@@ -464,3 +464,12 @@ export const complianceReports = pgTable("compliance_reports", {
   resultJson: jsonb("result_json").notNull(),
   createdAt: createdAt(),
 });
+
+// Managed demo keys (KEY_MODE managed/both). Private JWK encrypted at rest with AES-256-GCM; never plaintext.
+export const managedKeys = pgTable("managed_keys", {
+  keyId: text("key_id").primaryKey().references(() => signingKeys.id),
+  ownerType: text("owner_type", { enum: ["user", "client"] }).notNull(),
+  ownerId: text("owner_id").notNull().unique(),
+  encryptedPrivateJwk: text("encrypted_private_jwk").notNull(), // base64(iv || ciphertext+tag)
+  createdAt: createdAt(),
+});

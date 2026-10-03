@@ -2,6 +2,20 @@
 
 Phase plan: docs/SPEC.md §19. Feature freeze 8 Nov 2026; submit by 11 Nov 2026.
 
+## Official rules check (2026-10-03): overrides the spec where they differ
+
+- **Deadline: 12 Nov 2026, 12:00 pm PT** (spec said 2:00 pm) = 20:00 UTC = ~01:30 IST on 13 Nov. Target remains submit by 11 Nov.
+- **Judging: 1–15 Dec 2026.** Hosted demo, sandbox credentials and LLM budget must stay alive until 15 Dec.
+- Demo access: hosted URL **or** complete local setup instructions. Provide both: Render URL + zero-key MOCK quick start + sandbox buyer login in README.
+- Must integrate the **PayPal sandbox**: Stage One checks it "reasonably applies the required APIs". MOCK-only is a real risk, so we need sandbox credentials before Phase 5.
+- Stage Two criteria, equally weighted: Technological Implementation, Design, Potential Impact, Innovation, Presentation. **Tie-break uses Technological Implementation first.** "Design" means a complete, coherent product, not a proof of concept.
+- **Prize stacking:** at most one Grand Prize *or* one Honorable Mention (Most Creative, Most Impactful, Best Demo Delivery, Best Use of PayPal + AI, Best Use of Agentic Commerce) **plus one Sponsor Prize**.
+- Sponsor prize target: **AG Grid** (1st $5k). Render and APIMatic are useful but only one sponsor prize can be won. **Elastic, Channel3 and Bryntum have no or irrelevant prizes**, so F22 (Elastic precedents) drops to the bottom of the cut list.
+- PayPal AI resources worth using for "Technological Implementation" and the agentic prize: PayPal Agent Toolkit and the PayPal MCP server (docs.paypal.ai). Evaluate in T302/T303 for Concierge and ProcureBot.
+- Funding UI should use the **PayPal JavaScript SDK v6** in LIVE mode (T131).
+- Video: under 3 minutes, public on YouTube, no copyrighted music or third-party trademarks without permission.
+- Public GitHub repo with the license visible in the About section.
+
 ## Phase 0: Foundation and contracts (3–5 Oct): DONE 2026-10-03
 
 1. T001 Next.js 16 + TS strict + Tailwind, Drizzle, Vitest, ESLint, GitHub Actions CI.

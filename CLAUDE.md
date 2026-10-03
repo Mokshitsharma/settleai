@@ -38,8 +38,12 @@ Full spec: `docs/SPEC.md` (source of truth). Progress: `docs/STATUS.md`. Re-read
 
 ## Project decisions (deviations from spec, see docs/STATUS.md)
 - Project lives at `E:\settleai` (never on C:).
+- Official rules override the spec: deadline 12 Nov 2026 12:00 pm PT; judging 1–15 Dec (keep the demo alive); one sponsor prize max, target AG Grid. See docs/STATUS.md "Official rules check".
 - Local/demo DB is PGlite (embedded Postgres); real Postgres when `DATABASE_URL` is set (Render, CI).
 - PayPal runs in MOCK mode until sandbox credentials are provided.
+
+## Database rule
+- Inside a transaction, use only the `tx` handle. Never query the root `db` while a transaction is open: PGlite has a single connection, so it deadlocks (hangs forever). Services take an optional `tx` and pass it down.
 
 ## Commands
 `pnpm dev` · `pnpm test` · `pnpm typecheck` · `pnpm lint` · `pnpm demo:smoke` · `pnpm db:reset` · `pnpm db:seed` · `pnpm db:generate` (after schema changes) · `pnpm verify:audit`

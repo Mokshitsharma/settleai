@@ -105,13 +105,14 @@ export class MockPayPalAdapter implements PaymentsPort {
         payout_item_id: itemId,
         payout_batch_id: batchId,
         payout_item: { sender_item_id: input.senderItemId },
-        transaction_status: result.status,
+        // Real PayPal wording: the event is ...SUCCEEDED but the status field says SUCCESS.
+        transaction_status: fail ? "FAILED" : "SUCCESS",
       });
       return result;
     });
   }
 
-  async getPayout(itemId: string): Promise<PayoutResult> {
+  async getPayoutItem(itemId: string): Promise<PayoutResult> {
     const payout = this.payouts.get(itemId);
     if (!payout) throw new Error(`Unknown mock payout item ${itemId}`);
     return payout;

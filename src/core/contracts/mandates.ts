@@ -22,7 +22,9 @@ export const IntentMandatePayload = z.object({
     maxPerJobMinor: MinorAmount,
     maxTotalMinor: MinorAmount,
     maxJobsPerDay: z.number().int().positive(),
-    geoFence: z.object({ lat: z.number(), lng: z.number(), radiusKm: z.number().positive() }).optional(),
+    geoFence: z
+      .object({ lat: z.number(), lng: z.number(), radiusKm: z.number().positive(), label: z.string().optional() })
+      .optional(),
     counterparty: z.object({ minTrustScore: z.number().min(0).max(100), requirePayPalEmail: z.boolean() }),
     prohibitedKeywords: z.array(z.string()).optional(),
   }),

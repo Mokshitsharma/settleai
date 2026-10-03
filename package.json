@@ -20,6 +20,7 @@
   "dependencies": {
     "@electric-sql/pglite": "^0.5.8",
     "@noble/hashes": "^2.4.0",
+    "@paypal/paypal-server-sdk": "^2.5.0",
     "canonicalize": "^5.1.0",
     "drizzle-orm": "^0.45.3",
     "jose": "^6.2.12",

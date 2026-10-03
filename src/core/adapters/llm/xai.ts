@@ -45,7 +45,12 @@ export class XaiLlmAdapter implements LlmPort {
         ],
         response_format: {
           type: "json_schema",
-          json_schema: { name: req.schemaName, schema: z.toJSONSchema(req.schema, { target: "draft-7", io: "output" }), strict: true },
+          // strict:false because optional fields can be rejected by strict mode; Zod below is the real gate.
+          json_schema: {
+            name: req.schemaName,
+            schema: z.toJSONSchema(req.schema, { target: "draft-7", io: "output", unrepresentable: "any" }),
+            strict: false,
+          },
         },
       }),
     });
