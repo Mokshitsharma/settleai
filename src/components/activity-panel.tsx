@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect, useRef, useState } from "react";
 
 interface ActivityEvent {
   id: number;
@@ -15,26 +16,44 @@ const DOT: Record<string, string> = {
   "payout.succeeded": "var(--seal)",
   "job.funded": "var(--seal)",
   "admin.alert": "var(--deny)",
+  "decision.hold": "var(--deny)",
+  "decision.review": "var(--hold)",
+  "decision.auto_release": "var(--seal)",
+  "release.paused": "var(--deny)",
+  "decision.rejected": "var(--deny)",
 };
+
+// Events that change what the page shows: refresh server data when they arrive.
+const REFRESH_ON = new Set(["job.funded", "job.accepted", "decision.auto_release", "decision.hold", "decision.review", "decision.rejected", "decision.admin_approved", "payout.succeeded", "payout.failed", "release.paused", "milestone.submitted"]);
 
 /** Live feed of agent and money events for a job (SSE). The hero of the demo (spec §13.2). */
 export function ActivityPanel({ jobId, initial }: { jobId: string; initial: ActivityEvent[] }) {
   const [events, setEvents] = useState<ActivityEvent[]>(initial);
   const [connected, setConnected] = useState(false);
+  const router = useRouter();
+  const seen = useRef(new Set(initial.map((e) => e.id)));
 
   useEffect(() => {
     const es = new EventSource(`/api/events/stream?jobId=${encodeURIComponent(jobId)}`);
     const onEvent = (e: MessageEvent) => {
       const data = JSON.parse(e.data) as ActivityEvent;
-      setEvents((prev) => (prev.some((p) => p.id === data.id) ? prev : [...prev, data].slice(-60)));
+      if (seen.current.has(data.id)) return; // the stream replays recent events on connect
+      seen.current.add(data.id);
+      setEvents((prev) => [...prev, data].slice(-60));
+      if (REFRESH_ON.has(data.type)) setTimeout(() => router.refresh(), 300);
     };
     es.onopen = () => setConnected(true);
     es.onerror = () => setConnected(false);
     es.onmessage = onEvent;
-    const types = ["agent.step", "agent.done", "agent.fallback", "job.created", "job.funded", "job.accepted", "funding.order_created", "funding.captured", "payout.submitted", "payout.succeeded", "payout.failed", "payout.status", "refund.completed", "refund.pending"];
+    const types = [
+      "agent.step", "agent.done", "agent.fallback", "job.created", "job.funded", "job.accepted", "funding.order_created", "funding.captured",
+      "payout.submitted", "payout.succeeded", "payout.failed", "payout.status", "refund.completed", "refund.pending", "proof.added",
+      "milestone.submitted", "decision.auto_release", "decision.hold", "decision.review", "decision.rejected", "decision.admin_approved",
+      "release.window_closed", "release.paused",
+    ];
     types.forEach((t) => es.addEventListener(t, onEvent as EventListener));
     return () => es.close();
-  }, [jobId]);
+  }, [jobId, router]);
 
   return (
     <aside aria-live="polite" className="rounded-[10px] border border-vellum bg-surface">

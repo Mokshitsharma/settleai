@@ -5,6 +5,8 @@ import { apiClients } from "@/core/db/schema";
 import { pageUser } from "@/lib/page-auth";
 import { MandateComposer } from "./mandate-composer";
 import { MandateCard } from "./mandate-card";
+import { AgentRequestPanel } from "./agent-request";
+import { formatMinor } from "@/core/money";
 import { EmptyState } from "@/components/ui";
 
 export const metadata: Metadata = { title: "Agent mandates" };
@@ -32,6 +34,21 @@ export default async function MandatesPage() {
         <section>
           <h2 className="text-lg font-semibold">Give an agent permission</h2>
           <MandateComposer userId={user.id} clients={clients} keyMode={c.config.KEY_MODE} />
+          <div className="mt-8">
+            <AgentRequestPanel
+              mandates={active.flatMap((m) =>
+                m.envelope.payload.type === "intent"
+                  ? [
+                      {
+                        id: m.id,
+                        categories: m.envelope.payload.scope.categories,
+                        label: `${m.envelope.payload.agent.name}: ${m.envelope.payload.scope.categories.join(", ").replace("_", " ")}, up to ${formatMinor(m.envelope.payload.scope.maxPerJobMinor)} per job`,
+                      },
+                    ]
+                  : [],
+              )}
+            />
+          </div>
         </section>
         <section>
           <h2 className="text-lg font-semibold">Active</h2>

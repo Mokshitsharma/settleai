@@ -43,15 +43,23 @@ function describeError(err: unknown): string {
   return (err as Error).message ?? String(err);
 }
 
+const AGENT_LABEL: Record<string, string> = {
+  scoping: "Scoping agent",
+  verification: "Verification agent",
+  arbiter: "Dispute arbiter",
+  concierge: "Concierge",
+};
+
 export async function runAgent<T>(deps: AgentDeps, call: AgentCall<T>): Promise<AgentResult<T>> {
   const traceId = newId("trace");
+  const label = AGENT_LABEL[call.agent] ?? call.agent;
   const emit = deps.emit ?? (() => {});
   let messages = call.messages;
   let lastError = "";
 
   for (let attempt = 1; attempt <= 2; attempt++) {
     const started = Date.now();
-    emit("agent.step", attempt === 1 ? `${call.agent}: thinking` : `${call.agent}: retrying after invalid output`, {
+    emit("agent.step", attempt === 1 ? `${label} is reviewing` : `${label} returned invalid output; retrying once`, {
       agent: call.agent,
       attempt,
     });
@@ -80,7 +88,7 @@ export async function runAgent<T>(deps: AgentDeps, call: AgentCall<T>): Promise<
         status: "ok",
         traceId,
       });
-      emit("agent.done", `${call.agent}: done in ${res.latencyMs || Date.now() - started} ms`, { agent: call.agent, model: res.model });
+      emit("agent.done", `${label} finished in ${res.latencyMs || Date.now() - started} ms`, { agent: call.agent, model: res.model });
       return { ok: true, output: res.output, traceId, model: res.model, latencyMs: res.latencyMs };
     } catch (err) {
       lastError = describeError(err);
@@ -120,7 +128,7 @@ export async function runAgent<T>(deps: AgentDeps, call: AgentCall<T>): Promise<
     status: "fallback",
     traceId,
   });
-  emit("agent.fallback", `${call.agent}: falling back to human review`, { agent: call.agent, error: lastError });
+  emit("agent.fallback", `${label} could not produce a valid answer; a person will review`, { agent: call.agent, error: lastError });
   return { ok: false, traceId, error: lastError };
 }
 

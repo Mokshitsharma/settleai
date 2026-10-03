@@ -76,7 +76,11 @@ export function runDeterministicChecks(proofs: ProofForChecks[], ctx: CheckConte
       const exact = p.sha256 && prior.sha256 && p.sha256 === prior.sha256;
       const dist = p.phash && prior.phash ? hammingDistance(p.phash, prior.phash) : 99;
       if (exact || dist <= ctx.policy.dupImagePhashMaxDistance) {
-        add("DUP_IMAGE", "critical", `Photo ${p.id} matches a photo already submitted for job ${prior.jobId} (${exact ? "identical file" : `${dist}-bit difference`})`);
+        add(
+          "DUP_IMAGE",
+          "critical",
+          `This photo was already submitted for another job (…${prior.jobId.slice(-6)}; ${exact ? "identical file" : "visually identical"})`,
+        );
         break;
       }
     }

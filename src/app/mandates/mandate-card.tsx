@@ -75,7 +75,11 @@ export function MandateCard({ mandate, fresh = false }: { mandate: MandateView; 
         <span>
           Hash <Hash value={mandate.envelope.payloadHash} chars={16} /> key <Hash value={keyMode ?? ""} chars={14} />
         </span>
-        {mandate.revokedAt ? <span>Revoked {new Date(mandate.revokedAt).toLocaleString()}</span> : null}
+        {mandate.revokedAt ? (
+          <span>
+            Revoked {new Date(mandate.revokedAt).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" })} IST
+          </span>
+        ) : null}
         {active ? (
           <Button variant="danger" onClick={revoke} disabled={busy} className="px-3 py-1.5 text-xs">
             {busy ? "Revoking…" : "Revoke"}

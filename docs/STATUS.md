@@ -48,15 +48,33 @@ Phase plan: docs/SPEC.md §19. Feature freeze 8 Nov 2026; submit by 11 Nov 2026.
 - **Not done from T141, moved to Phase 2 start:** proof photo fixtures with EXIF/GPS (needed by T201) and 12 historical jobs (need the release flow). Render deploy needs the owner's Render account; plan names in render.yaml must be checked in the dashboard.
 - Proof uploads use local disk; Render disks are ephemeral, so production needs S3/R2 (D3) before Phase 5.
 
+## Phase 2: Intelligence and enforcement (13–19 Oct): DONE 2026-10-03
+
+1. T201/T202 Deterministic checks (dHash duplicates, EXIF time + GPS, MIME sniffing, geo radius incl. per-criterion pickup location, timing, injection scan incl. EXIF text); Verification Agent with delimited data and a deterministic merge where rules and critical flags always win.
+2. T203 Versioned risk engine (all §8.5 signals, Appendix B scenarios S01-S11 tested), Decision Card, plain-English explanations, risk-scaled challenge windows.
+3. T204/T205/T206 Mandate Guard G1/G2/G3 with every reason code, step-up, recorded checks and attested denials; signed Job Mandates (spec hashes, worker countersignature, re-signed on edit) and Payment Mandates bound to PayPal custom_id; attestations at every state change.
+4. T207 Challenge-window timer, admin approve/reject (attested overrides, fraud lowers trust), revocation pauses pending payouts with payer resume or refund; next milestone opens after payout; trust rises on success.
+5. T208/T209 Decision Card, Denial Card, live activity with auto-refresh, mobile worker proof capture (camera, location, demo sample photos), agent request panel; e2e J1 (verify, window, payout), J2 (reused photo, hold, reject), mandate denial. 96 unit/integration + 5 e2e green; `pnpm demo:smoke` now runs J1, J2 and J6.
+
+### Phase 2 deviations and leftovers
+- **No pg-boss:** PGlite cannot host it. Background work is a DB-driven in-process timer (restart-safe because state lives in the DB) plus fire-and-forget verification. Revisit if Render runs a separate worker.
+- **Perceptual hash is a 64-bit difference hash (dHash)** implemented on sharp; robust to recompression and resizing (tested). Not a security primitive.
+- **Risk narrator is a deterministic template**, not an LLM: explanations are always accurate and free. An LLM narrator can be added later behind the same field.
+- **Managed keys sign Job/Payment Mandates** for payers, workers and agents (KEY_MODE both). Intent Mandates can still be signed in the browser. Production would use passkeys or a KMS.
+- Agent jobs: a G1 dry run happens before scoping (geofence deferred until the location is known), then the binding G1 + spend reservation + job creation run in one transaction.
+- **Demo endpoints** (`/api/dev/sample-proof`, `/api/dev/agent-request`) exist so judges can exercise every path without a phone or an MCP client; all generated evidence is labelled as demo samples.
+- Contract change: `AcceptanceCriterion.params.location` (where a criterion's proof must be taken, e.g. the pickup point).
+- Still open from T141: 12 historical jobs for analytics (Phase 4 needs them) and the staging deploy (needs Render access).
+
 ### Open items / needs from owner
 - PayPal sandbox Client ID + Secret before Phase 5 (strongly recommended for the "Best Use of PayPal" prize and Stage One viability).
-- `XAI_API_KEY` in `.env.local` to test the live Scoping Agent (everything works on the offline stub meanwhile).
-- Real delivery photos taken in Indore (pickup and drop-off, with location on) would make the AI vision demo far more convincing than synthetic fixtures.
-- Render account access when we are ready to deploy (target: staging in Phase 2).
+- `XAI_API_KEY` in `.env.local` to test the live Scoping and Verification agents (everything works on the offline stub meanwhile; image + json_schema with grok-4.7 still to verify).
+- Real delivery photos taken in Indore (pickup and drop-off, with location on) would make the AI vision demo far more convincing than generated samples.
+- Render account access for the staging deploy.
 
 ## Track sections
-- A. Payments and ledger: done for Phase 1; next T207 release path through Mandate Guard G3.
-- B. Agents and verification: runtime + Scoping done; next T201 deterministic checks, T202 Verification Agent, T203 risk engine.
-- C. Mandates and proof: crypto, mandates, attestations done; next T204 Mandate Guard, T205 Job/Payment Mandate binding, T206 attestations at every state change.
-- D. Product and UI: core pages done with the "signed and sealed" design; next T208 Decision Card, Denial Card, worker proof upload.
-- E. Platform and QA: e2e + CI done; next proof fixtures, J2 e2e, staging deploy.
+- A. Payments and ledger: release path through G3 done; next T305 reconciliation, refund fee shares in disputes (T301).
+- B. Agents and verification: checks, verification, risk done; next T301 Arbiter with liability, T302 reputation polish + Concierge.
+- C. Mandates and proof: guard, binding, attestations done; next T303 MCP server + ProcureBot, T304 verifier CLI + /verify page + receipts.
+- D. Product and UI: decision/denial cards and worker flow done; next T306 dispute UI, proof chain viewer, mandate detail page.
+- E. Platform and QA: J1/J2 e2e done; next J3/J4/J6/J7 e2e, staging deploy.

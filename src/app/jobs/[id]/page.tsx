@@ -4,7 +4,9 @@ import type { AcceptanceCriterion, JobSpec } from "@/core/contracts";
 import { getContainer } from "@/core/container";
 import { pageUser } from "@/lib/page-auth";
 import { ActivityPanel } from "@/components/activity-panel";
+import { DecisionCardView } from "@/components/decision-card";
 import { AcceptButton, FundPanel } from "@/components/job-actions";
+import { AdminReview, ChallengeCountdown, PausedChoice, SubmitProofLink } from "@/components/milestone-actions";
 import { MoneyStrip } from "@/components/money-strip";
 import { Hash, JobStatusPill, MilestoneStatusPill, Money, Panel, Pill } from "@/components/ui";
 
@@ -30,6 +32,9 @@ export default async function JobPage({ params }: PageProps<"/jobs/[id]">) {
   const spec = job.specJson as JobSpec;
   const funding = d.funding.find((f) => f.status === "CONFIRMED");
   const isPayer = user.role === "payer" && job.payerId === user.id;
+  const isWorker = user.role === "worker" && job.workerId === user.id;
+  const proofImages = Object.fromEntries(d.proofs.filter((p) => p.kind === "photo").map((p) => [p.id, true]));
+  const waiting = Object.fromEntries(d.releases.filter((r) => r.status === "WAITING_WINDOW" && r.challengeEndsAt).map((r) => [r.milestoneId, r.challengeEndsAt!.toISOString()]));
 
   return (
     <main className="grid gap-8 lg:grid-cols-[1fr_340px]">
@@ -88,6 +93,14 @@ export default async function JobPage({ params }: PageProps<"/jobs/[id]">) {
                         </li>
                       ))}
                     </ul>
+                    {d.decisions[m.id] ? <DecisionCardView card={d.decisions[m.id]} proofImages={proofImages} /> : null}
+                    {m.status === "CHALLENGE_WINDOW" && waiting[m.id] ? <ChallengeCountdown endsAt={waiting[m.id]} /> : null}
+                    {isWorker && (m.status === "ACTIVE" || m.status === "REJECTED") ? <SubmitProofLink milestoneId={m.id} resubmit={m.status === "REJECTED"} /> : null}
+                    {user.role === "admin" && (m.status === "NEEDS_REVIEW" || m.status === "HELD") ? <AdminReview milestoneId={m.id} /> : null}
+                    {isPayer && m.status === "PAUSED_MANDATE" ? <PausedChoice milestoneId={m.id} /> : null}
+                    {(m.status === "VERIFYING" || m.status === "SUBMITTED") ? (
+                      <p className="mt-3 text-sm text-ink-soft">Checking the proof now. Follow each step in the live activity panel.</p>
+                    ) : null}
                   </Panel>
                 </li>
               );
@@ -119,6 +132,7 @@ export default async function JobPage({ params }: PageProps<"/jobs/[id]">) {
             <h2 className="font-semibold">Take this job</h2>
             <p className="mb-3 mt-1 text-sm text-ink-soft">
               <Money minor={job.totalMinor} className="font-semibold text-ink" /> is already held by PayPal for you.
+              {job.createdBy.startsWith("api_client:") ? " This job was created by an AI agent within its owner's signed mandate." : ""}
             </p>
             <AcceptButton jobId={job.id} hasPayPalEmail={Boolean(user.paypalEmail)} />
           </Panel>

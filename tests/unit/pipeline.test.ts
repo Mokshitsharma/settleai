@@ -95,7 +95,7 @@ describe("J2 fraud: reused photo is held and rejected", () => {
     const card = await submitPhoto(d.milestones[0].id, "j1-pickup"); // same scene as the J1 job
     expect(card?.decision).toBe("HOLD");
     expect(card?.verification.deterministicFlags.map((f) => f.code)).toContain("DUP_IMAGE");
-    expect(card?.explanation).toMatch(/^Held: Photo .* matches a photo already submitted for job/);
+    expect(card?.explanation).toMatch(/^Held: This photo was already submitted for another job/);
     clock.advance(60_000);
     expect(await c.releases.processDueWindows()).toBe(0); // nothing waiting: no release was created
 

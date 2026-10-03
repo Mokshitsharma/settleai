@@ -1,12 +1,13 @@
 // Jobs and milestones: create from a confirmed JobSpec, edit before funding, accept, and read models.
 import { and, asc, desc, eq, inArray, or } from "drizzle-orm";
 import type { Db, DbOrTx } from "@/core/db/client";
-import { fundingOrders, jobs, milestones, payouts, refunds, releases, users } from "@/core/db/schema";
+import { fundingOrders, jobs, milestones, payouts, proofs, refunds, releases, riskAssessments, users } from "@/core/db/schema";
 import { JobSpec, type Role } from "@/core/contracts";
 import type { EventHub } from "@/core/events/hub";
 import { newId } from "@/core/ids";
 import { feeForAmount } from "@/core/money";
 import type { ClockPort } from "@/core/ports/clock";
+import type { DecisionCard } from "@/core/policy/decision-card";
 import { assertTransition, type JobStatus } from "@/core/state/machines";
 import type { AuditService } from "./audit";
 import type { MandateBindingService } from "./binding";
@@ -41,6 +42,9 @@ export interface JobDetail {
   money: MoneyStrip;
   payer: { id: string; name: string };
   worker: { id: string; name: string; trustScore: number } | null;
+  proofs: (typeof proofs.$inferSelect)[];
+  /** Latest Decision Card per milestone id. */
+  decisions: Record<string, DecisionCard>;
 }
 
 export class JobService {
@@ -226,6 +230,15 @@ export class JobService {
         : Promise.resolve([]),
     ]);
     const releaseRows = rel.map((x) => x.r);
+    const msIds = ms.map((m) => m.id);
+    const [proofRows, riskRows] = msIds.length
+      ? await Promise.all([
+          this.db.select().from(proofs).where(inArray(proofs.milestoneId, msIds)).orderBy(asc(proofs.createdAt)),
+          this.db.select().from(riskAssessments).where(inArray(riskAssessments.milestoneId, msIds)).orderBy(asc(riskAssessments.createdAt)),
+        ])
+      : [[], []];
+    const decisions: Record<string, DecisionCard> = {};
+    for (const r of riskRows) decisions[r.milestoneId] = r.cardJson as DecisionCard; // ascending, so the latest wins
     const payoutRows = releaseRows.length
       ? await this.db.select().from(payouts).where(inArray(payouts.releaseId, releaseRows.map((r) => r.id)))
       : [];
@@ -244,6 +257,8 @@ export class JobService {
       },
       payer: payer[0],
       worker: worker[0] ?? null,
+      proofs: proofRows,
+      decisions,
     };
   }
 

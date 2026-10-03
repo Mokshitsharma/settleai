@@ -114,11 +114,16 @@ function humanDuration(s: number): string {
   return `${Math.round(s / 3600)}-hour`;
 }
 
+/** "an 18-second", "a 15-second": numbers read aloud as eight, eleven or eighteen take "an". */
+function article(phrase: string): string {
+  return `${/^(8|11|18)/.test(phrase) ? "an" : "a"} ${phrase}`;
+}
+
 function explain(decision: RiskDecision, score: number, v: VerificationResult, signals: Signal[], reasons: string[], window: number): string {
   const passed = v.criteria.filter((c) => c.verdict === "pass").length;
   const top = [...signals].filter((s) => s.points > 0).sort((a, b) => b.points - a.points)[0];
   if (decision === "AUTO_RELEASE") {
-    return `Released automatically: ${passed} of ${v.criteria.length} criteria verified with ${Math.round(v.confidence * 100)}% confidence and a risk score of ${score}${top ? ` (${top.detail.toLowerCase()})` : ""}. The payer has a ${humanDuration(window)} window to dispute before PayPal pays out.`;
+    return `Released automatically: ${passed} of ${v.criteria.length} criteria verified with ${Math.round(v.confidence * 100)}% confidence and a risk score of ${score}${top ? ` (${top.detail.toLowerCase()})` : ""}. The payer has ${article(humanDuration(window))} window to dispute before PayPal pays out.`;
   }
   if (decision === "HOLD") {
     const critical = v.deterministicFlags.find((f) => f.severity === "critical");
