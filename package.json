@@ -1,0 +1,50 @@
+{
+  "name": "settleai",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "test": "vitest run",
+    "typecheck": "tsc --noEmit",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "tsx scripts/db.ts migrate",
+    "db:seed": "tsx scripts/db.ts seed",
+    "db:reset": "tsx scripts/db.ts reset",
+    "demo:smoke": "tsx scripts/demo-smoke.ts",
+    "verify:audit": "tsx scripts/verify-audit-chain.ts",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@electric-sql/pglite": "^0.5.8",
+    "@noble/hashes": "^2.4.0",
+    "canonicalize": "^5.1.0",
+    "drizzle-orm": "^0.45.3",
+    "jose": "^6.2.12",
+    "next": "16.3.8",
+    "pg": "^8.23.1",
+    "react": "19.2.8",
+    "react-dom": "19.2.8",
+    "ulid": "^3.0.2",
+    "zod": "^4.6.5"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^24.19.1",
+    "@types/pg": "^8.23.1",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "drizzle-kit": "^0.31.11",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.8",
+    "fast-check": "^4.10.2",
+    "prettier": "^3.9.9",
+    "tailwindcss": "^4",
+    "tsx": "^4.23.15",
+    "typescript": "^5",
+    "vitest": "^5.0.3"
+  },
+  "packageManager": "pnpm@9.15.9"
+}

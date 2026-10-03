@@ -1,0 +1,21 @@
+{
+  "version": 1,
+  "holdAt": 60,
+  "reviewAt": 25,
+  "autoReleaseMinConfidence": 0.85,
+  "baseChallengeWindowSeconds": 86400,
+  "maxAutoReleaseAmountMinor": 50000,
+  "payoutDestRecentHours": 72,
+  "dupImagePhashMaxDistance": 6,
+  "gpsDefaultRadiusM": 150,
+  "exifWindowMinutes": 90,
+  "weights": {
+    "LOW_VERIFICATION_CONFIDENCE": 20, "CRITERION_UNCLEAR": 15, "CRITERION_FAIL": 15,
+    "DUP_IMAGE": 60, "GPS_MISMATCH": 35, "EXIF_TIME_MISMATCH": 25, "NO_EXIF": 10,
+    "INJECTION_SUSPECTED": 40, "AMOUNT_ANOMALY": 15, "LOW_TRUST": 20, "HIGH_TRUST": -15,
+    "FIRST_TIME_PAIR": 10, "PAYOUT_DEST_RECENT": 25, "VELOCITY": 15, "PAYER_DISPUTE_RATE": 10
+  },
+  "hardHoldFlags": ["DUP_IMAGE"],
+  "forceReviewFlags": ["INJECTION_SUSPECTED"],
+  "trustDeltas": { "release_success": 3, "dispute_won": 2, "dispute_lost": -8, "fraud_confirmed": -30 }
+}
