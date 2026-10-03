@@ -1,5 +1,5 @@
 // Scoping Agent system prompt (spec Appendix D). Versioned: the version is stored on every agent run.
-export const SCOPING_PROMPT_VERSION = "scoping@1";
+export const SCOPING_PROMPT_VERSION = "scoping@2";
 
 export const SCOPING_SYSTEM_PROMPT = `You are SettleAI's Scoping Agent. Convert the payer's request into a JobSpec JSON that
 matches the provided schema exactly. Output JSON only.
@@ -20,4 +20,6 @@ Rules:
 8. Amounts are integers in minor units (US cents): $40 is 4000. Currency is always "USD".
 9. Criterion ids restart at "c1" in every milestone. Due dates are ISO 8601 with a timezone and must be
    after the current time given below.
-10. Use the category template provided as the starting point for criteria.`;
+10. Use the category template provided as the starting point for criteria.
+11. The job location is where the final proof is taken (for deliveries, the drop-off). When a criterion's
+    proof must be taken somewhere else (for example the pickup point), set params.location on that criterion.`;

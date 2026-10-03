@@ -5,11 +5,14 @@ import type { Db } from "@/core/db/client";
 import { fundingOrders, jobs, milestones } from "@/core/db/schema";
 import type { EventHub } from "@/core/events/hub";
 import { newId } from "@/core/ids";
-import { hashCanonical } from "@/core/mandates/canonical";
+import type { JobSpec } from "@/core/contracts";
 import type { ClockPort } from "@/core/ports/clock";
 import type { PaymentsPort } from "@/core/ports/payments";
 import { assertTransition } from "@/core/state/machines";
 import type { AuditService } from "./audit";
+import type { MandateBindingService } from "./binding";
+import type { MandateGuardService } from "./guard";
+import type { PolicyService } from "./policy";
 import { JobError, type JobService } from "./jobs";
 
 /** PayPal custom_id binding (spec §7.7): smd_<jobShortId>_<first 16 hex of the Payment Mandate hash>. */
@@ -25,6 +28,10 @@ export class FundingService {
     private readonly audit: AuditService,
     private readonly events: EventHub,
     private readonly clock: ClockPort,
+    private readonly binding: MandateBindingService,
+    private readonly guard: MandateGuardService,
+    private readonly policy: PolicyService,
+    private readonly challengeWindowSeconds: number,
   ) {}
 
   /** Creates the PayPal order for milestones total + platform fee. Idempotent per attempt. */
@@ -49,14 +56,37 @@ export class FundingService {
       return { fundingId: open.id, orderId: open.paypalOrderId, amountMinor: open.amountMinor, approveUrl: (open.rawJson as { approveUrl?: string })?.approveUrl };
     }
 
+    // Gate G2: the payer clicking Fund is the human approval for agent-created jobs.
+    const g2 = await this.guard.g2Fund({ jobId: job.id, humanApproved: true });
+    if (g2.result !== "allow") throw new JobError("FORBIDDEN", g2.message);
+
     const [{ n }] = await this.db.select({ n: count() }).from(fundingOrders).where(eq(fundingOrders.jobId, job.id));
     const attempt = n + 1;
     const fundingId = newId("fund");
     const amountMinor = job.totalMinor + job.feeMinor;
     const requestId = `fund_${job.id}_${attempt}`;
-    // Until the Payment Mandate exists (T205), bind the order to the hash of the confirmed job spec.
-    const customId = paypalCustomId(job.id, hashCanonical(job.specJson));
-    await this.db.insert(fundingOrders).values({ id: fundingId, jobId: job.id, amountMinor, status: "CREATED", requestId });
+    const signer = await this.binding.signerFor({ type: "user", id: args.payerId });
+    const policy = await this.policy.active();
+    // The Payment Mandate (settlement conditions per milestone) is signed before the order exists;
+    // its hash rides in PayPal custom_id so the order and the mandate are bound together (spec §7.7).
+    const customId = await this.db.transaction(async (tx) => {
+      await tx.insert(fundingOrders).values({ id: fundingId, jobId: job.id, amountMinor, status: "CREATED", requestId });
+      const pm = await this.binding.createPaymentMandate(
+        {
+          jobId: job.id,
+          spec: job.specJson as JobSpec,
+          fundingId,
+          amountMinor,
+          feeMinor: job.feeMinor,
+          policyVersion: policy.version,
+          challengeWindowSeconds: this.challengeWindowSeconds,
+          agentPresence: job.createdBy.startsWith("api_client:"),
+        },
+        tx,
+        signer,
+      );
+      return paypalCustomId(job.id, pm.payloadHash);
+    });
 
     const order = await this.payments.createOrder({
       requestId,

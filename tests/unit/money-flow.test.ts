@@ -59,7 +59,13 @@ describe("funding (J1 start) in MOCK mode", () => {
     const detail = (await c.jobs.detail(job.id))!;
     expect(detail.job.status).toBe("FUNDED");
     expect(detail.money).toMatchObject({ fundedMinor: 10200, inEscrowMinor: 10200 });
-    expect(await c.attestations.verify(job.id)).toMatchObject({ ok: true, checked: 1 });
+    expect(await c.attestations.verify(job.id)).toMatchObject({ ok: true, checked: 3 });
+    // Job Mandate (signed by the payer), Payment Mandate bound to the order, then the funding evidence.
+    expect((await c.attestations.chain(job.id)).map((a) => [a.type, a.payload.mandateType ?? a.payload.kind])).toEqual([
+      ["mandate", "job"],
+      ["mandate", "payment"],
+      ["evidence", "funding_captured"],
+    ]);
   });
 
   it("a replayed or out-of-order webhook is a no-op (S13)", async () => {
@@ -116,7 +122,9 @@ describe("treasury (T102)", () => {
     expect(detail.money.releasedMinor).toBe(4000);
     expect(detail.money.inEscrowMinor).toBe(10200 - 4000 - 80);
     expect(detail.milestones[0].status).toBe("RELEASED");
-    expect(await c.attestations.verify(job.id)).toMatchObject({ ok: true, checked: 2 });
+    expect(await c.attestations.verify(job.id)).toMatchObject({ ok: true, checked: 5 });
+    expect((await c.attestations.chain(job.id)).map((a) => a.type)).toEqual(["mandate", "mandate", "evidence", "mandate", "settlement"]);
+    expect(detail.milestones[1].status).toBe("ACTIVE"); // next milestone opens after payout
     expect(await c.ledger.checkInvariants()).toEqual([]);
   });
 

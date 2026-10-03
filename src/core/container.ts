@@ -23,6 +23,14 @@ import { LedgerService } from "@/core/services/ledger";
 import { MandateService } from "@/core/services/mandates";
 import { TreasuryService } from "@/core/services/treasury";
 import { WebhookService } from "@/core/services/webhooks";
+import { MandateBindingService } from "@/core/services/binding";
+import { AgentJobService } from "@/core/services/agent-jobs";
+import { MandateGuardService } from "@/core/services/guard";
+import { PolicyService } from "@/core/services/policy";
+import { ProofService } from "@/core/services/proofs";
+import { ReleaseService } from "@/core/services/releases";
+import { ReputationService } from "@/core/services/reputation";
+import { VerificationService } from "@/core/services/verification";
 
 export interface Container {
   config: AppConfig;
@@ -42,6 +50,15 @@ export interface Container {
   funding: FundingService;
   treasury: TreasuryService;
   webhooks: WebhookService;
+  policy: PolicyService;
+  guard: MandateGuardService;
+  binding: MandateBindingService;
+  proofs: ProofService;
+  verification: VerificationService;
+  releases: ReleaseService;
+  agentJobs: AgentJobService;
+  /** Runs verification for a submitted milestone in the background; progress streams over SSE. */
+  verifyInBackground(milestoneId: string): void;
   /** MOCK mode only: delivers the mock's queued PayPal events through the real webhook pipeline. */
   deliverMockWebhooks(): Promise<number>;
 }
@@ -90,10 +107,38 @@ export async function createContainer(
   await keys.platformSigner();
   const attestations = new AttestationService(db, keys, clock);
   const mandates = new MandateService(db, keys, audit, clock);
-  const jobs = new JobService(db, ledger, audit, events, clock, cfg.PLATFORM_FEE_BPS);
-  const funding = new FundingService(db, payments, jobs, audit, events, clock);
-  const treasury = new TreasuryService(db, payments, ledger, audit, attestations, events, clock, { killSwitch: cfg.PAYOUT_KILL_SWITCH });
+  const policy = new PolicyService(db);
+  const reputation = new ReputationService();
+  const guard = new MandateGuardService(db, keys, mandates, attestations, audit, clock);
+  const binding = new MandateBindingService(db, keys, attestations, clock);
+  const jobs = new JobService(db, ledger, audit, events, clock, cfg.PLATFORM_FEE_BPS, binding, guard);
+  const funding = new FundingService(db, payments, jobs, audit, events, clock, binding, guard, policy, cfg.CHALLENGE_WINDOW_SECONDS);
+  const treasury = new TreasuryService(
+    db,
+    payments,
+    ledger,
+    audit,
+    attestations,
+    events,
+    clock,
+    { killSwitch: cfg.PAYOUT_KILL_SWITCH, releaseGuard: (a) => guard.g3Release({ releaseId: a.releaseId }) },
+    reputation,
+    policy,
+  );
   const webhooks = new WebhookService(db, payments, ledger, treasury, audit, attestations, events, clock);
+  const storage = new LocalStorageAdapter(path.resolve(cfg.STORAGE_LOCAL_DIR));
+  const llm = overrides.llm ?? buildLlm(cfg);
+  const proofs = new ProofService(db, storage, attestations, audit, events, clock);
+  const verification = new VerificationService(db, llm, storage, proofs, policy, treasury, attestations, audit, events, clock, {
+    baseChallengeWindowSeconds: cfg.CHALLENGE_WINDOW_SECONDS,
+  });
+  const releases = new ReleaseService(db, treasury, attestations, audit, reputation, policy, events, clock);
+  mandates.onRevoked = (mandateId, reason) => releases.pauseForMandate(mandateId, reason);
+  const agentJobs = new AgentJobService(db, llm, guard, mandates, binding, jobs, events, clock);
+
+  function verifyInBackground(milestoneId: string): void {
+    void verification.run(milestoneId).catch((err) => console.error("verification failed", milestoneId, err));
+  }
 
   async function deliverMockWebhooks(): Promise<number> {
     if (!(payments instanceof MockPayPalAdapter)) return 0;
@@ -108,8 +153,8 @@ export async function createContainer(
     config: cfg,
     dbHandle,
     payments,
-    llm: overrides.llm ?? buildLlm(cfg),
-    storage: new LocalStorageAdapter(path.resolve(cfg.STORAGE_LOCAL_DIR)),
+    llm,
+    storage,
     search: new InMemorySearchAdapter(),
     clock,
     events,
@@ -122,12 +167,29 @@ export async function createContainer(
     funding,
     treasury,
     webhooks,
+    policy,
+    guard,
+    binding,
+    proofs,
+    verification,
+    releases,
+    agentJobs,
+    verifyInBackground,
     deliverMockWebhooks,
   };
 }
 
 // One container per server process (Next.js may re-evaluate modules in dev, so cache on globalThis).
-const g = globalThis as unknown as { __settleai?: Promise<Container> };
+const g = globalThis as unknown as { __settleai?: Promise<Container>; __settleaiTimer?: ReturnType<typeof setInterval> };
 export function getContainer(): Promise<Container> {
-  return (g.__settleai ??= createContainer());
+  return (g.__settleai ??= createContainer().then((c) => {
+    // Challenge-window timer: DB-driven, so a restart simply picks up overdue releases.
+    g.__settleaiTimer ??= setInterval(() => {
+      void c.releases
+        .processDueWindows()
+        .then(() => c.deliverMockWebhooks())
+        .catch((err) => console.error("release timer", err));
+    }, 2000);
+    return c;
+  }));
 }

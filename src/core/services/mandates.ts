@@ -62,6 +62,9 @@ export interface MandateView {
 const utcDay = (d: Date) => d.toISOString().slice(0, 10);
 
 export class MandateService {
+  /** Called after a revocation commits (wired to ReleaseService.pauseForMandate in the container). */
+  onRevoked?: (mandateId: string, reason: string) => Promise<unknown>;
+
   constructor(
     private readonly db: Db,
     private readonly keys: KeyService,
@@ -184,11 +187,13 @@ export class MandateService {
   }
 
   async revoke(args: { mandateId: string; actorUserId: string; actorRole: string; reason: string }): Promise<MandateView> {
+    let changed = false;
     await this.db.transaction(async (tx) => {
       const [m] = await tx.select().from(mandates).where(eq(mandates.id, args.mandateId)).for("update");
       if (!m) throw new MandateError("MANDATE_NOT_FOUND", "Mandate not found");
       if (m.issuerId !== args.actorUserId && args.actorRole !== "admin") throw new MandateError("FORBIDDEN", "Only the issuer or an admin can revoke");
       if (m.status === "revoked") return;
+      changed = true;
       await tx
         .update(mandates)
         .set({ status: "revoked", revokedAt: this.clock.now(), revokedReason: args.reason, updatedAt: this.clock.now() })
@@ -204,6 +209,7 @@ export class MandateService {
         tx,
       );
     });
+    if (changed && this.onRevoked) await this.onRevoked(args.mandateId, args.reason);
     return (await this.get(args.mandateId))!;
   }
 

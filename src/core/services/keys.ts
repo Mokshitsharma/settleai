@@ -31,6 +31,8 @@ async function deriveWrappingKey(secret: string): Promise<globalThis.CryptoKey> 
 export class KeyService {
   private wrapKey?: Promise<globalThis.CryptoKey>;
   private platform?: Promise<Signer>;
+  // Decrypted managed signers, cached so callers can load them before opening a transaction.
+  private managed = new Map<string, Signer>();
 
   constructor(
     private readonly db: Db,
@@ -126,6 +128,8 @@ export class KeyService {
 
   /** Returns the owner's managed key id, creating the key on first use. */
   async ensureManagedKey(ownerType: "user" | "client", ownerId: string): Promise<string> {
+    const cached = this.managed.get(ownerId);
+    if (cached) return cached.keyId;
     const [existing] = await this.db.select().from(managedKeys).where(eq(managedKeys.ownerId, ownerId));
     if (existing) return existing.keyId;
     const { privateKey, publicKey } = await generateKeyPair(ALG, { extractable: true });
@@ -144,11 +148,15 @@ export class KeyService {
   }
 
   async managedSigner(ownerId: string): Promise<Signer | undefined> {
+    const cached = this.managed.get(ownerId);
+    if (cached) return cached;
     const [row] = await this.db.select().from(managedKeys).where(eq(managedKeys.ownerId, ownerId));
     if (!row) return undefined;
     const raw = Buffer.from(row.encryptedPrivateJwk, "base64");
     const plain = await subtle.decrypt({ name: "AES-GCM", iv: raw.subarray(0, 12) }, await this.wrapping(), raw.subarray(12));
     const jwk = JSON.parse(new TextDecoder().decode(plain)) as JWK;
-    return { keyId: row.keyId, privateKey: (await importJWK(jwk, ALG)) as CryptoKey };
+    const signer = { keyId: row.keyId, privateKey: (await importJWK(jwk, ALG)) as CryptoKey };
+    this.managed.set(ownerId, signer);
+    return signer;
   }
 }

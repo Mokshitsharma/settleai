@@ -9,6 +9,8 @@ import { feeForAmount } from "@/core/money";
 import type { ClockPort } from "@/core/ports/clock";
 import { assertTransition, type JobStatus } from "@/core/state/machines";
 import type { AuditService } from "./audit";
+import type { MandateBindingService } from "./binding";
+import type { MandateGuardService } from "./guard";
 import { escrowCode, type LedgerService } from "./ledger";
 
 export class JobError extends Error {
@@ -49,6 +51,8 @@ export class JobService {
     private readonly events: EventHub,
     private readonly clock: ClockPort,
     private readonly feeBps: number,
+    private readonly binding: MandateBindingService,
+    private readonly guard: MandateGuardService,
   ) {}
 
   async setStatus(tx: DbOrTx, job: JobRow, to: JobStatus): Promise<void> {
@@ -56,12 +60,22 @@ export class JobService {
     await tx.update(jobs).set({ status: to, updatedAt: this.clock.now() }).where(eq(jobs.id, job.id));
   }
 
-  async createFromSpec(args: { payerId: string; spec: unknown; createdBy: string; intentMandateId?: string }): Promise<JobRow> {
+  /**
+   * Creates a job and its signed Job Mandate. Agent-created jobs (createdBy "api_client:<id>") are signed by
+   * the agent and must already have passed Mandate Guard G1; pass the same `tx` so spend and job commit together.
+   */
+  async createFromSpec(
+    args: { payerId: string; spec: unknown; createdBy: string; intentMandateId?: string; requestNonce?: string },
+    outerTx?: DbOrTx,
+  ): Promise<JobRow> {
     const parsed = JobSpec.safeParse(args.spec);
     if (!parsed.success) throw new JobError("INVALID_SPEC", parsed.error.issues[0]?.message ?? "Invalid job spec");
     const spec = parsed.data;
     const id = newId("job");
-    await this.db.transaction(async (tx) => {
+    const agentClientId = args.createdBy.startsWith("api_client:") ? args.createdBy.slice("api_client:".length) : null;
+    // Keys are loaded before the transaction (PGlite single connection rule).
+    const signer = await this.binding.signerFor(agentClientId ? { type: "client", id: agentClientId } : { type: "user", id: args.payerId });
+    const run = async (tx: DbOrTx) => {
       await tx.insert(jobs).values({
         id,
         payerId: args.payerId,
@@ -90,9 +104,17 @@ export class JobService {
         { actor: args.createdBy, action: "job.created", entityType: "job", entityId: id, payload: { totalMinor: spec.totalAmountMinor, title: spec.title } },
         tx,
       );
-    });
-    this.events.publish(`job:${id}`, "job.created", `Job created: ${spec.title}`);
-    return (await this.getRow(id))!;
+      await this.binding.createJobMandate(
+        { jobId: id, spec, payerId: args.payerId, intentMandateId: args.intentMandateId, agentClientId, nonce: args.requestNonce },
+        tx,
+        signer,
+        agentClientId ? "agent" : "principal",
+      );
+    };
+    if (outerTx) await run(outerTx);
+    else await this.db.transaction(run);
+    this.events.publish(`job:${id}`, "job.created", agentClientId ? `Agent created job: ${spec.title}` : `Job created: ${spec.title}`);
+    return (await this.getRow(id, outerTx))!;
   }
 
   /** Payer edits milestones and criteria before funding. Re-opens funding if an order was pending. */
@@ -100,6 +122,7 @@ export class JobService {
     const parsed = JobSpec.safeParse(args.spec);
     if (!parsed.success) throw new JobError("INVALID_SPEC", parsed.error.issues[0]?.message ?? "Invalid job spec");
     const spec = parsed.data;
+    const signer = await this.binding.signerFor({ type: "user", id: args.payerId });
     await this.db.transaction(async (tx) => {
       const [job] = await tx.select().from(jobs).where(eq(jobs.id, args.jobId)).for("update");
       if (!job) throw new JobError("NOT_FOUND", "Job not found");
@@ -142,12 +165,20 @@ export class JobService {
         { actor: `user:${args.payerId}`, action: "job.spec_edited", entityType: "job", entityId: job.id, payload: { totalMinor: spec.totalAmountMinor } },
         tx,
       );
+      // A new spec version needs a new signature: the previous Job Mandate is superseded.
+      await this.binding.createJobMandate(
+        { jobId: job.id, spec, payerId: args.payerId, intentMandateId: job.intentMandateId },
+        tx,
+        signer,
+        "principal", // the payer re-signs any edited spec, including agent-drafted ones
+      );
     });
     return (await this.getRow(args.jobId))!;
   }
 
   /** Worker accepts a funded job. Requires a PayPal payout email (spec §6.5). Activates milestone 1. */
   async accept(args: { jobId: string; workerId: string }): Promise<JobRow> {
+    const signer = await this.binding.signerFor({ type: "user", id: args.workerId });
     await this.db.transaction(async (tx) => {
       const [job] = await tx.select().from(jobs).where(eq(jobs.id, args.jobId)).for("update");
       if (!job) throw new JobError("NOT_FOUND", "Job not found");
@@ -155,6 +186,9 @@ export class JobService {
       const [worker] = await tx.select().from(users).where(eq(users.id, args.workerId));
       if (!worker || worker.role !== "worker") throw new JobError("FORBIDDEN", "Only workers can accept jobs");
       if (!worker.paypalEmail) throw new JobError("PAYOUT_EMAIL_REQUIRED", "Add your PayPal email before accepting jobs");
+      const g2 = await this.guard.g2Counterparty({ jobId: job.id, worker }, tx);
+      if (g2.result !== "allow") throw new JobError("FORBIDDEN", g2.message);
+      await this.binding.countersign({ jobId: job.id, workerId: worker.id }, tx, signer);
       await this.setStatus(tx, job, "IN_PROGRESS");
       await tx.update(jobs).set({ workerId: worker.id }).where(eq(jobs.id, job.id));
       const [first] = await tx.select().from(milestones).where(eq(milestones.jobId, job.id)).orderBy(asc(milestones.seq)).limit(1);

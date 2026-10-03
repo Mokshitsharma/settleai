@@ -12,6 +12,8 @@ export const AcceptanceCriterion = z.object({
       withinMinutesOfDue: z.number().positive().optional(),
       mimeTypes: z.array(z.string()).optional(),
       requiredSections: z.array(z.string()).optional(),
+      // Where this criterion's proof must be taken (e.g. the pickup point). Defaults to the job location.
+      location: z.object({ lat: z.number(), lng: z.number(), label: z.string() }).optional(),
     })
     .optional(),
 });

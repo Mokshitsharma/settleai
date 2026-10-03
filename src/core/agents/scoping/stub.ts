@@ -27,9 +27,13 @@ export function stubScope(req: StructuredRequest<unknown>): JobSpec {
   const parts = total > 0 ? splitProportional(total, template.map((t) => t.share)) : template.map(() => 0);
   // The job location is where the final proof is checked: for deliveries the destination, which is
   // usually the last place mentioned ("from Rajwada to Vijay Nagar").
-  const place = KNOWN_PLACES.filter((p) => p.match.test(text) && p.label !== "Indore")
+  const mentioned = KNOWN_PLACES.filter((p) => p.match.test(text) && p.label !== "Indore")
     .map((p) => ({ p, at: text.search(p.match) }))
-    .sort((a, b) => b.at - a.at)[0]?.p ?? KNOWN_PLACES.find((p) => p.match.test(text));
+    .sort((a, b) => a.at - b.at)
+    .map((x) => x.p);
+  const place = mentioned[mentioned.length - 1] ?? KNOWN_PLACES.find((p) => p.match.test(text));
+  // For deliveries with two places, the first one mentioned is the pickup point.
+  const pickup = category === "delivery" && mentioned.length >= 2 ? mentioned[0] : undefined;
   const questions: string[] = [];
   if (total === 0) questions.push("What is your total budget for this job in USD?");
   if (amounts.length > 1) questions.push("You mentioned several amounts. Which one is the total budget?");
@@ -50,7 +54,12 @@ export function stubScope(req: StructuredRequest<unknown>): JobSpec {
       description: t.description,
       amountMinor: parts[i],
       dueAt: new Date(now.getTime() + t.hoursFromNow * 3600_000).toISOString(),
-      acceptanceCriteria: t.criteria,
+      acceptanceCriteria:
+        pickup && i === 0
+          ? t.criteria.map((c) =>
+              c.evidenceType === "geo" ? { ...c, params: { ...c.params, location: { lat: pickup.lat, lng: pickup.lng, label: pickup.label } } } : c,
+            )
+          : t.criteria,
     })),
     clarifyingQuestions: questions.slice(0, 3),
     riskNotes: hits.length ? [`Request mentions prohibited terms: ${hits.join(", ")}`] : [],

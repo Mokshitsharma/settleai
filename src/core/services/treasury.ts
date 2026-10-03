@@ -13,6 +13,8 @@ import { assertTransition, canTransition } from "@/core/state/machines";
 import type { AttestationService } from "./attestations";
 import type { AuditService } from "./audit";
 import { escrowCode, type LedgerService } from "./ledger";
+import type { PolicyService } from "./policy";
+import type { ReputationService } from "./reputation";
 
 export class TreasuryError extends Error {
   constructor(
@@ -25,6 +27,7 @@ export class TreasuryError extends Error {
       | "INSUFFICIENT_ESCROW"
       | "NOT_FUNDED",
     message: string,
+    readonly decision?: GuardDecision,
   ) {
     super(message);
   }
@@ -43,6 +46,8 @@ export class TreasuryService {
     private readonly events: EventHub,
     private readonly clock: ClockPort,
     private readonly opts: { killSwitch: boolean; releaseGuard?: ReleaseGuard },
+    private readonly reputation: ReputationService,
+    private readonly policy: PolicyService,
   ) {}
 
   /** Platform fee share for one milestone: the job fee split proportionally to milestone amounts. */
@@ -101,7 +106,7 @@ export class TreasuryService {
       const decision = await this.opts.releaseGuard({ releaseId: rel.id, jobId: job.id, amountMinor: rel.amountMinor });
       if (decision.result !== "allow") {
         await this.markPayoutFailed(payoutId, rel.id, `GUARD_${decision.reasonCodes.join("+")}`, true);
-        throw new TreasuryError("GUARD_DENIED", decision.message);
+        throw new TreasuryError("GUARD_DENIED", decision.message, decision);
       }
     }
 
@@ -200,8 +205,20 @@ export class TreasuryService {
           },
           tx,
         );
+        if (fullyReleased) await this.activateNextMilestone(tx, ms.jobId, ms.seq);
+        const [job] = await tx.select().from(jobs).where(eq(jobs.id, ms.jobId));
+        let trust: number | null = null;
+        if (job.workerId) {
+          const policy = await this.policy.active(tx);
+          trust = await this.reputation.apply(tx, { userId: job.workerId, delta: policy.trustDeltas.release_success, reason: "release_success", refType: "release", refId: rel.id });
+        }
         await this.maybeCompleteJob(tx, ms.jobId);
-        return { applied: true as const, jobId: ms.jobId, message: `PayPal payout succeeded: ${formatMinor(rel.amountMinor)} to the worker`, type: "payout.succeeded" };
+        return {
+          applied: true as const,
+          jobId: ms.jobId,
+          message: `PayPal payout succeeded: ${formatMinor(rel.amountMinor)} to the worker${trust !== null ? `; trust score now ${trust}` : ""}`,
+          type: "payout.succeeded",
+        };
       }
       if (TERMINAL_PAYOUT_FAILURES.includes(args.status) && rel.status === "PAYOUT_PENDING") {
         await tx.update(releases).set({ status: "PAYOUT_FAILED", updatedAt: this.clock.now() }).where(eq(releases.id, rel.id));
@@ -216,6 +233,12 @@ export class TreasuryService {
     if (!outcome.applied) return "ignored";
     this.events.publish(`job:${outcome.jobId}`, outcome.type, outcome.message);
     return "applied";
+  }
+
+  private async activateNextMilestone(tx: Parameters<Parameters<Db["transaction"]>[0]>[0], jobId: string, afterSeq: number) {
+    const ms = await tx.select().from(milestones).where(eq(milestones.jobId, jobId)).orderBy(asc(milestones.seq));
+    const next = ms.find((m) => m.seq > afterSeq && m.status === "PENDING");
+    if (next) await tx.update(milestones).set({ status: "ACTIVE", activatedAt: this.clock.now(), updatedAt: this.clock.now() }).where(eq(milestones.id, next.id));
   }
 
   private async maybeCompleteJob(tx: Parameters<Parameters<Db["transaction"]>[0]>[0], jobId: string) {
