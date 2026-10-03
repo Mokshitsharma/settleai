@@ -1,8 +1,11 @@
 // pnpm db:migrate | pnpm db:seed | pnpm db:reset
+import "./_env";
 import { rm } from "node:fs/promises";
 import { loadConfig } from "@/core/config";
+import { createContainer } from "@/core/container";
 import { openDb } from "@/core/db/client";
 import { seed } from "@/core/db/seed";
+import { seedDemo } from "@/core/db/seed-demo";
 
 async function main() {
   const cmd = process.argv[2];
@@ -15,7 +18,9 @@ async function main() {
   console.log(`Migrations applied (${h.driver}).`);
   if (cmd === "seed" || cmd === "reset") {
     await seed(h.db);
-    console.log("Seed data loaded.");
+    const c = await createContainer(cfg, { dbHandle: h });
+    const { mandateIds } = await seedDemo(c);
+    console.log(`Seed data loaded. ProcureBot mandates: ${mandateIds.join(", ")}`);
   }
   await h.close();
 }

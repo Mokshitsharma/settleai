@@ -32,13 +32,31 @@ Phase plan: docs/SPEC.md §19. Feature freeze 8 Nov 2026; submit by 11 Nov 2026.
 - **Extra table `ledger_txns`** holding a unique idempotency key per money movement, so a retried release or refund can never double-post.
 - **Audit hash covers seq, actor, action, entity and payload** (spec says payload only), so metadata cannot be altered either.
 
+## Phase 1: Core loops (6–12 Oct): DONE 2026-10-03 (ahead of schedule)
+
+1. T101/T102 Live PayPal REST adapter verified against official OpenAPI specs (docs/paypal-notes.md); webhook pipeline (verify, dedupe, state-machine-safe); Treasury payouts (claim-then-call, retries with fresh ids, kill switch) and escrow-bounded refunds.
+2. T111/T112 Agent runtime (Zod, one retry with error feedback, HUMAN_REVIEW fallback, agent_runs traces, SSE); Scoping Agent with templates, never-invent-amounts guard, prohibited-content flags, deterministic offline stub.
+3. T121/T122 ES256 JWS over RFC 8785 canonical JSON; envelopes; signed hash-linked attestation chain; Intent Mandates (draft, browser or managed signing, revoke); row-locked spend counters (50-way race test).
+4. T131/T132 Demo auth with role switcher; landing, jobs, job detail (money strip, milestones, live activity), job intake with streamed scoping, mock PayPal checkout; mandate composer with plain-language preview, in-browser WebCrypto signing, revoke.
+5. T141 ProcureBot client and two pre-signed mandates in seed; Playwright e2e (J1 fund+accept, mandate sign+revoke) green; render.yaml. 63 unit/integration tests + 2 e2e green; production build green.
+
+### Phase 1 deviations and leftovers
+- Prompts live in `prompt.ts` (versioned constant) instead of `prompt.md`, so they bundle without filesystem reads in production.
+- Funding in LIVE mode uses the PayPal approve link + "capture now" button; switch to **PayPal JS SDK v6** buttons once sandbox credentials exist (must test against sandbox, not guess).
+- Human-created jobs are funded without Job/Payment Mandates for now; mandate lineage binding is T205. `custom_id` currently binds the order to the job-spec hash.
+- Fee on refunds: refunds return principal only; unearned fee share on cancellation/dispute is handled in T301.
+- **Not done from T141, moved to Phase 2 start:** proof photo fixtures with EXIF/GPS (needed by T201) and 12 historical jobs (need the release flow). Render deploy needs the owner's Render account; plan names in render.yaml must be checked in the dashboard.
+- Proof uploads use local disk; Render disks are ephemeral, so production needs S3/R2 (D3) before Phase 5.
+
 ### Open items / needs from owner
 - PayPal sandbox Client ID + Secret before Phase 5 (strongly recommended for the "Best Use of PayPal" prize and Stage One viability).
-- `XAI_API_KEY` in `.env.local` when live AI testing starts (Phase 1, T111).
+- `XAI_API_KEY` in `.env.local` to test the live Scoping Agent (everything works on the offline stub meanwhile).
+- Real delivery photos taken in Indore (pickup and drop-off, with location on) would make the AI vision demo far more convincing than synthetic fixtures.
+- Render account access when we are ready to deploy (target: staging in Phase 2).
 
 ## Track sections
-- A. Payments and ledger: ledger + mock PayPal done; live adapter pending (T101).
-- B. Agents and verification: LlmPort, stub and xAI adapters ready; agent runtime next (T111).
-- C. Mandates and proof: canonical JSON and hashing done; signing/verification next (T121).
-- D. Product and UI: placeholder landing with mode badge; real UI starts T131.
-- E. Platform and QA: CI, smoke script; seed fixtures next (T141).
+- A. Payments and ledger: done for Phase 1; next T207 release path through Mandate Guard G3.
+- B. Agents and verification: runtime + Scoping done; next T201 deterministic checks, T202 Verification Agent, T203 risk engine.
+- C. Mandates and proof: crypto, mandates, attestations done; next T204 Mandate Guard, T205 Job/Payment Mandate binding, T206 attestations at every state change.
+- D. Product and UI: core pages done with the "signed and sealed" design; next T208 Decision Card, Denial Card, worker proof upload.
+- E. Platform and QA: e2e + CI done; next proof fixtures, J2 e2e, staging deploy.

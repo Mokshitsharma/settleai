@@ -15,7 +15,8 @@
     "db:reset": "tsx scripts/db.ts reset",
     "demo:smoke": "tsx scripts/demo-smoke.ts",
     "verify:audit": "tsx scripts/verify-audit-chain.ts",
-    "format": "prettier --write ."
+    "format": "prettier --write .",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.8",
@@ -32,6 +33,7 @@
     "zod": "^4.6.5"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^24.19.1",
     "@types/pg": "^8.23.1",

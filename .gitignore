@@ -44,3 +44,7 @@ next-env.d.ts
 
 # local data (PGlite database, uploaded proofs)
 /.data/
+
+# Playwright
+/test-results/
+/playwright-report/
