@@ -25,6 +25,9 @@ import { TreasuryService } from "@/core/services/treasury";
 import { WebhookService } from "@/core/services/webhooks";
 import { MandateBindingService } from "@/core/services/binding";
 import { AgentJobService } from "@/core/services/agent-jobs";
+import { DisputeService } from "@/core/services/disputes";
+import { ReceiptService } from "@/core/services/receipts";
+import { ReconciliationService } from "@/core/services/reconciliation";
 import { MandateGuardService } from "@/core/services/guard";
 import { PolicyService } from "@/core/services/policy";
 import { ProofService } from "@/core/services/proofs";
@@ -57,6 +60,9 @@ export interface Container {
   verification: VerificationService;
   releases: ReleaseService;
   agentJobs: AgentJobService;
+  disputes: DisputeService;
+  receipts: ReceiptService;
+  reconciliation: ReconciliationService;
   /** Runs verification for a submitted milestone in the background; progress streams over SSE. */
   verifyInBackground(milestoneId: string): void;
   /** MOCK mode only: delivers the mock's queued PayPal events through the real webhook pipeline. */
@@ -135,6 +141,11 @@ export async function createContainer(
   const releases = new ReleaseService(db, treasury, attestations, audit, reputation, policy, events, clock);
   mandates.onRevoked = (mandateId, reason) => releases.pauseForMandate(mandateId, reason);
   const agentJobs = new AgentJobService(db, llm, guard, mandates, binding, jobs, events, clock);
+  const disputes = new DisputeService(db, llm, storage, treasury, guard, ledger, attestations, audit, reputation, policy, events, clock, {
+    evidenceWindowSeconds: cfg.DISPUTE_EVIDENCE_WINDOW_SECONDS,
+  });
+  const receipts = new ReceiptService(db, jobs, attestations, keys, clock);
+  const reconciliation = new ReconciliationService(db, payments, ledger, treasury);
 
   function verifyInBackground(milestoneId: string): void {
     void verification.run(milestoneId).catch((err) => console.error("verification failed", milestoneId, err));
@@ -174,6 +185,9 @@ export async function createContainer(
     verification,
     releases,
     agentJobs,
+    disputes,
+    receipts,
+    reconciliation,
     verifyInBackground,
     deliverMockWebhooks,
   };
@@ -187,6 +201,7 @@ export function getContainer(): Promise<Container> {
     g.__settleaiTimer ??= setInterval(() => {
       void c.releases
         .processDueWindows()
+        .then(() => c.disputes.processDueWindows())
         .then(() => c.deliverMockWebhooks())
         .catch((err) => console.error("release timer", err));
     }, 2000);

@@ -79,6 +79,18 @@ async function main() {
   assert(!denied.ok && denied.decision.reasonCodes.includes("MANDATE_SCOPE_VIOLATION"), "agent request was not denied");
   step(`J6 agent request denied: ${denied.decision.reasonCodes.join(", ")}`);
 
+  // J7: the receipt verifies offline, and a one-field change fails.
+  const { verifyReceipt } = await import("@/core/verifier/receipt");
+  const receipt = await c.receipts.build(job.id);
+  assert(receipt, "no receipt");
+  const pinned = { trustedPlatformKeyIds: await c.receipts.platformKeyIds() };
+  const good = await verifyReceipt(receipt, pinned);
+  assert(good.ok, `receipt did not verify: ${good.checks.filter((x) => !x.ok).map((x) => x.detail).join("; ")}`);
+  const tampered = JSON.parse(JSON.stringify(receipt).replace('"amountMinor":4000', '"amountMinor":9000'));
+  const bad = await verifyReceipt(tampered, pinned);
+  assert(!bad.ok, "tampered receipt verified");
+  step(`J7 receipt verifies offline; tampered copy fails at ${bad.checks.find((x) => !x.ok)?.pointer}`);
+
   const problems = await c.ledger.checkInvariants();
   assert(problems.length === 0, `ledger invariants failed: ${problems.join("; ")}`);
   step("ledger invariants hold");

@@ -16,10 +16,15 @@
     "demo:smoke": "tsx scripts/demo-smoke.ts",
     "verify:audit": "tsx scripts/verify-audit-chain.ts",
     "format": "prettier --write .",
-    "e2e": "playwright test"
+    "e2e": "playwright test",
+    "verify-receipt": "tsx scripts/verify-receipt.ts",
+    "procurebot": "tsx scripts/procurebot.ts",
+    "mcp": "tsx src/mcp/server.ts",
+    "reconcile": "tsx scripts/reconcile.ts"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.8",
+    "@modelcontextprotocol/sdk": "^1.32.0",
     "@noble/hashes": "^2.4.0",
     "@paypal/paypal-server-sdk": "^2.5.0",
     "canonicalize": "^5.1.0",

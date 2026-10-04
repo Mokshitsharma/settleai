@@ -66,15 +66,33 @@ Phase plan: docs/SPEC.md §19. Feature freeze 8 Nov 2026; submit by 11 Nov 2026.
 - Contract change: `AcceptanceCriterion.params.location` (where a criterion's proof must be taken, e.g. the pickup point).
 - Still open from T141: 12 historical jobs for analytics (Phase 4 needs them) and the staging deploy (needs Render access).
 
+## Phase 3: Accountability features (20–26 Oct): DONE 2026-10-04
+
+1. T301 Disputes: open (freezes payout), evidence from both sides, deterministic mandate-compliance report, Arbiter Agent with liability (fault class, bearer, basis), invariants enforced in code (exact split, report is ground truth, injection or low confidence escalates), accept/reject, admin resolution, gate G4, PayPal payout + refund (incl. unearned fee), trust effects, agent suspension on AGENT_SCOPE_VIOLATION. S14, S15, S26 tested.
+2. T303 Agent REST API (`/api/agent/*`, Bearer API key, scopes, suspension) and MCP server (`src/mcp/server.ts`, 10 tools) tested through a real MCP client; ProcureBot reference agent (scripted, and live with Grok function calling) verified end to end over stdio + HTTP.
+3. T304 Receipt bundles (no personal data), pure offline verifier (CLI `pnpm verify-receipt`, `/verify` page in the browser, `POST /api/verify`), public `/receipt/[id]` page, published platform keys for pinning. S25 tamper tests: every attestation field, recomputed hashes, full re-signing by an attacker (caught by key pinning), mandate swapping (caught by anchoring/lineage).
+4. T305 Reconciliation service and `pnpm reconcile`: missed webhooks repaired through the normal path, other mismatches reported; no double counting on repeated success.
+5. T306/T307 Dispute UI, proof chain viewer, mandate detail page with every guard check, receipt and verify pages; e2e J3 (dispute 70/30 via UI) and J7 (browser verification + one-byte tamper). 124 unit/integration + 7 e2e green; `pnpm demo:smoke` runs J1, J2, J6, J7.
+
+### Phase 3 deviations, fixes and leftovers
+- **Bug found and fixed:** key-validity check compared DB-clock key times (ms) with second-rounded document times, so brand-new keys made genuine receipts fail. Now a documented 5-minute skew allowance (`KEY_CLOCK_SKEW_MS`), with a regression test.
+- **Bug found and fixed:** the job page could miss a live update if an event landed between reading the job and snapshotting events. Events are now snapshotted first.
+- Disputed payouts no longer earn the "successful release" trust bonus; dispute outcomes carry their own trust effects.
+- The agent cannot fund: `confirm_job` returns an approval link; the human funds through PayPal (spec J4).
+- Agents' Job Mandates are signed with the agent's managed key held by SettleAI (the MCP server authenticates with the agent's API key). Production would let the agent hold its own key.
+- Receipts include full mandate payloads (opaque user ids, city-level geofence) so signatures verify; exact job coordinates are not included.
+- **T302 Concierge not built** (F17, on the cut list). Reputation is done. Elastic precedents (F22) not built (no Elastic prize).
+- A2A agent card (F34, P2) not built.
+
 ### Open items / needs from owner
 - PayPal sandbox Client ID + Secret before Phase 5 (strongly recommended for the "Best Use of PayPal" prize and Stage One viability).
-- `XAI_API_KEY` in `.env.local` to test the live Scoping and Verification agents (everything works on the offline stub meanwhile; image + json_schema with grok-4.7 still to verify).
-- Real delivery photos taken in Indore (pickup and drop-off, with location on) would make the AI vision demo far more convincing than generated samples.
+- `XAI_API_KEY` in `.env.local` to test the live Scoping, Verification and Arbiter agents and ProcureBot live mode (everything works on the offline stub meanwhile).
+- Real delivery photos taken in Indore (pickup, drop-off, a damaged-goods photo for the dispute scene).
 - Render account access for the staging deploy.
 
 ## Track sections
-- A. Payments and ledger: release path through G3 done; next T305 reconciliation, refund fee shares in disputes (T301).
-- B. Agents and verification: checks, verification, risk done; next T301 Arbiter with liability, T302 reputation polish + Concierge.
-- C. Mandates and proof: guard, binding, attestations done; next T303 MCP server + ProcureBot, T304 verifier CLI + /verify page + receipts.
-- D. Product and UI: decision/denial cards and worker flow done; next T306 dispute UI, proof chain viewer, mandate detail page.
-- E. Platform and QA: J1/J2 e2e done; next J3/J4/J6/J7 e2e, staging deploy.
+- A. Payments and ledger: reconciliation done; next LIVE sandbox run of the PayPal adapter (needs credentials), JS SDK v6 buttons.
+- B. Agents and verification: verification, risk, arbiter done; next eval harness (T402) and live-model checks.
+- C. Mandates and proof: guard, MCP, verifier done; next AP2 write-up (T406), policy editor (T403).
+- D. Product and UI: all journey screens exist; next AG Grid dashboards (T401, sponsor prize) and the visual pass (T404).
+- E. Platform and QA: J1-J3, J6, J7 e2e done; next seed history for analytics, staging deploy, CI on GitHub.

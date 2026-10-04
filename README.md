@@ -4,7 +4,7 @@
 
 > AP2 proves a human authorized an agent to pay. SettleAI proves the work was done before the money moves, and decides who is liable when it was not.
 
-Built for the PayPal AI Hackathon 2026. Status: early development (Phase 0 of 6). See [docs/STATUS.md](docs/STATUS.md).
+Built for the PayPal AI Hackathon 2026. Status: Phase 3 of 6 complete (disputes, MCP agents, offline receipts). See [docs/STATUS.md](docs/STATUS.md).
 
 ## Quick start (zero keys needed)
 
@@ -26,6 +26,25 @@ XAI_API_KEY=...            # Grok for live AI agents
 PAYPAL_CLIENT_ID=...       # PayPal sandbox; switches payments to LIVE (sandbox) mode
 PAYPAL_CLIENT_SECRET=...
 ```
+
+## For AI agents (MCP)
+
+Any MCP-capable agent can hire through SettleAI within the mandate its human signed. See [src/mcp/README.md](src/mcp/README.md).
+
+```bash
+pnpm dev                 # in one terminal
+pnpm procurebot          # the reference agent hires via MCP: one request denied, one created
+```
+
+## Verify a receipt offline
+
+```bash
+curl -o receipt.json "http://localhost:3000/api/receipts/<jobId>"
+curl -o keys.json http://localhost:3000/api/keys/platform
+pnpm verify-receipt receipt.json --platform-keys keys.json
+```
+
+Change one byte in `receipt.json` and run it again: verification fails and points at the broken link. The same verifier runs in the browser at `/verify`.
 
 ## Honest positioning
 

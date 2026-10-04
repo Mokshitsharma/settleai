@@ -112,6 +112,13 @@ export class MockPayPalAdapter implements PaymentsPort {
     });
   }
 
+  /** Failure injection (spec §6.6): make PayPal report a different item status, e.g. a late RETURNED. */
+  forcePayoutStatus(itemId: string, status: PayoutResult["status"]): void {
+    const payout = this.payouts.get(itemId);
+    if (!payout) throw new Error(`Unknown mock payout item ${itemId}`);
+    this.payouts.set(itemId, { ...payout, status });
+  }
+
   async getPayoutItem(itemId: string): Promise<PayoutResult> {
     const payout = this.payouts.get(itemId);
     if (!payout) throw new Error(`Unknown mock payout item ${itemId}`);

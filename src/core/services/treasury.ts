@@ -174,8 +174,9 @@ export class TreasuryService {
       if (args.status === "SUCCEEDED" && rel.status === "PAYOUT_PENDING") {
         assertTransition("RELEASE", rel.status, "PAYOUT_SUCCEEDED");
         await tx.update(releases).set({ status: "PAYOUT_SUCCEEDED", updatedAt: this.clock.now() }).where(eq(releases.id, rel.id));
-        await this.ledger.recordRelease({ jobId: ms.jobId, releaseId: rel.id, payoutMinor: rel.amountMinor, feeMinor: rel.feeMinor }, tx);
-        const releasedMinor = ms.releasedMinor + rel.amountMinor;
+        const posted = await this.ledger.recordRelease({ jobId: ms.jobId, releaseId: rel.id, payoutMinor: rel.amountMinor, feeMinor: rel.feeMinor }, tx);
+        // A repeated success (late webhook, reconciliation) must not count the same release twice.
+        const releasedMinor = posted.duplicate ? ms.releasedMinor : ms.releasedMinor + rel.amountMinor;
         const fullyReleased = releasedMinor >= ms.amountMinor;
         await tx
           .update(milestones)
@@ -208,7 +209,8 @@ export class TreasuryService {
         if (fullyReleased) await this.activateNextMilestone(tx, ms.jobId, ms.seq);
         const [job] = await tx.select().from(jobs).where(eq(jobs.id, ms.jobId));
         let trust: number | null = null;
-        if (job.workerId) {
+        // Disputed payouts carry their own trust effects (DisputeService); no success bonus for them.
+        if (job.workerId && rel.decisionSource !== "dispute") {
           const policy = await this.policy.active(tx);
           trust = await this.reputation.apply(tx, { userId: job.workerId, delta: policy.trustDeltas.release_success, reason: "release_success", refType: "release", refId: rel.id });
         }

@@ -187,6 +187,29 @@ export class MandateGuardService {
     return tx ? run(tx) : this.db.transaction(run);
   }
 
+  /** G4: dispute settlement, immediately before the payout and refund calls. */
+  async g4Settle(req: G4Request, t: DbOrTx = this.db): Promise<GuardDecision> {
+    const [job] = await t.select().from(jobs).where(eq(jobs.id, req.jobId));
+    const [pm] = await t
+      .select()
+      .from(mandates)
+      .where(and(eq(mandates.type, "payment"), eq(mandates.subjectId, req.jobId)))
+      .orderBy(desc(mandates.createdAt))
+      .limit(1);
+    let decision: GuardDecision;
+    if (pm) {
+      const check = await verifyEnvelope({ payload: pm.payloadJson, payloadHash: pm.payloadHash, signatures: pm.signaturesJson }, (kid) => this.keys.resolve(kid, t));
+      const cond = (pm.payloadJson as PaymentMandatePayload).settlementConditions.find((c) => c.milestoneSeq === req.milestoneSeq);
+      decision = check.ok
+        ? evaluateG4(req, cond)
+        : { result: "deny", gate: "G4", reasonCodes: ["MANDATE_SIGNATURE_INVALID"], message: "Settlement blocked: the Payment Mandate signature does not verify. Funds stay in escrow." };
+    } else {
+      decision = evaluateG4(req, undefined);
+    }
+    await this.record(t, { mandateId: job.intentMandateId ?? pm?.id ?? `job:${req.jobId}`, gate: "G4", action: "settle_dispute", decision, requestRef: req.disputeId, chainJobId: req.jobId });
+    return decision;
+  }
+
   /** G2 (funding): lineage and validity for agent-created jobs. The payer clicking Fund is the human approval. */
   async g2Fund(args: { jobId: string; humanApproved: boolean }, t: DbOrTx = this.db): Promise<GuardDecision> {
     const [job] = await t.select().from(jobs).where(eq(jobs.id, args.jobId));
@@ -279,7 +302,8 @@ export class MandateGuardService {
       mandateId = job.intentMandateId;
       const [m] = await t.select().from(mandates).where(eq(mandates.id, job.intentMandateId));
       const basics = await this.basics(t, m);
-      const payerApproved = rel.decisionSource === "payer";
+      // A payer approval or a dispute settlement both parties (or an admin) agreed to is a human decision.
+      const payerApproved = rel.decisionSource === "payer" || rel.decisionSource === "dispute";
       if (basics.codes.length && !payerApproved) {
         codes.push(...basics.codes);
         reasons.push(...basics.reasons.map((r) => `the agent's mandate is no longer valid: ${r}`));
@@ -304,6 +328,42 @@ export class MandateGuardService {
     await this.record(t, { mandateId, gate: "G3", action: "release", decision, requestRef: rel.id, chainJobId: job.id });
     return decision;
   }
+}
+
+export interface G4Request {
+  disputeId: string;
+  jobId: string;
+  milestoneSeq: number;
+  disputedAmountMinor: number;
+  releaseToWorkerMinor: number;
+  refundToPayerMinor: number;
+  escrowMinor: number;
+  resolvedBy: "both_parties" | "admin";
+}
+
+/** G4 (dispute settlement): pure checks; the service records the decision. */
+export function evaluateG4(req: G4Request, paymentCondition: { amountMinor: number } | undefined): GuardDecision {
+  const reasons: string[] = [];
+  const codes: ReasonCode[] = [];
+  if (!paymentCondition) {
+    codes.push("MANDATE_CHAIN_INVALID");
+    reasons.push("the milestone is not covered by the job's Payment Mandate");
+  }
+  if (req.releaseToWorkerMinor < 0 || req.refundToPayerMinor < 0 || req.releaseToWorkerMinor + req.refundToPayerMinor !== req.disputedAmountMinor) {
+    codes.push("RELEASE_CONDITION_UNMET");
+    reasons.push("release plus refund must equal the disputed amount");
+  }
+  if (paymentCondition && req.disputedAmountMinor > paymentCondition.amountMinor) {
+    codes.push("RELEASE_CONDITION_UNMET");
+    reasons.push("the disputed amount exceeds the milestone's settlement condition");
+  }
+  if (req.disputedAmountMinor > req.escrowMinor) {
+    codes.push("RELEASE_CONDITION_UNMET");
+    reasons.push("escrow does not cover the disputed amount");
+  }
+  return codes.length
+    ? { result: "deny", gate: "G4", reasonCodes: [...new Set(codes)], message: `Settlement blocked: ${reasons.join("; ")}. Funds stay in escrow.` }
+    : { result: "allow", gate: "G4", reasonCodes: [], message: `Settlement allowed: resolved by ${req.resolvedBy === "admin" ? "an admin" : "both parties"}.` };
 }
 
 function capReason(amountMinor: number, p: IntentMandatePayload, remainingMinor?: number): string {

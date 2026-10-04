@@ -47,6 +47,9 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
                 ))}
               </nav>
             ) : null}
+            <Link href="/verify" className="rounded px-2.5 py-1.5 text-sm font-medium text-ink-soft hover:bg-paper hover:text-ink">
+              Verify a receipt
+            </Link>
             <div className="ml-auto flex items-center gap-4">
               <ModeBadge />
               <RoleSwitcher current={user?.role} />

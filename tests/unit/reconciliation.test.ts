@@ -1,0 +1,69 @@
+import { eq } from "drizzle-orm";
+import { afterAll, beforeAll, describe, expect, it } from "vitest";
+import { MockPayPalAdapter } from "@/core/adapters/paypal/mock";
+import { loadConfig } from "@/core/config";
+import { createContainer, type Container } from "@/core/container";
+import { openTestDb } from "@/core/db/client";
+import { milestones, payouts, releases } from "@/core/db/schema";
+import { seed } from "@/core/db/seed";
+import { newId } from "@/core/ids";
+import { FixedClock } from "@/core/ports/clock";
+import { sampleJobSpec } from "../fixtures/contracts";
+import { T0 } from "../helpers";
+
+let c: Container;
+let mock: MockPayPalAdapter;
+
+beforeAll(async () => {
+  const dbHandle = await openTestDb();
+  await seed(dbHandle.db);
+  mock = new MockPayPalAdapter();
+  c = await createContainer(loadConfig({}), { dbHandle, clock: new FixedClock(T0), payments: mock });
+});
+afterAll(() => c.dbHandle.close());
+
+async function paidMilestone() {
+  const job = await c.jobs.createFromSpec({ payerId: "usr_ravi", spec: sampleJobSpec, createdBy: "user:usr_ravi" });
+  const order = await c.funding.start({ jobId: job.id, payerId: "usr_ravi" });
+  mock.approveOrder(order.orderId);
+  await c.funding.capture({ jobId: job.id, payerId: "usr_ravi", orderId: order.orderId });
+  await c.deliverMockWebhooks();
+  await c.jobs.accept({ jobId: job.id, workerId: "usr_asha" });
+  const [m] = await c.dbHandle.db.select().from(milestones).where(eq(milestones.jobId, job.id));
+  await c.dbHandle.db.update(milestones).set({ status: "RELEASING" }).where(eq(milestones.id, m.id));
+  const relId = newId("rel");
+  await c.dbHandle.db.insert(releases).values({ id: relId, milestoneId: m.id, amountMinor: m.amountMinor, feeMinor: 0, decisionSource: "admin", status: "CREATED" });
+  await c.treasury.executeRelease(relId, "admin:test");
+  return (await c.dbHandle.db.select().from(payouts).where(eq(payouts.releaseId, relId)))[0];
+}
+
+describe("reconciliation (F20)", () => {
+  it("is clean when ledger, records and PayPal agree", async () => {
+    await paidMilestone();
+    expect(await c.reconciliation.run()).toMatchObject({ ok: true, repaired: [], mismatches: [] });
+  });
+
+  it("detects a payout PayPal later reports as RETURNED", async () => {
+    const p = await paidMilestone();
+    mock.forcePayoutStatus(p.paypalItemId!, "RETURNED");
+    const report = await c.reconciliation.run();
+    expect(report.ok).toBe(false);
+    expect(report.mismatches).toContainEqual(expect.objectContaining({ kind: "payout_status", ref: p.id, detail: "SettleAI says SUCCEEDED, PayPal says RETURNED" }));
+  });
+
+  it("repairs a missed webhook through the normal path, without double counting", async () => {
+    const p = await paidMilestone();
+    // Simulate the webhook never being applied: our records still say the payout is in flight.
+    await c.dbHandle.db.update(payouts).set({ status: "PROCESSING" }).where(eq(payouts.id, p.id));
+    await c.dbHandle.db.update(releases).set({ status: "PAYOUT_PENDING" }).where(eq(releases.id, p.releaseId));
+    const [rel] = await c.dbHandle.db.select().from(releases).where(eq(releases.id, p.releaseId));
+    const [before] = await c.dbHandle.db.select().from(milestones).where(eq(milestones.id, rel.milestoneId));
+    mock.forcePayoutStatus(p.paypalItemId!, "SUCCEEDED");
+
+    const report = await c.reconciliation.run();
+    expect(report.repaired).toContain(`payout ${p.id}: PROCESSING -> SUCCEEDED`);
+    const [after] = await c.dbHandle.db.select().from(milestones).where(eq(milestones.id, rel.milestoneId));
+    expect(after.releasedMinor).toBe(before.releasedMinor);
+    expect(await c.ledger.checkInvariants()).toEqual([]);
+  });
+});

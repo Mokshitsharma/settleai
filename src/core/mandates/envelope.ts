@@ -15,6 +15,8 @@ export interface KeyRecord {
   retiredAt?: string | null;
 }
 
+export const KEY_CLOCK_SKEW_MS = 5 * 60_000;
+
 export type KeyResolver = (keyId: string) => KeyRecord | undefined | Promise<KeyRecord | undefined>;
 
 export async function signEnvelopePart(payload: MandatePayload, key: SigningKey, keyId: string, role: SignerRole) {
@@ -55,9 +57,11 @@ export async function verifyEnvelope(
     }
     if (key.status === "revoked") problems.push(`key ${sig.keyId} is revoked`);
     if (opts.requireActiveAt) {
+      // Key times come from the database clock (ms precision) and document times from the app clock
+      // (whole seconds), so allow a small skew; anything beyond it is a real validity violation.
       const at = Date.parse(opts.requireActiveAt);
-      if (Date.parse(key.createdAt) > at) problems.push(`key ${sig.keyId} did not exist at ${opts.requireActiveAt}`);
-      if (key.retiredAt && Date.parse(key.retiredAt) <= at) problems.push(`key ${sig.keyId} was retired before ${opts.requireActiveAt}`);
+      if (Date.parse(key.createdAt) > at + KEY_CLOCK_SKEW_MS) problems.push(`key ${sig.keyId} did not exist at ${opts.requireActiveAt}`);
+      if (key.retiredAt && Date.parse(key.retiredAt) <= at - KEY_CLOCK_SKEW_MS) problems.push(`key ${sig.keyId} was retired before ${opts.requireActiveAt}`);
     }
     const result = await verifyCanonical(sig.jws, env.payload, key.publicJwk);
     if (!result.ok) problems.push(`${sig.role} signature: ${result.reason}`);

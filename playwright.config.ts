@@ -29,7 +29,7 @@ export default defineConfig({
       APP_MODE: "MOCK",
       LLM_PROVIDER: "stub",
       PGLITE_DATA_DIR: ".data/e2e",
-      CHALLENGE_WINDOW_SECONDS: "15",
+      CHALLENGE_WINDOW_SECONDS: "30", // long enough to open a dispute through the UI
     },
   },
 });

@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { MandateView } from "@/core/services/mandates";
@@ -49,7 +50,11 @@ export function MandateCard({ mandate, fresh = false }: { mandate: MandateView; 
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex items-center gap-2">
-            <h3 className="font-semibold">{p.agent.name}</h3>
+            <h3 className="font-semibold">
+              <Link href={`/mandates/${mandate.id}`} className="hover:text-signal">
+                {p.agent.name}
+              </Link>
+            </h3>
             <Pill tone={status.tone}>{status.label}</Pill>
           </div>
           <p className="mt-3 leading-relaxed">{mandate.plainLanguage}</p>

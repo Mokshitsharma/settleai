@@ -5,6 +5,9 @@ import { getContainer } from "@/core/container";
 import { pageUser } from "@/lib/page-auth";
 import { ActivityPanel } from "@/components/activity-panel";
 import { DecisionCardView } from "@/components/decision-card";
+import { DisputePanel, OpenDispute, type DisputeProps } from "@/components/dispute-panel";
+import { ProofChainView } from "@/components/proof-chain";
+import type { DisputeProposal } from "@/core/contracts";
 import { AcceptButton, FundPanel } from "@/components/job-actions";
 import { AdminReview, ChallengeCountdown, PausedChoice, SubmitProofLink } from "@/components/milestone-actions";
 import { MoneyStrip } from "@/components/money-strip";
@@ -24,6 +27,9 @@ export default async function JobPage({ params }: PageProps<"/jobs/[id]">) {
   const user = await pageUser();
   const { id } = await params;
   const c = await getContainer();
+  // Snapshot events BEFORE reading the job: anything newer than the page's data then arrives over the
+  // stream as unseen and triggers a refresh (reading in the other order can miss an update).
+  const initialEvents = c.events.recent(`job:${id}`);
   const d = await c.jobs.detail(id);
   if (!d) notFound();
   const { job, milestones, money } = d;
@@ -34,6 +40,26 @@ export default async function JobPage({ params }: PageProps<"/jobs/[id]">) {
   const isPayer = user.role === "payer" && job.payerId === user.id;
   const isWorker = user.role === "worker" && job.workerId === user.id;
   const proofImages = Object.fromEntries(d.proofs.filter((p) => p.kind === "photo").map((p) => [p.id, true]));
+  const viewer = user.role === "admin" ? "admin" : isPayer ? "payer" : isWorker ? "worker" : "other";
+  const disputeViews = await c.disputes.forJob(job.id);
+  const disputesByMilestone: Record<string, DisputeProps[]> = {};
+  for (const v of disputeViews) {
+    const side = (uid: string) => (uid === job.payerId ? ("payer" as const) : ("worker" as const));
+    (disputesByMilestone[v.dispute.milestoneId] ??= []).push({
+      id: v.dispute.id,
+      status: v.dispute.status,
+      reason: v.dispute.reason,
+      openedBySide: side(v.dispute.openedBy),
+      deadlineAt: v.dispute.deadlineAt.toISOString(),
+      disputedAmountMinor: v.disputedAmountMinor,
+      evidence: v.evidence.map((e) => ({ id: e.id, side: side(e.submitterId), kind: e.kind, content: e.content })),
+      proposal: v.proposal ? { ...(v.proposal.proposalJson as DisputeProposal), payerResponse: v.proposal.payerResponse, workerResponse: v.proposal.workerResponse } : null,
+      reportSummary: v.report?.summary ?? null,
+      resolution: (v.dispute.resolutionJson as DisputeProps["resolution"]) ?? null,
+    });
+  }
+  const chain = await c.attestations.chain(job.id);
+  const chainOk = (await c.attestations.verify(job.id)).ok;
   const waiting = Object.fromEntries(d.releases.filter((r) => r.status === "WAITING_WINDOW" && r.challengeEndsAt).map((r) => [r.milestoneId, r.challengeEndsAt!.toISOString()]));
 
   return (
@@ -98,6 +124,11 @@ export default async function JobPage({ params }: PageProps<"/jobs/[id]">) {
                     {isWorker && (m.status === "ACTIVE" || m.status === "REJECTED") ? <SubmitProofLink milestoneId={m.id} resubmit={m.status === "REJECTED"} /> : null}
                     {user.role === "admin" && (m.status === "NEEDS_REVIEW" || m.status === "HELD") ? <AdminReview milestoneId={m.id} /> : null}
                     {isPayer && m.status === "PAUSED_MANDATE" ? <PausedChoice milestoneId={m.id} /> : null}
+                    {(disputesByMilestone[m.id] ?? []).map((dp) => (
+                      <DisputePanel key={dp.id} d={dp} viewer={viewer} />
+                    ))}
+                    {isPayer && (m.status === "CHALLENGE_WINDOW" || m.status === "SUBMITTED") ? <OpenDispute milestoneId={m.id} label="Dispute this milestone" /> : null}
+                    {isWorker && m.status === "REJECTED" ? <OpenDispute milestoneId={m.id} label="Dispute the rejection" /> : null}
                     {(m.status === "VERIFYING" || m.status === "SUBMITTED") ? (
                       <p className="mt-3 text-sm text-ink-soft">Checking the proof now. Follow each step in the live activity panel.</p>
                     ) : null}
@@ -107,6 +138,30 @@ export default async function JobPage({ params }: PageProps<"/jobs/[id]">) {
             })}
           </ol>
         </section>
+
+        {chain.length ? (
+          <Panel className="p-5">
+            <details>
+              <summary className="cursor-pointer text-lg font-semibold">Proof chain</summary>
+              <p className="mt-1 text-sm text-ink-soft">
+                Every step of this job is a signed record linked to the one before it. Anyone can check the receipt offline.
+              </p>
+              <div className="mt-4">
+                <ProofChainView chain={chain} ok={chainOk} />
+              </div>
+            </details>
+            {d.funding.some((f) => f.status === "CONFIRMED") ? (
+              <div className="mt-4 flex flex-wrap gap-4 border-t border-vellum pt-3 text-sm">
+                <a href={`/receipt/${job.id}`} className="font-semibold text-signal hover:text-signal-ink">
+                  Open the public receipt
+                </a>
+                <a href={`/api/receipts/${job.id}?download`} className="font-semibold text-signal hover:text-signal-ink">
+                  Download receipt file
+                </a>
+              </div>
+            ) : null}
+          </Panel>
+        ) : null}
 
         {spec.riskNotes.length ? (
           <Panel className="border-hold/40 bg-hold-wash/40 p-4">
@@ -158,7 +213,7 @@ export default async function JobPage({ params }: PageProps<"/jobs/[id]">) {
             </dd>
           </dl>
         </Panel>
-        <ActivityPanel jobId={job.id} initial={c.events.recent(`job:${job.id}`)} />
+        <ActivityPanel jobId={job.id} initial={initialEvents} />
       </div>
     </main>
   );

@@ -44,7 +44,11 @@ export function ChallengeCountdown({ endsAt }: { endsAt: string }) {
     <p className="mt-3 rounded-md bg-hold-wash px-3 py-2 text-sm text-hold" suppressHydrationWarning>
       {left > 0 ? (
         <>
-          Payer can dispute for <span className="num font-semibold">{left}s</span> more, then PayPal pays out.
+          Payer can dispute for{" "}
+          <span className="num font-semibold" suppressHydrationWarning>
+            {left}s
+          </span>{" "}
+          more, then PayPal pays out.
         </>
       ) : (
         "Challenge window closed: checking the mandate and paying out."

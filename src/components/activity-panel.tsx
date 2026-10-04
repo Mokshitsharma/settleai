@@ -21,10 +21,13 @@ const DOT: Record<string, string> = {
   "decision.auto_release": "var(--seal)",
   "release.paused": "var(--deny)",
   "decision.rejected": "var(--deny)",
+  "dispute.opened": "var(--hold)",
+  "dispute.escalated": "var(--deny)",
+  "dispute.executed": "var(--seal)",
 };
 
 // Events that change what the page shows: refresh server data when they arrive.
-const REFRESH_ON = new Set(["job.funded", "job.accepted", "decision.auto_release", "decision.hold", "decision.review", "decision.rejected", "decision.admin_approved", "payout.succeeded", "payout.failed", "release.paused", "milestone.submitted"]);
+const REFRESH_ON = new Set(["dispute.opened", "dispute.evidence", "dispute.proposed", "dispute.escalated", "dispute.executed", "dispute.payer_accept", "dispute.worker_accept", "refund.completed", "job.funded", "job.accepted", "decision.auto_release", "decision.hold", "decision.review", "decision.rejected", "decision.admin_approved", "payout.succeeded", "payout.failed", "release.paused", "milestone.submitted"]);
 
 /** Live feed of agent and money events for a job (SSE). The hero of the demo (spec §13.2). */
 export function ActivityPanel({ jobId, initial }: { jobId: string; initial: ActivityEvent[] }) {
@@ -49,7 +52,9 @@ export function ActivityPanel({ jobId, initial }: { jobId: string; initial: Acti
       "agent.step", "agent.done", "agent.fallback", "job.created", "job.funded", "job.accepted", "funding.order_created", "funding.captured",
       "payout.submitted", "payout.succeeded", "payout.failed", "payout.status", "refund.completed", "refund.pending", "proof.added",
       "milestone.submitted", "decision.auto_release", "decision.hold", "decision.review", "decision.rejected", "decision.admin_approved",
-      "release.window_closed", "release.paused",
+      "release.window_closed", "release.paused", "dispute.opened", "dispute.evidence", "dispute.proposed", "dispute.escalated",
+      "dispute.executed", "dispute.blocked", "dispute.payer_accept", "dispute.payer_reject", "dispute.worker_accept", "dispute.worker_reject",
+      "agent.confirm_requested",
     ];
     types.forEach((t) => es.addEventListener(t, onEvent as EventListener));
     return () => es.close();

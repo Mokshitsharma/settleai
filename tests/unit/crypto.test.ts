@@ -111,6 +111,13 @@ describe("mandate envelope", () => {
     expect((await verifyEnvelope(env, revoked)).ok).toBe(false);
     expect((await verifyEnvelope(env, registry(k), { requireActiveAt: "2025-12-31T00:00:00Z" })).ok).toBe(false);
   });
+
+  it("regression: a key created a moment after the (second-rounded) document time still verifies", async () => {
+    const k = await freshKey();
+    const env = buildEnvelope(sampleIntentMandate, [await signEnvelopePart(sampleIntentMandate, k.privateKey, k.keyId, "principal")]);
+    const justAfter = (kid: string) => ({ ...registry(k)(kid)!, createdAt: "2026-10-20T09:00:00.734Z" });
+    expect((await verifyEnvelope(env, justAfter, { requireActiveAt: "2026-10-20T09:00:00.000Z" })).ok).toBe(true);
+  });
 });
 
 describe("attestation chain", () => {
