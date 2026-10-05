@@ -4,7 +4,7 @@
 :root {
   --ink: #14213d;
   --ink-soft: #46536e;
-  --ink-faint: #7a859b;
+  --ink-faint: #5f6b82; /* 5.1:1 on paper, AA for small text */
   --paper: #f6f8fb;
   --surface: #ffffff;
   --vellum: #e3e9f2;
@@ -12,7 +12,7 @@
   --signal-ink: #1d36c4;
   --seal: #0e7a5c;
   --seal-wash: #e3f3ed;
-  --hold: #a86b12;
+  --hold: #8f5a0c; /* 5.1:1 on hold-wash */
   --hold-wash: #fbf0dc;
   --deny: #b4322b;
   --deny-wash: #f9e4e2;

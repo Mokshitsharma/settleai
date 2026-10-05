@@ -78,7 +78,7 @@ export default async function MandatePage({ params }: PageProps<"/mandates/[id]"
                     </td>
                     <td className="px-3 py-2">
                       {k.reasonCodes.length ? <span className="block font-mono text-xs text-deny">{k.reasonCodes.join(" ")}</span> : null}
-                      <span className="text-ink-soft">{k.action === "check_action" ? "Dry run. " : ""}</span>
+                      <span className="text-ink-soft">{k.action === "check_action" ? "Dry run. " : k.action === "create_job_precheck" ? "Agent request. " : ""}</span>
                       {k.message}
                     </td>
                   </tr>

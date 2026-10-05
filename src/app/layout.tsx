@@ -22,8 +22,7 @@ const NAV: Record<string, { href: string; label: string }[]> = {
   ],
   worker: [{ href: "/jobs", label: "My jobs" }],
   admin: [
-    { href: "/admin", label: "Overview" },
-    { href: "/admin/risk", label: "Review queue" },
+    { href: "/admin", label: "Admin console" },
     { href: "/jobs", label: "All jobs" },
   ],
 };

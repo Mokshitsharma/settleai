@@ -46,7 +46,7 @@ export function MandateCard({ mandate, fresh = false }: { mandate: MandateView; 
   }
 
   return (
-    <Panel as="article" className={`p-5 ${active ? "" : "opacity-75"}`}>
+    <Panel as="article" className={`p-5 ${active ? "" : "bg-paper"}`}>
       <div className="flex items-start justify-between gap-4">
         <div className="min-w-0">
           <div className="flex items-center gap-2">

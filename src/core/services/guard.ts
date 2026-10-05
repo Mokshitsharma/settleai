@@ -26,6 +26,8 @@ export interface G1Request {
   location?: { lat: number; lng: number };
   requestNonce?: string;
   dryRun?: boolean;
+  /** A dry run that is an agent's real request being pre-screened (counts as an agent request, not a "check"). */
+  agentPrecheck?: boolean;
 }
 
 const CATEGORY_LABEL: Record<string, string> = { delivery: "delivery", digital_deliverable: "digital work", onsite_service: "on-site services" };
@@ -177,7 +179,7 @@ export class MandateGuardService {
       await this.record(t, {
         mandateId: req.mandateId,
         gate: "G1",
-        action: req.dryRun ? "check_action" : "create_job",
+        action: req.agentPrecheck ? "create_job_precheck" : req.dryRun ? "check_action" : "create_job",
         decision,
         requestRef: req.requestNonce,
         chainJobId: `intent:${req.mandateId}`,

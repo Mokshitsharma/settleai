@@ -52,7 +52,10 @@ export class AnalyticsService {
       this.db.select({ id: milestones.id, status: milestones.status }).from(milestones),
       this.db.select({ milestoneId: riskAssessments.milestoneId, decision: riskAssessments.decision, at: riskAssessments.createdAt }).from(riskAssessments),
       this.db.select({ id: disputes.id }).from(disputes),
-      this.db.select({ id: mandateChecks.id }).from(mandateChecks).where(and(eq(mandateChecks.result, "deny"), eq(mandateChecks.action, "create_job"))),
+      this.db
+        .select({ id: mandateChecks.id })
+        .from(mandateChecks)
+        .where(and(eq(mandateChecks.result, "deny"), inArray(mandateChecks.action, ["create_job", "create_job_precheck"]))),
     ]);
     const normal = rels.filter((r) => r.decisionSource !== "dispute");
     // Time to payout: first decision for the milestone -> payout success (proxy for submit -> paid).
@@ -191,7 +194,7 @@ export class AnalyticsService {
       at: k.createdAt.toISOString(),
       mandate: k.mandateId,
       gate: k.gate,
-      action: k.action === "check_action" ? "dry run" : k.action.replace("_", " "),
+      action: k.action === "check_action" ? "dry run" : k.action === "create_job_precheck" ? "agent hire (pre-check)" : k.action.replaceAll("_", " "),
       result: k.result,
       reasons: k.reasonCodes.join(" "),
       message: k.message,

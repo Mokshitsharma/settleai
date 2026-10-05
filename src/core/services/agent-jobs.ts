@@ -52,6 +52,7 @@ export class AgentJobService {
       location: req.location,
       requestNonce: req.requestNonce,
       dryRun: true,
+      agentPrecheck: true,
     });
     if (pre.result !== "allow") {
       emit("guard.denied", `Mandate Guard denied an agent request: ${pre.reasonCodes.join(", ")}`, { codes: pre.reasonCodes });
