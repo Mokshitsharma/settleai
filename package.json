@@ -21,6 +21,7 @@
     "procurebot": "tsx scripts/procurebot.ts",
     "mcp": "tsx src/mcp/server.ts",
     "reconcile": "tsx scripts/reconcile.ts",
+    "paypal:probe": "tsx scripts/paypal-sandbox-probe.ts",
     "eval": "tsx eval/run.ts"
   },
   "dependencies": {

@@ -39,3 +39,10 @@ Current mode: **MOCK** (no sandbox credentials yet). `MockPayPalAdapter` mirrors
 | Agent-presence field exposed in sandbox | Not found in Orders OpenAPI; keep internal |
 | `@paypal/agent-toolkit` for Concierge read tools | Check in T302 |
 | Live run of the adapter against sandbox | Needs credentials; contract tests are skipped without them |
+
+## Sandbox findings (2026-10-05, `pnpm paypal:probe`)
+
+- OAuth and Orders v2 create work with the SettleAI sandbox app; the approve link is `checkoutnow?token=<orderId>`.
+- **Payouts fail with `403 PAYOUT_NOT_AVAILABLE` when the app's sandbox business account is region IN.** PayPal does not
+  allow India-region accounts to send payouts. Fix: link the app to a **US** sandbox business account
+  (Developer Dashboard > Sandbox Accounts > Create account > Business, country United States). Currency stays USD.
