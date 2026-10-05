@@ -78,6 +78,15 @@ describe("config", () => {
     expect(cfg.mode).toBe("MOCK");
   });
 
+  it("selects Groq (Qwen vision model) when only a Groq key is present; xAI wins when both are set", () => {
+    const cfg = loadConfig({ GROQ_API_KEY: "gsk_test" });
+    expect(cfg.llmProvider).toBe("groq");
+    expect(cfg.llmModel).toBe("qwen/qwen3.8-27b");
+    expect(loadConfig({ GROQ_API_KEY: "gsk_test", XAI_API_KEY: "xai-test" }).llmProvider).toBe("xai");
+    expect(loadConfig({ GROQ_API_KEY: "gsk_test", XAI_API_KEY: "xai-test", LLM_PROVIDER: "groq" }).llmProvider).toBe("groq");
+    expect(() => loadConfig({ LLM_PROVIDER: "groq" })).toThrow(/GROQ_API_KEY/);
+  });
+
   it("goes LIVE only when PayPal keys are present", () => {
     expect(loadConfig({ PAYPAL_CLIENT_ID: "id", PAYPAL_CLIENT_SECRET: "s" }).mode).toBe("LIVE");
     expect(loadConfig({ PAYPAL_CLIENT_ID: "id", PAYPAL_CLIENT_SECRET: "s", APP_MODE: "MOCK" }).mode).toBe("MOCK");

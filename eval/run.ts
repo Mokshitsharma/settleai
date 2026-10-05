@@ -8,11 +8,10 @@ import { eq } from "drizzle-orm";
 import scenarios from "./scenarios.json";
 import { MockPayPalAdapter, MOCK_WEBHOOK_HEADER } from "@/core/adapters/paypal/mock";
 import { StubLlmAdapter } from "@/core/adapters/llm/stub";
-import { XaiLlmAdapter } from "@/core/adapters/llm/xai";
 import { createStubLlm } from "@/core/agents/stub-fixtures";
 import { makeSamplePhoto, offsetPoint } from "@/core/checks/sample-photos";
 import { loadConfig } from "@/core/config";
-import { createContainer, type Container } from "@/core/container";
+import { buildLlm, createContainer, type Container } from "@/core/container";
 import type { DisputeProposal, JobSpec } from "@/core/contracts";
 import { openTestDb } from "@/core/db/client";
 import { mandateChecks, milestones, payouts, releases, users, webhookEvents } from "@/core/db/schema";
@@ -27,6 +26,8 @@ import { verifyReceipt } from "@/core/verifier/receipt";
 const T0 = new Date("2026-10-20T08:00:00.000Z");
 const SHOP = { lat: 22.7533, lng: 75.8937, label: "Vijay Nagar, Indore" };
 const LIVE = process.env.EVAL_LIVE === "1";
+/** The real provider from .env.local (xai or groq) for EVAL_LIVE=1 runs. */
+const liveCfg = () => loadConfig(process.env);
 
 interface World {
   c: Container;
@@ -96,7 +97,7 @@ async function world(llm?: LlmPort): Promise<World> {
   await seed(dbHandle.db);
   const clock = new FixedClock(T0);
   const paypal = new MockPayPalAdapter();
-  const baseLlm = llm ?? (LIVE ? new XaiLlmAdapter(process.env.XAI_API_KEY!, process.env.LLM_MODEL ?? "grok-4.7") : createStubLlm());
+  const baseLlm = llm ?? (LIVE ? buildLlm(liveCfg()) : createStubLlm());
   const c = await createContainer(loadConfig({ CHALLENGE_WINDOW_SECONDS: "15", DISPUTE_EVIDENCE_WINDOW_SECONDS: "45" }), { dbHandle, clock, payments: paypal, llm: baseLlm });
   const [deliveryMandate] = (await seedDemo(c)).mandateIds;
   return { c, clock, paypal, deliveryMandate };
@@ -447,7 +448,7 @@ async function main() {
     arbiterInvariantViolations: ran.reduce((a, r) => a + (r.invariantViolations ?? 0), 0),
     avgVerificationLatencyMs: latencies.length ? Math.round(latencies.reduce((a, b) => a + b, 0) / latencies.length) : null,
   };
-  const report = { generatedAt: new Date().toISOString(), llm: LIVE ? `xai:${process.env.LLM_MODEL ?? "grok-4.7"}` : "offline stub", metrics, results };
+  const report = { generatedAt: new Date().toISOString(), llm: LIVE ? `${liveCfg().llmProvider}:${liveCfg().llmModel}` : "offline stub", metrics, results };
   await writeFile(path.resolve("eval/report.json"), JSON.stringify(report, null, 2));
   console.log("\n", metrics);
   console.log(`\n${metrics.passed}/${metrics.ran} passed (${metrics.skipped} skipped). Report: eval/report.json`);

@@ -2,6 +2,7 @@
 import path from "node:path";
 import { MOCK_WEBHOOK_HEADER, MockPayPalAdapter } from "@/core/adapters/paypal/mock";
 import { PayPalAdapter } from "@/core/adapters/paypal/live";
+import { GroqLlmAdapter } from "@/core/adapters/llm/groq";
 import { XaiLlmAdapter } from "@/core/adapters/llm/xai";
 import { LocalStorageAdapter } from "@/core/adapters/storage/local";
 import { InMemorySearchAdapter } from "@/core/adapters/search/none";
@@ -90,6 +91,8 @@ export function buildLlm(cfg: AppConfig): LlmPort {
   switch (cfg.llmProvider) {
     case "xai":
       return new XaiLlmAdapter(cfg.XAI_API_KEY!, cfg.llmModel);
+    case "groq":
+      return new GroqLlmAdapter(cfg.GROQ_API_KEY!, cfg.llmModel);
     case "anthropic":
       throw new Error("Anthropic adapter not included; use LLM_PROVIDER=xai or stub");
     default:

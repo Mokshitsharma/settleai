@@ -30,8 +30,8 @@ services:
       - key: PAYPAL_WEBHOOK_ID
         sync: false
       - key: LLM_PROVIDER
-        value: xai
-      - key: XAI_API_KEY
+        value: groq
+      - key: GROQ_API_KEY
         sync: false
       - key: CHALLENGE_WINDOW_SECONDS
         value: "15"

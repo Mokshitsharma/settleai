@@ -9,9 +9,10 @@ const EnvSchema = z.object({
   PAYPAL_CLIENT_ID: z.string().optional(),
   PAYPAL_CLIENT_SECRET: z.string().optional(),
   PAYPAL_WEBHOOK_ID: z.string().optional(),
-  LLM_PROVIDER: z.enum(["xai", "anthropic", "stub"]).optional(),
+  LLM_PROVIDER: z.enum(["xai", "groq", "anthropic", "stub"]).optional(),
   LLM_MODEL: z.string().optional(),
   XAI_API_KEY: z.string().optional(),
+  GROQ_API_KEY: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),
   STORAGE_DRIVER: z.enum(["local", "s3"]).default("local"),
   STORAGE_LOCAL_DIR: z.string().default(".data/uploads"),
@@ -35,11 +36,11 @@ export type Env = z.infer<typeof EnvSchema>;
 export interface AppConfig extends Env {
   mode: "MOCK" | "LIVE";
   paymentsLive: boolean;
-  llmProvider: "xai" | "anthropic" | "stub";
+  llmProvider: "xai" | "groq" | "anthropic" | "stub";
   llmModel: string;
 }
 
-const DEFAULT_MODELS = { xai: "grok-4.7", anthropic: "claude-sonnet-5-5", stub: "stub" } as const;
+const DEFAULT_MODELS = { xai: "grok-4.7", groq: "qwen/qwen3.8-27b", anthropic: "claude-sonnet-5-5", stub: "stub" } as const;
 
 export function loadConfig(source: Record<string, string | undefined> = process.env): AppConfig {
   const env = EnvSchema.parse(source);
@@ -49,8 +50,9 @@ export function loadConfig(source: Record<string, string | undefined> = process.
 
   // Pick the LLM provider explicitly, else from whichever key is present, else the offline stub.
   const llmProvider =
-    env.LLM_PROVIDER ?? (env.XAI_API_KEY ? "xai" : env.ANTHROPIC_API_KEY ? "anthropic" : "stub");
+    env.LLM_PROVIDER ?? (env.XAI_API_KEY ? "xai" : env.GROQ_API_KEY ? "groq" : env.ANTHROPIC_API_KEY ? "anthropic" : "stub");
   if (llmProvider === "xai" && !env.XAI_API_KEY) throw new Error("LLM_PROVIDER=xai requires XAI_API_KEY");
+  if (llmProvider === "groq" && !env.GROQ_API_KEY) throw new Error("LLM_PROVIDER=groq requires GROQ_API_KEY");
   if (llmProvider === "anthropic" && !env.ANTHROPIC_API_KEY) throw new Error("LLM_PROVIDER=anthropic requires ANTHROPIC_API_KEY");
 
   // Never sign sessions with the public dev default on a deployment: fall back to a random per-process

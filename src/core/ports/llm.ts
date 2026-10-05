@@ -30,7 +30,7 @@ export interface StructuredResponse<T> {
 }
 
 export interface LlmPort {
-  readonly provider: "xai" | "anthropic" | "stub";
+  readonly provider: "xai" | "groq" | "anthropic" | "stub";
   readonly model: string;
   /** Returns schema-valid output or throws; callers retry once and then fall back to HUMAN_REVIEW. */
   structured<T>(req: StructuredRequest<T>): Promise<StructuredResponse<T>>;
