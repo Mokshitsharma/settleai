@@ -13,10 +13,13 @@ import {
   timestamp,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
+import { now as timeSourceNow } from "@/core/ports/time-source";
 
 const money = (name: string) => bigint(name, { mode: "number" });
-const createdAt = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow();
-const updatedAt = () => timestamp("updated_at", { withTimezone: true }).notNull().defaultNow();
+// Row timestamps come from the app's ClockPort (via the time source); the SQL default is only a fallback.
+const createdAt = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow().$defaultFn(timeSourceNow);
+const updatedAt = () =>
+  timestamp("updated_at", { withTimezone: true }).notNull().defaultNow().$defaultFn(timeSourceNow).$onUpdateFn(timeSourceNow);
 const ts = (name: string) => timestamp(name, { withTimezone: true });
 
 export const users = pgTable(

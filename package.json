@@ -20,13 +20,16 @@
     "verify-receipt": "tsx scripts/verify-receipt.ts",
     "procurebot": "tsx scripts/procurebot.ts",
     "mcp": "tsx src/mcp/server.ts",
-    "reconcile": "tsx scripts/reconcile.ts"
+    "reconcile": "tsx scripts/reconcile.ts",
+    "eval": "tsx eval/run.ts"
   },
   "dependencies": {
     "@electric-sql/pglite": "^0.5.8",
     "@modelcontextprotocol/sdk": "^1.32.0",
     "@noble/hashes": "^2.4.0",
     "@paypal/paypal-server-sdk": "^2.5.0",
+    "ag-grid-community": "^36.2.0",
+    "ag-grid-react": "^36.2.0",
     "canonicalize": "^5.1.0",
     "drizzle-orm": "^0.45.3",
     "exifr": "^7.1.3",

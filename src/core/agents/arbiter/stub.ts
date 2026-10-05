@@ -35,7 +35,13 @@ export function stubArbitrate(req: StructuredRequest<unknown>): DisputeProposal 
   let faultClass: DisputeProposal["liability"]["faultClass"];
   let bearer: DisputeProposal["liability"]["bearer"];
   let rationale: string;
-  if (!verified) {
+  const ambiguous = /\b(unclear|ambiguous|not specified|never said|did not say)\b/i.test(statements);
+  if (verified && ambiguous) {
+    release = Math.round(total / 2);
+    faultClass = "SPEC_AMBIGUITY";
+    bearer = "shared";
+    rationale = "The acceptance criteria did not settle the point in dispute and both sides acted in good faith, so the amount is shared.";
+  } else if (!verified) {
     release = 0;
     faultClass = "WORKER_NONPERFORMANCE";
     bearer = "worker";

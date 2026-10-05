@@ -10,6 +10,7 @@ import { config, type AppConfig } from "@/core/config";
 import { openDb, type DbHandle } from "@/core/db/client";
 import { EventHub } from "@/core/events/hub";
 import { systemClock, type ClockPort } from "@/core/ports/clock";
+import { setTimeSource } from "@/core/ports/time-source";
 import type { LlmPort } from "@/core/ports/llm";
 import type { PaymentsPort } from "@/core/ports/payments";
 import type { SearchPort } from "@/core/ports/search";
@@ -28,6 +29,7 @@ import { AgentJobService } from "@/core/services/agent-jobs";
 import { DisputeService } from "@/core/services/disputes";
 import { ReceiptService } from "@/core/services/receipts";
 import { ReconciliationService } from "@/core/services/reconciliation";
+import { AnalyticsService } from "@/core/services/analytics";
 import { MandateGuardService } from "@/core/services/guard";
 import { PolicyService } from "@/core/services/policy";
 import { ProofService } from "@/core/services/proofs";
@@ -63,6 +65,7 @@ export interface Container {
   disputes: DisputeService;
   receipts: ReceiptService;
   reconciliation: ReconciliationService;
+  analytics: AnalyticsService;
   /** Runs verification for a submitted milestone in the background; progress streams over SSE. */
   verifyInBackground(milestoneId: string): void;
   /** MOCK mode only: delivers the mock's queued PayPal events through the real webhook pipeline. */
@@ -78,7 +81,9 @@ export function buildPayments(cfg: AppConfig): PaymentsPort {
       webhookId: cfg.PAYPAL_WEBHOOK_ID,
     });
   }
-  return new MockPayPalAdapter({ payoutFailRate: cfg.MOCK_PAYOUT_FAIL_RATE, captureDelayMs: cfg.MOCK_CAPTURE_DELAY_MS });
+  // A per-process tag keeps mock PayPal ids unique when a seed script and the app share a database.
+  const idTag = `${Math.random().toString(36).slice(2, 6).toUpperCase()}-`;
+  return new MockPayPalAdapter({ payoutFailRate: cfg.MOCK_PAYOUT_FAIL_RATE, captureDelayMs: cfg.MOCK_CAPTURE_DELAY_MS, idTag });
 }
 
 export function buildLlm(cfg: AppConfig): LlmPort {
@@ -99,6 +104,9 @@ export async function createContainer(
   const dbHandle = overrides.dbHandle ?? (await openDb({ databaseUrl: cfg.DATABASE_URL, dataDir: cfg.PGLITE_DATA_DIR }));
   const db = dbHandle.db;
   const clock = overrides.clock ?? systemClock;
+  // Row timestamps follow this container's clock. Only an explicit clock replaces the process default,
+  // so extra containers built in a test (without a clock) do not reset it.
+  if (overrides.clock) setTimeSource(overrides.clock);
   const payments = overrides.payments ?? buildPayments(cfg);
   const events = new EventHub();
   const ledger = new LedgerService(db);
@@ -113,7 +121,7 @@ export async function createContainer(
   await keys.platformSigner();
   const attestations = new AttestationService(db, keys, clock);
   const mandates = new MandateService(db, keys, audit, clock);
-  const policy = new PolicyService(db);
+  const policy = new PolicyService(db, audit);
   const reputation = new ReputationService();
   const guard = new MandateGuardService(db, keys, mandates, attestations, audit, clock);
   const binding = new MandateBindingService(db, keys, attestations, clock);
@@ -188,6 +196,7 @@ export async function createContainer(
     disputes,
     receipts,
     reconciliation,
+    analytics: new AnalyticsService(db),
     verifyInBackground,
     deliverMockWebhooks,
   };

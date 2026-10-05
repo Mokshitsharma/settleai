@@ -21,7 +21,11 @@ const NAV: Record<string, { href: string; label: string }[]> = {
     { href: "/mandates", label: "Agent mandates" },
   ],
   worker: [{ href: "/jobs", label: "My jobs" }],
-  admin: [{ href: "/jobs", label: "All jobs" }],
+  admin: [
+    { href: "/admin", label: "Overview" },
+    { href: "/admin/risk", label: "Review queue" },
+    { href: "/jobs", label: "All jobs" },
+  ],
 };
 
 export default async function RootLayout({ children }: LayoutProps<"/">) {

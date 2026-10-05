@@ -13,6 +13,8 @@ export interface ReconciliationReport {
   checked: { fundings: number; payouts: number; refunds: number };
   repaired: string[];
   mismatches: { kind: string; ref: string; detail: string }[];
+  /** Payouts PayPal could not be asked about (e.g. made by another process's mock). Not mismatches. */
+  unverifiable: number;
 }
 
 export class ReconciliationService {
@@ -26,6 +28,7 @@ export class ReconciliationService {
   async run(): Promise<ReconciliationReport> {
     const mismatches: ReconciliationReport["mismatches"] = [];
     const repaired: string[] = [];
+    let unverifiable = 0;
     const posted = new Set((await this.db.select({ k: ledgerTxns.idempotencyKey }).from(ledgerTxns)).map((r) => r.k));
 
     const fundings = await this.db.select().from(fundingOrders).where(eq(fundingOrders.status, "CONFIRMED"));
@@ -39,7 +42,17 @@ export class ReconciliationService {
         mismatches.push({ kind: "payout_without_item", ref: p.id, detail: "PayPal never returned a payout item id for this batch" });
         continue;
       }
-      const remote = await this.payments.getPayoutItem(p.paypalItemId);
+      let remote;
+      try {
+        remote = await this.payments.getPayoutItem(p.paypalItemId);
+      } catch (err) {
+        if (this.payments.mode === "MOCK") {
+          unverifiable++;
+          continue;
+        }
+        mismatches.push({ kind: "payout_lookup_failed", ref: p.id, detail: (err as Error).message });
+        continue;
+      }
       if (remote.status === p.status) {
         if (p.status === "SUCCEEDED" && !posted.has(`release:${p.releaseId}`)) {
           mismatches.push({ kind: "payout_not_in_ledger", ref: p.id, detail: "Payout succeeded at PayPal but the ledger has no release entry" });
@@ -68,6 +81,7 @@ export class ReconciliationService {
       checked: { fundings: fundings.length, payouts: pays.length, refunds: refundRows.length },
       repaired,
       mismatches,
+      unverifiable,
     };
   }
 }

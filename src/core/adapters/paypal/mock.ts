@@ -14,6 +14,8 @@ import type {
 export interface MockPayPalOptions {
   payoutFailRate?: number; // 0..1, decided deterministically from the request id
   captureDelayMs?: number;
+  /** Prefix that keeps ids unique across processes sharing one database (seed script vs app). */
+  idTag?: string;
 }
 
 export const MOCK_WEBHOOK_HEADER = "x-settleai-mock-webhook";
@@ -35,7 +37,7 @@ export class MockPayPalAdapter implements PaymentsPort {
 
   private nextId(prefix: string): string {
     this.counter += 1;
-    return `MOCK-${prefix}-${String(this.counter).padStart(4, "0")}`;
+    return `MOCK-${prefix}-${this.options.idTag ?? ""}${String(this.counter).padStart(4, "0")}`;
   }
 
   private idempotent<T>(requestId: string, fn: () => T): T {

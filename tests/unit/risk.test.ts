@@ -113,3 +113,27 @@ describe("verification merge", () => {
     expect(r).toMatchObject({ overall: "inconclusive", confidence: 0 });
   });
 });
+
+describe("policy versions (T403)", () => {
+  it("a saved policy version changes the next decision and is audited with its diff", async () => {
+    const { openTestDb } = await import("@/core/db/client");
+    const { seed } = await import("@/core/db/seed");
+    const { AuditService } = await import("@/core/services/audit");
+    const { PolicyService, diffPolicy } = await import("@/core/services/policy");
+    const h = await openTestDb();
+    await seed(h.db);
+    const svc = new PolicyService(h.db, new AuditService(h.db));
+    const v1 = await svc.active();
+    const before = computeRisk(base({ policy: v1, history: { pairCompletedReleases: 0, workerAvgReleaseMinor: 0, workerReleasesLastHour: 0, payerDisputeRate: 0 } }));
+    expect(before.decision).toBe("AUTO_RELEASE"); // score 10 < reviewAt 25
+    const v2 = await svc.save({ json: { ...v1, reviewAt: 5 }, adminId: "usr_meera", note: "Stricter during launch" });
+    expect(v2.version).toBe(2);
+    expect((await svc.active()).reviewAt).toBe(5);
+    const after = computeRisk(base({ policy: await svc.active(), history: { pairCompletedReleases: 0, workerAvgReleaseMinor: 0, workerReleasesLastHour: 0, payerDisputeRate: 0 } }));
+    expect(after.decision).toBe("HUMAN_REVIEW");
+    expect(diffPolicy(v1, v2)).toEqual(["reviewAt: 25 -> 5"]);
+    await expect(svc.save({ json: { ...v1, reviewAt: 90, holdAt: 60 }, adminId: "usr_meera", note: "bad" })).rejects.toThrow();
+    expect((await svc.history()).map((x) => [x.version, x.active])).toEqual([[2, true], [1, false]]);
+    await h.close();
+  });
+});

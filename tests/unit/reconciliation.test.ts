@@ -40,7 +40,7 @@ async function paidMilestone() {
 describe("reconciliation (F20)", () => {
   it("is clean when ledger, records and PayPal agree", async () => {
     await paidMilestone();
-    expect(await c.reconciliation.run()).toMatchObject({ ok: true, repaired: [], mismatches: [] });
+    expect(await c.reconciliation.run()).toMatchObject({ ok: true, repaired: [], mismatches: [], unverifiable: 0 });
   });
 
   it("detects a payout PayPal later reports as RETURNED", async () => {
