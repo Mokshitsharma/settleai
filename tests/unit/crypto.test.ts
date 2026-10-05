@@ -14,7 +14,7 @@ import {
 import { keyIdFor, signCanonical, verifyCanonical } from "@/core/mandates/jws";
 import { sampleIntentMandate } from "../fixtures/contracts";
 
-// Known-answer vector: a fixed P-256 key and a JWS produced once with it. Verification of this exact
+// Known-answer vector: the PUBLIC example P-256 key from RFC 7515 Appendix A.3 (not a secret). Verification of this exact
 // string must keep passing across library upgrades (ES256 signatures are randomized, so we pin verify).
 const KAT_PUBLIC: JWK = {
   kty: "EC",

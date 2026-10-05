@@ -8,6 +8,7 @@ import { MandateError } from "@/core/services/mandates";
 import { TreasuryError } from "@/core/services/treasury";
 import { IllegalTransitionError } from "@/core/state/machines";
 import { PayPalApiError } from "@/core/adapters/paypal/live";
+import { clientIp, enforce, LIMITS, RateLimitError } from "@/core/rate-limit";
 
 export class HttpError extends Error {
   constructor(
@@ -28,7 +29,16 @@ const STATUS_BY_CODE: Record<string, number> = {
   KILL_SWITCH: 503,
 };
 
+/** Rate limits (spec §14): per IP before auth, per user after; AI-backed routes get the tighter "llm" budget. */
+export function limit(req: Request, kind: keyof typeof LIMITS, who?: string): void {
+  enforce(`${kind}:ip:${clientIp(req)}`, LIMITS[kind]);
+  if (who) enforce(`${kind}:who:${who}`, LIMITS[kind]);
+}
+
 export function errorResponse(err: unknown): Response {
+  if (err instanceof RateLimitError) {
+    return Response.json({ error: { code: "RATE_LIMITED", message: err.message } }, { status: 429, headers: { "retry-after": String(err.retryAfterSeconds) } });
+  }
   if (err instanceof HttpError) return Response.json({ error: { code: err.code, message: err.message } }, { status: err.status });
   if (err instanceof z.ZodError) {
     return Response.json({ error: { code: "VALIDATION", message: err.issues[0]?.message ?? "Invalid request" } }, { status: 400 });

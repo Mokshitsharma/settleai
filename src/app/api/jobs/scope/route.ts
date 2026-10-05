@@ -2,7 +2,7 @@ import { z } from "zod";
 import { scopeJob } from "@/core/agents/scoping";
 import { getContainer } from "@/core/container";
 import { newId } from "@/core/ids";
-import { handle, readJson, requireUser } from "../../_lib";
+import { handle, limit, readJson, requireUser } from "../../_lib";
 
 export const dynamic = "force-dynamic";
 
@@ -12,6 +12,7 @@ export const dynamic = "force-dynamic";
  */
 export const POST = handle(async (req: Request) => {
   const user = await requireUser(["payer"]);
+  limit(req, "llm", user.id);
   const { text } = await readJson(req, z.object({ text: z.string().trim().min(10).max(4000) }));
   const c = await getContainer();
   const draftId = newId("draft");

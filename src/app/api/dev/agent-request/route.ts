@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { getContainer } from "@/core/container";
 import { newId } from "@/core/ids";
-import { HttpError, handle, readJson, requireUser } from "../../_lib";
+import { HttpError, handle, limit, readJson, requireUser } from "../../_lib";
 
 /**
  * Demo: run a hire request exactly as the payer's agent would (same AgentJobService, same Mandate Guard),
@@ -9,6 +9,7 @@ import { HttpError, handle, readJson, requireUser } from "../../_lib";
  */
 export const POST = handle(async (req: Request) => {
   const user = await requireUser(["payer"]);
+  limit(req, "llm", user.id);
   const body = await readJson(req, z.object({ mandateId: z.string(), description: z.string().trim().min(10).max(1000), budgetMinor: z.number().int().positive() }));
   const c = await getContainer();
   const m = await c.mandates.get(body.mandateId);

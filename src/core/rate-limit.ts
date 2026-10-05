@@ -16,7 +16,7 @@ export const LIMITS = {
   /** Any write from a signed-in user or IP. */
   write: { capacity: 60, refillPerMinute: 60 },
   /** Routes that run an AI agent (scoping, verification submit, arbiter, agent create_job). */
-  llm: { capacity: 10, refillPerMinute: 10 },
+  llm: { capacity: 20, refillPerMinute: 20 },
   /** Agent API calls per client key. */
   agent: { capacity: 60, refillPerMinute: 120 },
 } as const satisfies Record<string, Limit>;

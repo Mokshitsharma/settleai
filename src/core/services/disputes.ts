@@ -129,7 +129,13 @@ export class DisputeService {
       const evId = newId("dev");
       const key = `disputes/${d.dispute.id}/${evId}.jpg`;
       const sharp = (await import("sharp")).default;
-      await this.storage.put(key, new Uint8Array(await sharp(args.photo).rotate().resize({ width: 2048, height: 2048, fit: "inside", withoutEnlargement: true }).jpeg({ quality: 85 }).toBuffer()), "image/jpeg");
+      let reencoded: Uint8Array;
+      try {
+        reencoded = new Uint8Array(await sharp(args.photo).rotate().resize({ width: 2048, height: 2048, fit: "inside", withoutEnlargement: true }).jpeg({ quality: 85 }).toBuffer());
+      } catch {
+        throw new JobError("INVALID_SPEC", "That file could not be read as an image");
+      }
+      await this.storage.put(key, reencoded, "image/jpeg");
       rows.push({ id: evId, disputeId: d.dispute.id, submitterId: args.userId, kind: "photo", storageKey: key });
     }
     if (!rows.length) throw new JobError("INVALID_SPEC", "Add a statement or a photo");

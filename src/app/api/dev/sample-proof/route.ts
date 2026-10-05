@@ -4,7 +4,7 @@ import type { AcceptanceCriterion, JobSpec } from "@/core/contracts";
 import { makeSamplePhoto, offsetPoint } from "@/core/checks/sample-photos";
 import { getContainer } from "@/core/container";
 import { jobs, milestones, proofs } from "@/core/db/schema";
-import { HttpError, handle, readJson, requireUser } from "../../_lib";
+import { HttpError, handle, limit, readJson, requireUser } from "../../_lib";
 
 /**
  * Demo samples for judges without a phone at the job site. Each is a generated photo with real EXIF,
@@ -16,6 +16,7 @@ import { HttpError, handle, readJson, requireUser } from "../../_lib";
  */
 export const POST = handle(async (req: Request) => {
   const user = await requireUser(["worker"]);
+  limit(req, "write", user.id);
   const { milestoneId, variant } = await readJson(req, z.object({ milestoneId: z.string(), variant: z.enum(["genuine", "far", "reused", "noexif"]) }));
   const c = await getContainer();
   const db = c.dbHandle.db;

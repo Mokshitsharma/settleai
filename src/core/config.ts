@@ -53,6 +53,13 @@ export function loadConfig(source: Record<string, string | undefined> = process.
   if (llmProvider === "xai" && !env.XAI_API_KEY) throw new Error("LLM_PROVIDER=xai requires XAI_API_KEY");
   if (llmProvider === "anthropic" && !env.ANTHROPIC_API_KEY) throw new Error("LLM_PROVIDER=anthropic requires ANTHROPIC_API_KEY");
 
+  // Never sign sessions with the public dev default on a deployment: fall back to a random per-process
+  // secret (sessions then reset on restart, which is safe).
+  const deployed = source.NODE_ENV === "production" || Boolean(env.DATABASE_URL);
+  if (deployed && env.SESSION_SECRET.startsWith("dev-only")) {
+    env.SESSION_SECRET = Array.from(crypto.getRandomValues(new Uint8Array(32)), (b) => b.toString(16).padStart(2, "0")).join("");
+  }
+
   return {
     ...env,
     mode: paymentsLive ? "LIVE" : "MOCK",

@@ -1,10 +1,11 @@
 import { getContainer } from "@/core/container";
 import { MAX_IMAGE_BYTES } from "@/core/checks/image";
-import { HttpError, handle, requireUser } from "../../../_lib";
+import { HttpError, handle, limit, requireUser } from "../../../_lib";
 
 /** Worker adds proof: multipart with any of `photo` (file), `text`, `lat`+`lng`(+`accuracy`). */
 export const POST = handle(async (req: Request, ctx: RouteContext<"/api/milestones/[id]/proofs">) => {
   const user = await requireUser(["worker"]);
+  limit(req, "write", user.id);
   const { id } = await ctx.params;
   const c = await getContainer();
   const form = await req.formData();

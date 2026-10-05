@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { AgentApi, AgentApiError, authenticateAgent } from "@/core/agent-api";
 import { getContainer } from "@/core/container";
+import { enforce, LIMITS, RateLimitError } from "@/core/rate-limit";
 import { errorResponse } from "../_lib";
 
 /** Agent route wrapper: Bearer API key auth, typed errors, and the public base URL for links. */
@@ -9,9 +10,12 @@ export function agentRoute<C>(fn: (api: AgentApi, req: Request, ctx: C, baseUrl:
     try {
       const c = await getContainer();
       const client = await authenticateAgent(c, req.headers.get("authorization"));
+      enforce(`agent:${client.id}`, LIMITS.agent);
+      if (req.method === "POST" && new URL(req.url).pathname === "/api/agent/jobs") enforce(`llm:agent:${client.id}`, LIMITS.llm);
       const baseUrl = new URL(req.url).origin;
       return Response.json(await fn(new AgentApi(c, client), req, ctx, baseUrl));
     } catch (err) {
+      if (err instanceof RateLimitError) return errorResponse(err);
       if (err instanceof AgentApiError) return Response.json({ error: { code: err.code, message: err.message } }, { status: err.status });
       if (err instanceof z.ZodError) return Response.json({ error: { code: "VALIDATION", message: err.issues[0]?.message ?? "Invalid request" } }, { status: 400 });
       return errorResponse(err);

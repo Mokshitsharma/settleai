@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { getContainer } from "@/core/container";
 import { Category } from "@/core/contracts";
-import { handle, readJson, requireUser } from "../../_lib";
+import { handle, limit, readJson, requireUser } from "../../_lib";
 
 const DraftBody = z.object({
   keyId: z.string().min(1),
@@ -22,6 +22,7 @@ const DraftBody = z.object({
 /** Server-built Intent Mandate draft + plain-language preview, for the human to sign. */
 export const POST = handle(async (req: Request) => {
   const user = await requireUser(["payer"]);
+  limit(req, "write", user.id);
   const body = await readJson(req, DraftBody);
   const c = await getContainer();
   const draft = await c.mandates.draftIntent({

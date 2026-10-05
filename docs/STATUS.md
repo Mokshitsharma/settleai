@@ -84,15 +84,37 @@ Phase plan: docs/SPEC.md §19. Feature freeze 8 Nov 2026; submit by 11 Nov 2026.
 - **T302 Concierge not built** (F17, on the cut list). Reputation is done. Elastic precedents (F22) not built (no Elastic prize).
 - A2A agent card (F34, P2) not built.
 
+## Phase 4: Proof of quality (27 Oct to 2 Nov): DONE 2026-10-05
+
+1. T401 AG Grid admin console: overview KPIs, daily funding chart split person vs agent (validated palette), jobs, review queue, disputes, ledger with invariant and PayPal-match badges, mandate checks with agent suspend/re-enable, AI runs; search, filters, CSV export.
+2. T402 Evaluation harness (`pnpm eval`): 28/28 Appendix B scenarios pass, 2 skipped (file-upload proofs not built). False-release 0%, mandate false-allow 0%, tamper detection 100% (49/49), injection detection 100%, arbiter invariant violations 0. Report at /admin/eval.
+3. T403 Versioned risk policy editor with diffs and audit; the next decision uses the new version (tested).
+4. T404 WCAG AA pass (axe-core on 8 pages, tokens darkened to 5.1:1), phone-sized checks (no horizontal scroll), not-found and error pages.
+5. T406 docs/AP2-EXTENSION.md, written against the current AP2 repository (open/closed mandates, SD-JWT VCs).
+6. Seeded two weeks of history through the real services; every seeded receipt verifies.
+
+### Phase 4 deviations and fixes
+- **Fix:** row timestamps came from the database clock; now from the app ClockPort via a time source (spec: server ClockPort only).
+- **Fix:** mock PayPal ids collided across processes; now tagged per process.
+- AG Grid Community only (no Enterprise row grouping); AG Studio not used.
+- T405 P2 items (Elastic precedents, Invoicing, APIMatic SDK, Postman) not built. APIMatic/Postman remain options for a sponsor prize, but only one sponsor prize can be won and AG Grid is the target.
+
+## Phase 5: Hardening (3 to 6 Nov): IN PROGRESS 2026-10-05
+
+1. T501 Security review: docs/SECURITY-REVIEW.md. Fixed: mock webhooks accepted over HTTP, no rate limiting, default session secret on deployments, 500 on non-image dispute photo. `pnpm audit` clean; no secrets in git history.
+2. T502 Failure drills (`drills.test.ts`): webhook storm, PayPal payout outage and retry, LLM network outage, database restart with a pending challenge window. All pass.
+3. T503 Performance: verification pipeline averages ~80 ms on the offline stub; live-model latency to be measured once an xAI key is available. Images are downscaled to 1024 px for the model; agent calls cap tokens (2048).
+4. T504 Deploy: **blocked** on Render access (render.yaml ready).
+
 ### Open items / needs from owner
-- PayPal sandbox Client ID + Secret before Phase 5 (strongly recommended for the "Best Use of PayPal" prize and Stage One viability).
-- `XAI_API_KEY` in `.env.local` to test the live Scoping, Verification and Arbiter agents and ProcureBot live mode (everything works on the offline stub meanwhile).
-- Real delivery photos taken in Indore (pickup, drop-off, a damaged-goods photo for the dispute scene).
-- Render account access for the staging deploy.
+- **PayPal sandbox Client ID + Secret** (biggest remaining risk: Stage One requires real PayPal sandbox integration).
+- **`XAI_API_KEY`** in `.env.local` to test live Scoping, Verification, Arbiter and ProcureBot live mode, and measure latency.
+- **Render account access** for the deployment (T504).
+- Real delivery photos taken in Indore (pickup, drop-off, damaged goods) for the demo video.
 
 ## Track sections
-- A. Payments and ledger: reconciliation done; next LIVE sandbox run of the PayPal adapter (needs credentials), JS SDK v6 buttons.
-- B. Agents and verification: verification, risk, arbiter done; next eval harness (T402) and live-model checks.
-- C. Mandates and proof: guard, MCP, verifier done; next AP2 write-up (T406), policy editor (T403).
-- D. Product and UI: all journey screens exist; next AG Grid dashboards (T401, sponsor prize) and the visual pass (T404).
-- E. Platform and QA: J1-J3, J6, J7 e2e done; next seed history for analytics, staging deploy, CI on GitHub.
+- A. Payments and ledger: done in MOCK; next a LIVE sandbox run of the PayPal adapter and JS SDK v6 buttons (needs credentials).
+- B. Agents and verification: done on the stub; next live-model runs and `EVAL_LIVE=1 pnpm eval`.
+- C. Mandates and proof: done.
+- D. Product and UI: done; final polish after live data.
+- E. Platform and QA: 132 unit/integration + 10 e2e; next deploy, README and video (Phase 6).
