@@ -1,6 +1,6 @@
 // A deployment never runs on the secrets published in this repository: the API key pepper must be set, and the
 // ProcureBot agent key must be its own, not the public demo key. Local runs keep working with zero secrets.
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { MockPayPalAdapter } from "@/core/adapters/paypal/mock";
 import { authenticateAgent } from "@/core/agent-api";
 import { loadConfig } from "@/core/config";
@@ -21,6 +21,7 @@ async function containerFor(env: Record<string, string>) {
 
 afterEach(() => {
   delete process.env.PROCUREBOT_API_KEY;
+  vi.unstubAllEnvs();
 });
 
 describe("API key pepper", () => {
@@ -49,6 +50,12 @@ describe("ProcureBot demo key", () => {
 
   it("is refused on a deployment, which must set its own key", async () => {
     const c = await containerFor(deployedEnv);
+    await expect(seedDemo(c)).rejects.toThrow(/PROCUREBOT_API_KEY/);
+  });
+
+  it("is refused on a production deployment on the embedded database too (Render free plan)", async () => {
+    const c = await containerFor({});
+    vi.stubEnv("NODE_ENV", "production");
     await expect(seedDemo(c)).rejects.toThrow(/PROCUREBOT_API_KEY/);
   });
 
