@@ -19,6 +19,8 @@ services:
         generateValue: true
       - key: API_KEY_PEPPER
         generateValue: true
+      - key: PROCUREBOT_API_KEY # set in the dashboard; use the same value as SETTLEAI_API_KEY in the MCP client
+        sync: false
       - key: PLATFORM_SIGNING_KEY_JWK
         sync: false
       - key: PAYPAL_ENV

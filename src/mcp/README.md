@@ -19,7 +19,7 @@ The demo key belongs to the seeded agent **ProcureBot** (owner: Ravi Traders). I
   "mcpServers": {
     "settleai": {
       "command": "pnpm",
-      "args": ["--dir", "E:/settleai", "exec", "tsx", "src/mcp/server.ts"],
+      "args": ["--dir", "<path-to-settleai>", "exec", "tsx", "src/mcp/server.ts"],
       "env": { "SETTLEAI_URL": "http://localhost:3000", "SETTLEAI_API_KEY": "sk_demo_procurebot_9f2c" }
     }
   }

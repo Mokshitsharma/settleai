@@ -15,6 +15,14 @@ export function hashApiKey(key: string, pepper: string): string {
 
 const INDORE = { lat: 22.7196, lng: 75.8577, radiusKm: 25, label: "Indore" };
 
+// The demo key is published in this repository, so it only works locally. A deployment (real Postgres) must set
+// its own PROCUREBOT_API_KEY, or anyone reading the repository could call the agent API on the live demo.
+function procurebotKey(c: Container): string {
+  const key = process.env.PROCUREBOT_API_KEY ?? (c.config.DATABASE_URL ? undefined : DEMO_PROCUREBOT_KEY);
+  if (!key) throw new Error("PROCUREBOT_API_KEY must be set on a deployment; the demo key is public");
+  return key;
+}
+
 export async function seedDemo(c: Container): Promise<{ mandateIds: string[] }> {
   const db = c.dbHandle.db;
   await db
@@ -23,7 +31,7 @@ export async function seedDemo(c: Container): Promise<{ mandateIds: string[] }> 
       id: PROCUREBOT_CLIENT_ID,
       ownerUserId: "usr_ravi",
       name: "ProcureBot",
-      keyHash: hashApiKey(process.env.PROCUREBOT_API_KEY ?? DEMO_PROCUREBOT_KEY, c.config.API_KEY_PEPPER),
+      keyHash: hashApiKey(procurebotKey(c), c.config.API_KEY_PEPPER),
       scopes: ["jobs:create", "jobs:read", "proofs:read", "disputes:open"],
       capPerJobMinor: 15000,
       capPerDayMinor: 40000,

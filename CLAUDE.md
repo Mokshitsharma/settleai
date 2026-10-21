@@ -37,7 +37,6 @@ Full spec: `docs/SPEC.md` (source of truth). Progress: `docs/STATUS.md`. Re-read
 - Every run is traced in `agent_runs` and emitted over SSE.
 
 ## Project decisions (deviations from spec, see docs/STATUS.md)
-- Project lives at `E:\settleai` (never on C:).
 - Official rules override the spec: deadline 12 Nov 2026 12:00 pm PT; judging 1–15 Dec (keep the demo alive); one sponsor prize max, target AG Grid. See docs/STATUS.md "Official rules check".
 - Local/demo DB is PGlite (embedded Postgres); real Postgres when `DATABASE_URL` is set (Render, CI).
 - PayPal runs in MOCK mode until sandbox credentials are provided.

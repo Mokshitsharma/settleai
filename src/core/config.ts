@@ -61,6 +61,11 @@ export function loadConfig(source: Record<string, string | undefined> = process.
   if (deployed && env.SESSION_SECRET.startsWith("dev-only")) {
     env.SESSION_SECRET = Array.from(crypto.getRandomValues(new Uint8Array(32)), (b) => b.toString(16).padStart(2, "0")).join("");
   }
+  // Agent API keys are stored as peppered hashes, so the pepper must stay the same across restarts and can't be
+  // replaced with a random one like the session secret. A deployment refuses to start with the published default.
+  if (deployed && env.API_KEY_PEPPER.startsWith("dev-only")) {
+    throw new Error("API_KEY_PEPPER must be set on a deployment (render.yaml generates one)");
+  }
 
   return {
     ...env,

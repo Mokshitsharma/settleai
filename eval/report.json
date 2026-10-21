@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-10-05T09:21:03.075Z",
+  "generatedAt": "2026-10-21T11:46:07.176Z",
   "llm": "offline stub",
   "metrics": {
     "scenarios": 30,
@@ -12,7 +12,7 @@
     "mandateFalseAllowRatePct": 0,
     "tamperDetectionPct": 100,
     "arbiterInvariantViolations": 0,
-    "avgVerificationLatencyMs": 81
+    "avgVerificationLatencyMs": 67
   },
   "results": [
     {
@@ -24,8 +24,8 @@
       "actual": "AUTO_RELEASE",
       "autoReleased": true,
       "cleanCase": true,
-      "verificationLatencyMs": 104,
-      "latencyMs": 5613
+      "verificationLatencyMs": 73,
+      "latencyMs": 4644
     },
     {
       "id": "S02",
@@ -36,8 +36,8 @@
       "actual": "GPS_MISMATCH; HOLD",
       "autoReleased": false,
       "shouldNotRelease": true,
-      "verificationLatencyMs": 66,
-      "latencyMs": 3435
+      "verificationLatencyMs": 95,
+      "latencyMs": 3425
     },
     {
       "id": "S03",
@@ -48,8 +48,8 @@
       "actual": "DUP_IMAGE; HOLD",
       "autoReleased": false,
       "shouldNotRelease": true,
-      "verificationLatencyMs": 58,
-      "latencyMs": 3929
+      "verificationLatencyMs": 55,
+      "latencyMs": 3350
     },
     {
       "id": "S04",
@@ -60,8 +60,8 @@
       "actual": "NO_EXIF; HUMAN_REVIEW",
       "autoReleased": false,
       "shouldNotRelease": true,
-      "verificationLatencyMs": 147,
-      "latencyMs": 3372
+      "verificationLatencyMs": 63,
+      "latencyMs": 3098
     },
     {
       "id": "S05",
@@ -72,8 +72,8 @@
       "actual": "inconclusive; HUMAN_REVIEW",
       "autoReleased": false,
       "shouldNotRelease": true,
-      "verificationLatencyMs": 65,
-      "latencyMs": 3834
+      "verificationLatencyMs": 68,
+      "latencyMs": 3370
     },
     {
       "id": "S06",
@@ -86,8 +86,8 @@
       "shouldNotRelease": true,
       "injectionCase": true,
       "injectionDetected": true,
-      "verificationLatencyMs": 74,
-      "latencyMs": 3435
+      "verificationLatencyMs": 71,
+      "latencyMs": 3248
     },
     {
       "id": "S07",
@@ -120,8 +120,8 @@
       "actual": "score 30; HUMAN_REVIEW",
       "autoReleased": false,
       "shouldNotRelease": true,
-      "verificationLatencyMs": 67,
-      "latencyMs": 3681
+      "verificationLatencyMs": 55,
+      "latencyMs": 2819
     },
     {
       "id": "S10",
@@ -132,8 +132,8 @@
       "actual": "PAYOUT_DEST_RECENT; HUMAN_REVIEW",
       "autoReleased": false,
       "shouldNotRelease": true,
-      "verificationLatencyMs": 65,
-      "latencyMs": 3380
+      "verificationLatencyMs": 52,
+      "latencyMs": 2969
     },
     {
       "id": "S11",
@@ -142,8 +142,8 @@
       "expected": "LATE_SUBMISSION flagged",
       "pass": true,
       "actual": "LATE_SUBMISSION; AUTO_RELEASE",
-      "verificationLatencyMs": 84,
-      "latencyMs": 3271
+      "verificationLatencyMs": 73,
+      "latencyMs": 2893
     },
     {
       "id": "S12",
@@ -152,7 +152,7 @@
       "expected": "Idempotent; exactly one payout",
       "pass": true,
       "actual": "1 payout(s); resubmit rejected",
-      "latencyMs": 3546
+      "latencyMs": 3213
     },
     {
       "id": "S13",
@@ -161,7 +161,7 @@
       "expected": "No double ledger entry; state consistent",
       "pass": true,
       "actual": "duplicate, ignored; escrow 10200",
-      "latencyMs": 2828
+      "latencyMs": 2472
     },
     {
       "id": "S14",
@@ -171,7 +171,7 @@
       "pass": true,
       "actual": "PAYER_UNSUPPORTED_CLAIM; 4000/0",
       "invariantViolations": 0,
-      "latencyMs": 3238
+      "latencyMs": 2871
     },
     {
       "id": "S15",
@@ -181,7 +181,7 @@
       "pass": true,
       "actual": "WORKER_PARTIAL; 2800/1200",
       "invariantViolations": 0,
-      "latencyMs": 3388
+      "latencyMs": 2937
     },
     {
       "id": "S16",
@@ -192,7 +192,7 @@
       "actual": "MANDATE_CAP_EXCEEDED",
       "guardDenyCase": true,
       "guardAllowed": false,
-      "latencyMs": 2584
+      "latencyMs": 2373
     },
     {
       "id": "S17",
@@ -203,7 +203,7 @@
       "actual": "13 allowed; spent 39000 of 40000",
       "guardDenyCase": true,
       "guardAllowed": false,
-      "latencyMs": 2717
+      "latencyMs": 2771
     },
     {
       "id": "S18",
@@ -214,7 +214,7 @@
       "actual": "HUMAN_REVIEW; milestone NEEDS_REVIEW",
       "autoReleased": false,
       "shouldNotRelease": true,
-      "latencyMs": 2708
+      "latencyMs": 3087
     },
     {
       "id": "S19",
@@ -225,7 +225,7 @@
       "actual": "MANDATE_SIGNATURE_INVALID",
       "guardDenyCase": true,
       "guardAllowed": false,
-      "latencyMs": 2541
+      "latencyMs": 2822
     },
     {
       "id": "S20",
@@ -236,7 +236,7 @@
       "actual": "MANDATE_EXPIRED",
       "guardDenyCase": true,
       "guardAllowed": false,
-      "latencyMs": 2476
+      "latencyMs": 2588
     },
     {
       "id": "S21",
@@ -247,7 +247,7 @@
       "actual": "MANDATE_SCOPE_VIOLATION; attested=true",
       "guardDenyCase": true,
       "guardAllowed": false,
-      "latencyMs": 2481
+      "latencyMs": 2713
     },
     {
       "id": "S22",
@@ -258,7 +258,7 @@
       "actual": "MANDATE_CAP_EXCEEDED",
       "guardDenyCase": true,
       "guardAllowed": false,
-      "latencyMs": 2392
+      "latencyMs": 2193
     },
     {
       "id": "S23",
@@ -267,7 +267,7 @@
       "expected": "PAUSED_MANDATE; funds stay; no payout",
       "pass": true,
       "actual": "PAUSED_MANDATE; payout call not made",
-      "latencyMs": 2740
+      "latencyMs": 2720
     },
     {
       "id": "S24",
@@ -278,7 +278,7 @@
       "actual": "MANDATE_REPLAY",
       "guardDenyCase": true,
       "guardAllowed": false,
-      "latencyMs": 2457
+      "latencyMs": 2368
     },
     {
       "id": "S25",
@@ -289,7 +289,7 @@
       "actual": "clean receipt verifies; 49/49 tampers caught",
       "tamperTotal": 49,
       "tamperDetected": 49,
-      "latencyMs": 3156
+      "latencyMs": 2885
     },
     {
       "id": "S26",
@@ -299,7 +299,7 @@
       "pass": true,
       "actual": "AGENT_SCOPE_VIOLATION; refund 1600; suspended=true",
       "invariantViolations": 0,
-      "latencyMs": 3886
+      "latencyMs": 3547
     },
     {
       "id": "S27",
@@ -309,7 +309,7 @@
       "pass": true,
       "actual": "SPEC_AMBIGUITY; 2000/2000",
       "invariantViolations": 0,
-      "latencyMs": 2829
+      "latencyMs": 2756
     },
     {
       "id": "S28",
@@ -320,7 +320,7 @@
       "actual": "without human: step_up; with human: allow",
       "guardDenyCase": true,
       "guardAllowed": false,
-      "latencyMs": 3589
+      "latencyMs": 2616
     },
     {
       "id": "S29",
@@ -333,7 +333,7 @@
       "guardAllowed": false,
       "injectionCase": true,
       "injectionDetected": true,
-      "latencyMs": 3379
+      "latencyMs": 2510
     },
     {
       "id": "S30",
@@ -344,7 +344,7 @@
       "actual": "GUARD_DENIED; MANDATE_REVOKED; payout call not made",
       "guardDenyCase": true,
       "guardAllowed": false,
-      "latencyMs": 4038
+      "latencyMs": 2999
     }
   ]
 }

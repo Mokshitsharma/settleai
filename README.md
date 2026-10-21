@@ -117,7 +117,7 @@ All agent output is Zod-validated, retried once with the error, then falls back 
 | Prompt injection detected | **100%** |
 | Dispute splits that did not add up | **0** |
 
-Plus 132 unit and integration tests, 10 Playwright journeys (including a WCAG AA audit and a phone-sized run),
+Plus 142 unit and integration tests, 10 Playwright journeys (including a WCAG AA audit and a phone-sized run),
 failure drills (webhook storms, PayPal outage, LLM outage, database restart), and `pnpm demo:smoke`.
 
 ```bash
