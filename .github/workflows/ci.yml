@@ -16,10 +16,19 @@ jobs:
           node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      - name: Secret scanning
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        continue-on-error: true
+      - name: Dependency audit
+        run: pnpm audit --audit-level=high
+        continue-on-error: true
       - run: pnpm exec next typegen
       - run: pnpm typecheck
       - run: pnpm lint
       - run: pnpm test
+      - run: pnpm eval
       - run: pnpm demo:smoke
 
   e2e:
