@@ -129,9 +129,11 @@ export class DisputeService {
       const evId = newId("dev");
       const key = `disputes/${d.dispute.id}/${evId}.jpg`;
       const sharp = (await import("sharp")).default;
+      const { assertImageLimits, MAX_IMAGE_PIXELS } = await import("@/core/checks/image");
       let reencoded: Uint8Array;
       try {
-        reencoded = new Uint8Array(await sharp(args.photo).rotate().resize({ width: 2048, height: 2048, fit: "inside", withoutEnlargement: true }).jpeg({ quality: 85 }).toBuffer());
+        await assertImageLimits(args.photo);
+        reencoded = new Uint8Array(await sharp(args.photo, { limitInputPixels: MAX_IMAGE_PIXELS }).rotate().resize({ width: 2048, height: 2048, fit: "inside", withoutEnlargement: true }).jpeg({ quality: 85 }).toBuffer());
       } catch {
         throw new JobError("INVALID_SPEC", "That file could not be read as an image");
       }

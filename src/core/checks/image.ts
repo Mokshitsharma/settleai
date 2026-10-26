@@ -7,6 +7,25 @@ import { sha256Hex } from "@/core/mandates/canonical";
 
 export const IMAGE_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"] as const;
 export const MAX_IMAGE_BYTES = 12 * 1024 * 1024;
+/** Longest side and total pixels accepted before decoding (decompression-bomb guard). */
+export const MAX_IMAGE_SIDE = 12_000;
+export const MAX_IMAGE_PIXELS = 50_000_000;
+export const MIN_IMAGE_SIDE = 16;
+
+export class ImageLimitError extends Error {}
+
+/** Reads only the image header and rejects files outside the size and dimension limits. */
+export async function assertImageLimits(bytes: Uint8Array): Promise<{ width: number; height: number }> {
+  if (bytes.byteLength === 0) throw new ImageLimitError("Image is empty");
+  if (bytes.byteLength > MAX_IMAGE_BYTES) throw new ImageLimitError("Image is larger than 12 MB");
+  const meta = await sharp(bytes, { limitInputPixels: MAX_IMAGE_PIXELS }).metadata();
+  const width = meta.width ?? 0;
+  const height = meta.height ?? 0;
+  if (width < MIN_IMAGE_SIDE || height < MIN_IMAGE_SIDE) throw new ImageLimitError(`Image is too small (${width}x${height})`);
+  if (width > MAX_IMAGE_SIDE || height > MAX_IMAGE_SIDE) throw new ImageLimitError(`Image side exceeds ${MAX_IMAGE_SIDE} px (${width}x${height})`);
+  if (width * height > MAX_IMAGE_PIXELS) throw new ImageLimitError(`Image exceeds ${MAX_IMAGE_PIXELS / 1e6} megapixels`);
+  return { width, height };
+}
 
 export interface ExifInfo {
   takenAt?: string; // ISO with offset
@@ -32,7 +51,7 @@ export interface IngestedImage {
  * resized, recompressed) land within a few bits of each other. Not a security primitive.
  */
 export async function differenceHash(bytes: Uint8Array): Promise<string> {
-  const { data } = await sharp(bytes).rotate().grayscale().resize(9, 8, { fit: "fill" }).raw().toBuffer({ resolveWithObject: true });
+  const { data } = await sharp(bytes, { limitInputPixels: MAX_IMAGE_PIXELS }).rotate().grayscale().resize(9, 8, { fit: "fill" }).raw().toBuffer({ resolveWithObject: true });
   let bits = 0n;
   for (let y = 0; y < 8; y++) {
     for (let x = 0; x < 8; x++) {
@@ -81,10 +100,10 @@ export async function readExif(bytes: Uint8Array, fallbackOffset = "Z"): Promise
 }
 
 export async function ingestImage(bytes: Uint8Array, opts: { fallbackOffset?: string } = {}): Promise<IngestedImage> {
-  if (bytes.byteLength > MAX_IMAGE_BYTES) throw new Error("Image is larger than 12 MB");
+  await assertImageLimits(bytes);
   const type = await fileTypeFromBuffer(bytes);
   const exif = await readExif(bytes, opts.fallbackOffset);
-  const img = sharp(bytes, { failOn: "error" }).rotate();
+  const img = sharp(bytes, { failOn: "error", limitInputPixels: MAX_IMAGE_PIXELS }).rotate();
   const meta = await img.metadata();
   const stored = new Uint8Array(await img.resize({ width: 2048, height: 2048, fit: "inside", withoutEnlargement: true }).jpeg({ quality: 85 }).toBuffer());
   return {
@@ -100,7 +119,7 @@ export async function ingestImage(bytes: Uint8Array, opts: { fallbackOffset?: st
 
 /** Downscaled JPEG for the vision model (spec §8.1: images downscaled to control latency and cost). */
 export async function forModel(bytes: Uint8Array, maxSide = 1024): Promise<string> {
-  const out = await sharp(bytes).rotate().resize({ width: maxSide, height: maxSide, fit: "inside", withoutEnlargement: true }).jpeg({ quality: 80 }).toBuffer();
+  const out = await sharp(bytes, { limitInputPixels: MAX_IMAGE_PIXELS }).rotate().resize({ width: maxSide, height: maxSide, fit: "inside", withoutEnlargement: true }).jpeg({ quality: 80 }).toBuffer();
   return out.toString("base64");
 }
 
