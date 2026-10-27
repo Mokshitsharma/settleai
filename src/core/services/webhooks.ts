@@ -13,6 +13,7 @@ import { canTransition } from "@/core/state/machines";
 import type { AttestationService } from "./attestations";
 import type { AuditService } from "./audit";
 import type { LedgerService } from "./ledger";
+import type { OutboxService } from "./outbox";
 import type { TreasuryService } from "./treasury";
 
 export type WebhookOutcome = "rejected" | "duplicate" | "processed" | "ignored";
@@ -27,6 +28,7 @@ export class WebhookService {
     private readonly attestations: AttestationService,
     private readonly events: EventHub,
     private readonly clock: ClockPort,
+    private readonly outbox?: OutboxService,
   ) {}
 
   async process(headers: Record<string, string>, body: string): Promise<WebhookOutcome> {
@@ -43,13 +45,31 @@ export class WebhookService {
     try {
       outcome = await this.dispatch(event);
     } catch (err) {
-      await this.db.update(webhookEvents).set({ status: "failed" }).where(eq(webhookEvents.id, inserted[0].id));
+      // The event is already stored (and deduped), so PayPal's own resend would be dropped as a duplicate.
+      // The outbox re-dispatches it from the stored payload with backoff instead (same transaction as the mark).
+      await this.db.transaction(async (tx) => {
+        await tx.update(webhookEvents).set({ status: "failed" }).where(eq(webhookEvents.id, inserted[0].id));
+        await this.outbox?.enqueue(tx, { topic: "webhook.redispatch", dedupeKey: `whr:${inserted[0].id}`, payload: { webhookEventId: inserted[0].id } });
+      });
       throw err;
     }
     await this.db
       .update(webhookEvents)
       .set({ status: outcome === "processed" ? "processed" : "ignored", processedAt: this.clock.now() })
       .where(eq(webhookEvents.id, inserted[0].id));
+    return outcome;
+  }
+
+  /** Outbox handler: re-runs a stored webhook whose first dispatch failed. Handlers are state-machine safe. */
+  async redispatch(webhookEventId: string): Promise<WebhookOutcome> {
+    const [row] = await this.db.select().from(webhookEvents).where(eq(webhookEvents.id, webhookEventId));
+    if (!row || row.status !== "failed") return "ignored";
+    const raw = row.payload as { id: string; event_type: string; resource: Record<string, unknown> };
+    const outcome = await this.dispatch({ id: row.paypalEventId, eventType: row.eventType, resource: raw.resource ?? {}, raw });
+    await this.db
+      .update(webhookEvents)
+      .set({ status: outcome === "processed" ? "processed" : "ignored", processedAt: this.clock.now() })
+      .where(eq(webhookEvents.id, row.id));
     return outcome;
   }
 

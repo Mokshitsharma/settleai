@@ -85,6 +85,8 @@ export interface PayPalAdapterOptions {
   env: "sandbox" | "live";
   webhookId?: string;
   fetchImpl?: typeof fetch;
+  /** Per-request timeout for every PayPal call (default 15 s). A timeout is an ambiguous failure for writes. */
+  timeoutMs?: number;
 }
 
 export class PayPalAdapter implements PaymentsPort {
@@ -105,6 +107,7 @@ export class PayPalAdapter implements PaymentsPort {
       method: "POST",
       headers: { authorization: `Basic ${basic}`, "content-type": "application/x-www-form-urlencoded" },
       body: "grant_type=client_credentials",
+      signal: AbortSignal.timeout(this.opts.timeoutMs ?? 15_000),
     });
     if (!res.ok) throw new PayPalApiError(res.status, "OAUTH_FAILED");
     const body = TokenResponse.parse(await res.json());
@@ -123,6 +126,7 @@ export class PayPalAdapter implements PaymentsPort {
       method,
       headers,
       body: body === undefined ? undefined : JSON.stringify(body),
+      signal: AbortSignal.timeout(this.opts.timeoutMs ?? 15_000),
     });
     const text = await res.text();
     const json = text ? (JSON.parse(text) as Record<string, unknown>) : {};

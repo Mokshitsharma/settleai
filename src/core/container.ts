@@ -32,6 +32,8 @@ import { ReceiptService } from "@/core/services/receipts";
 import { ReconciliationService } from "@/core/services/reconciliation";
 import { AnalyticsService } from "@/core/services/analytics";
 import { MandateGuardService } from "@/core/services/guard";
+import { OutboxService } from "@/core/services/outbox";
+import { CircuitBreaker, withCircuitBreaker } from "@/core/reliability/circuit-breaker";
 import { PolicyService } from "@/core/services/policy";
 import { ProofService } from "@/core/services/proofs";
 import { ReleaseService } from "@/core/services/releases";
@@ -67,6 +69,9 @@ export interface Container {
   receipts: ReceiptService;
   reconciliation: ReconciliationService;
   analytics: AnalyticsService;
+  outbox: OutboxService;
+  /** Breaker around every PayPal network call made by services. */
+  paypalBreaker: CircuitBreaker;
   /** Runs verification for a submitted milestone in the background; progress streams over SSE. */
   verifyInBackground(milestoneId: string): void;
   /** MOCK mode only: delivers the mock's queued PayPal events through the real webhook pipeline. */
@@ -111,6 +116,10 @@ export async function createContainer(
   // so extra containers built in a test (without a clock) do not reset it.
   if (overrides.clock) setTimeSource(overrides.clock);
   const payments = overrides.payments ?? buildPayments(cfg);
+  // Services get the breaker-wrapped port; `payments` stays the raw adapter (mode checks, mock helpers).
+  const paypalBreaker = new CircuitBreaker({ name: "paypal", failureThreshold: 5, cooldownMs: 30_000, now: () => clock.now().getTime() });
+  const guardedPayments = withCircuitBreaker(payments, paypalBreaker);
+  const outbox = new OutboxService(db, clock, { baseMs: 2_000, capMs: 5 * 60_000 });
   const events = new EventHub();
   const ledger = new LedgerService(db);
   const audit = new AuditService(db);
@@ -129,20 +138,26 @@ export async function createContainer(
   const guard = new MandateGuardService(db, keys, mandates, attestations, audit, clock);
   const binding = new MandateBindingService(db, keys, attestations, clock);
   const jobs = new JobService(db, ledger, audit, events, clock, cfg.PLATFORM_FEE_BPS, binding, guard);
-  const funding = new FundingService(db, payments, jobs, audit, events, clock, binding, guard, policy, cfg.CHALLENGE_WINDOW_SECONDS);
+  const funding = new FundingService(db, guardedPayments, jobs, audit, events, clock, binding, guard, policy, cfg.CHALLENGE_WINDOW_SECONDS);
   const treasury = new TreasuryService(
     db,
-    payments,
+    guardedPayments,
     ledger,
     audit,
     attestations,
     events,
     clock,
-    { killSwitch: cfg.PAYOUT_KILL_SWITCH, releaseGuard: (a) => guard.g3Release({ releaseId: a.releaseId }) },
+    { killSwitch: cfg.PAYOUT_KILL_SWITCH, releaseGuard: (a) => guard.g3Release({ releaseId: a.releaseId }), outbox },
     reputation,
     policy,
   );
-  const webhooks = new WebhookService(db, payments, ledger, treasury, audit, attestations, events, clock);
+  const webhooks = new WebhookService(db, guardedPayments, ledger, treasury, audit, attestations, events, clock, outbox);
+  outbox.on("webhook.redispatch", async (p) => {
+    await webhooks.redispatch(String(p.webhookEventId));
+  });
+  outbox.on("payout.retry", async (p) => {
+    await treasury.executeRelease(String(p.releaseId), "system:outbox");
+  });
   const storage = new LocalStorageAdapter(path.resolve(cfg.STORAGE_LOCAL_DIR));
   const llm = overrides.llm ?? buildLlm(cfg);
   const proofs = new ProofService(db, storage, attestations, audit, events, clock);
@@ -156,7 +171,7 @@ export async function createContainer(
     evidenceWindowSeconds: cfg.DISPUTE_EVIDENCE_WINDOW_SECONDS,
   });
   const receipts = new ReceiptService(db, jobs, attestations, keys, clock);
-  const reconciliation = new ReconciliationService(db, payments, ledger, treasury);
+  const reconciliation = new ReconciliationService(db, guardedPayments, ledger, treasury);
 
   function verifyInBackground(milestoneId: string): void {
     void verification.run(milestoneId).catch((err) => console.error("verification failed", milestoneId, err));
@@ -200,6 +215,8 @@ export async function createContainer(
     receipts,
     reconciliation,
     analytics: new AnalyticsService(db),
+    outbox,
+    paypalBreaker,
     verifyInBackground,
     deliverMockWebhooks,
   };
@@ -215,6 +232,7 @@ export function getContainer(): Promise<Container> {
         .processDueWindows()
         .then(() => c.disputes.processDueWindows())
         .then(() => c.deliverMockWebhooks())
+        .then(() => c.outbox.runDue())
         .catch((err) => console.error("release timer", err));
     }, 2000);
     return c;

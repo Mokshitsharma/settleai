@@ -11,8 +11,10 @@ import type { ClockPort } from "@/core/ports/clock";
 import { TERMINAL_PAYOUT_FAILURES, type PaymentsPort, type PayoutItemStatus } from "@/core/ports/payments";
 import { assertTransition, canTransition } from "@/core/state/machines";
 import type { AttestationService } from "./attestations";
+import { CircuitOpenError } from "@/core/reliability/circuit-breaker";
 import type { AuditService } from "./audit";
 import { escrowCode, type LedgerService } from "./ledger";
+import type { OutboxService } from "./outbox";
 import type { PolicyService } from "./policy";
 import type { ReputationService } from "./reputation";
 
@@ -45,7 +47,7 @@ export class TreasuryService {
     private readonly attestations: AttestationService,
     private readonly events: EventHub,
     private readonly clock: ClockPort,
-    private readonly opts: { killSwitch: boolean; releaseGuard?: ReleaseGuard },
+    private readonly opts: { killSwitch: boolean; releaseGuard?: ReleaseGuard; outbox?: OutboxService },
     private readonly reputation: ReputationService,
     private readonly policy: PolicyService,
   ) {}
@@ -123,7 +125,18 @@ export class TreasuryService {
         note: `SettleAI: ${job.title}, milestone ${ms.seq} (${ms.title})`,
       });
     } catch (err) {
-      await this.markPayoutFailed(payoutId, rel.id, (err as Error).message.slice(0, 200), false);
+      // CircuitOpenError: PayPal never saw the request, so an automatic retry (fresh sender_item_id) cannot
+      // double-pay. Any other error may have reached PayPal (timeout, 5xx): park it in the dead-letter table
+      // for reconciliation or a person, never retry it blindly.
+      const outbox = this.opts.outbox;
+      await this.markPayoutFailed(payoutId, rel.id, (err as Error).message.slice(0, 200), false, async (tx) => {
+        if (!outbox) return;
+        if (err instanceof CircuitOpenError) {
+          await outbox.enqueue(tx, { topic: "payout.retry", dedupeKey: `por:${rel.id}`, payload: { releaseId: rel.id } });
+        } else {
+          await outbox.deadLetterNow(tx, { topic: "payout.ambiguous", dedupeKey: `poa:${payoutId}`, payload: { releaseId: rel.id, payoutId }, error: (err as Error).message.slice(0, 200) });
+        }
+      });
       throw err;
     }
     await this.db
@@ -135,13 +148,20 @@ export class TreasuryService {
     return { status: fresh.status, payoutId };
   }
 
-  private async markPayoutFailed(payoutId: string, releaseId: string, reason: string, cancelRelease: boolean) {
+  private async markPayoutFailed(
+    payoutId: string,
+    releaseId: string,
+    reason: string,
+    cancelRelease: boolean,
+    followUp?: (tx: Parameters<Parameters<Db["transaction"]>[0]>[0]) => Promise<void>,
+  ) {
     await this.db.transaction(async (tx) => {
       await tx.update(payouts).set({ status: "FAILED", failureReason: reason, updatedAt: this.clock.now() }).where(eq(payouts.id, payoutId));
       await tx
         .update(releases)
         .set({ status: cancelRelease ? "CANCELLED" : "PAYOUT_FAILED", updatedAt: this.clock.now() })
         .where(eq(releases.id, releaseId));
+      await followUp?.(tx);
     });
   }
 
