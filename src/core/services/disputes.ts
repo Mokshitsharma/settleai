@@ -49,6 +49,19 @@ export interface DisputeView {
   disputedAmountMinor: number;
 }
 
+/**
+ * Money split of a settled dispute (pure, property-tested): the worker's share plus the payer's refund always
+ * equal the disputed amount, and the milestone's platform fee is split in the same proportion (the payer gets
+ * back the fee that was never earned). Rounding never creates or loses a cent.
+ */
+export function disputeSettlementSplit(args: { disputedMinor: number; releaseToWorkerMinor: number; feeShareMinor: number }) {
+  const { disputedMinor: disputed, releaseToWorkerMinor: release, feeShareMinor: fee } = args;
+  const refundToPayerMinor = disputed - release;
+  const releaseFeeMinor = disputed > 0 ? Math.round((fee * release) / disputed) : 0;
+  const feeRefundMinor = fee - releaseFeeMinor;
+  return { refundToPayerMinor, releaseFeeMinor, feeRefundMinor, refundTotalMinor: refundToPayerMinor + feeRefundMinor };
+}
+
 export class DisputeService {
   private ticking = false;
 
@@ -343,9 +356,8 @@ export class DisputeService {
     const [ms] = await this.db.select().from(milestones).where(eq(milestones.id, d.dispute.milestoneId));
     const [job] = await this.db.select().from(jobs).where(eq(jobs.id, ms.jobId));
     const disputed = d.disputedAmountMinor;
-    const refundToPayerMinor = disputed - releaseToWorkerMinor;
     const feeShare = await this.treasury.feeShare(job.id, ms.seq);
-    const releaseFee = disputed > 0 ? Math.round((feeShare * releaseToWorkerMinor) / disputed) : 0;
+    const { refundToPayerMinor, releaseFeeMinor: releaseFee } = disputeSettlementSplit({ disputedMinor: disputed, releaseToWorkerMinor, feeShareMinor: feeShare });
     const g4 = await this.guard.g4Settle({
       disputeId,
       jobId: job.id,
