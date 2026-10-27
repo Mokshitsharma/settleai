@@ -476,3 +476,66 @@ export const managedKeys = pgTable("managed_keys", {
   encryptedPrivateJwk: text("encrypted_private_jwk").notNull(), // base64(iv || ciphertext+tag)
   createdAt: createdAt(),
 });
+
+// ---- Hardening 2026-10 (migration 0002, additive only) -------------------------------------------
+
+// Transactional outbox: side effects (webhook re-dispatch, payout retries) are written in the same database
+// transaction as the state change, then run by the outbox worker with backoff + jitter. `dedupe_key` makes
+// enqueueing idempotent. Rows that exhaust their attempts move to dead_letters.
+export const outboxEvents = pgTable(
+  "outbox_events",
+  {
+    id: text("id").primaryKey(),
+    topic: text("topic").notNull(), // webhook.redispatch | payout.retry
+    dedupeKey: text("dedupe_key").notNull().unique(),
+    payload: jsonb("payload").notNull(),
+    status: text("status", { enum: ["pending", "done", "dead"] }).notNull().default("pending"),
+    attempts: integer("attempts").notNull().default(0),
+    maxAttempts: integer("max_attempts").notNull().default(6),
+    availableAt: timestamp("available_at", { withTimezone: true }).notNull().defaultNow().$defaultFn(timeSourceNow),
+    lastError: text("last_error"),
+    createdAt: createdAt(),
+    updatedAt: updatedAt(),
+  },
+  (t) => [index("outbox_due_idx").on(t.status, t.availableAt), check("outbox_attempts", sql`${t.attempts} >= 0 and ${t.maxAttempts} > 0`)],
+);
+
+export const deadLetters = pgTable("dead_letters", {
+  id: text("id").primaryKey(),
+  outboxId: text("outbox_id").notNull().unique(),
+  topic: text("topic").notNull(),
+  payload: jsonb("payload").notNull(),
+  attempts: integer("attempts").notNull(),
+  lastError: text("last_error"),
+  resolvedAt: ts("resolved_at"),
+  createdAt: createdAt(),
+});
+
+// Offline evaluation runs (pnpm eval:generated). Synthetic scenarios only; no production data.
+export const evalRuns = pgTable("eval_runs", {
+  id: text("id").primaryKey(), // same id as results/runs/<run_id>
+  gitSha: text("git_sha").notNull(),
+  datasetHash: text("dataset_hash").notNull(),
+  seed: integer("seed").notNull(),
+  variant: text("variant").notNull(), // ai | rules_only
+  llm: text("llm").notNull(),
+  scenarios: integer("scenarios").notNull(),
+  metricsJson: jsonb("metrics_json").notNull(),
+  startedAt: ts("started_at").notNull(),
+  finishedAt: ts("finished_at").notNull(),
+});
+
+export const evalResults = pgTable(
+  "eval_results",
+  {
+    id: text("id").primaryKey(),
+    runId: text("run_id").notNull().references(() => evalRuns.id),
+    scenarioId: text("scenario_id").notNull(),
+    family: text("family").notNull(),
+    pass: boolean("pass").notNull(),
+    decision: text("decision"),
+    latencyMs: doublePrecision("latency_ms"),
+    detailJson: jsonb("detail_json"),
+  },
+  (t) => [uniqueIndex("eval_results_run_scenario").on(t.runId, t.scenarioId)],
+);

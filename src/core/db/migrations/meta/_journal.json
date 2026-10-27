@@ -15,6 +15,20 @@
       "when": 1791029487445,
       "tag": "0001_managed_keys",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1793100338603,
+      "tag": "0002_outbox_eval",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1793100345486,
+      "tag": "0003_read_models",
+      "breakpoints": true
     }
   ]
 }
