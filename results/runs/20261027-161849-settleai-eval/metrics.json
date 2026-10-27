@@ -1,0 +1,56 @@
+{
+  "scenarios_passed": {
+    "value": 1.0,
+    "ci_low": 0.8766,
+    "ci_high": 1.0,
+    "n": 28,
+    "k": 28
+  },
+  "false_release_rate": {
+    "value": 0.0,
+    "ci_low": 0.0,
+    "ci_high": 0.3694,
+    "n": 8,
+    "k": 0
+  },
+  "auto_release_recall": {
+    "value": 1.0,
+    "ci_low": 0.025,
+    "ci_high": 1.0,
+    "n": 1,
+    "k": 1
+  },
+  "injection_detection_rate": {
+    "value": 1.0,
+    "ci_low": 0.1581,
+    "ci_high": 1.0,
+    "n": 2,
+    "k": 2
+  },
+  "mandate_false_allow_rate": {
+    "value": 0.0,
+    "ci_low": 0.0,
+    "ci_high": 0.3085,
+    "n": 10,
+    "k": 0
+  },
+  "tamper_detection_rate": {
+    "value": 1.0,
+    "ci_low": 0.9275,
+    "ci_high": 1.0,
+    "n": 49,
+    "k": 49
+  },
+  "arbiter_invariant_violations": {
+    "value": 0,
+    "ci_low": 0,
+    "ci_high": 0,
+    "n": 28
+  },
+  "avg_verification_latency_ms": {
+    "value": 147,
+    "ci_low": null,
+    "ci_high": null,
+    "n": 28
+  }
+}
