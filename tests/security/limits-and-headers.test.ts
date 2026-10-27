@@ -70,7 +70,6 @@ describe("security headers", () => {
   it("next.config applies the headers to every path and hides X-Powered-By", async () => {
     expect(nextConfig.poweredByHeader).toBe(false);
     const rules = await nextConfig.headers!();
-    expect(rules).toHaveLength(1);
     expect(rules[0].source).toBe("/:path*");
     expect(rules[0].headers.map((h) => h.key)).toContain("Content-Security-Policy");
   });

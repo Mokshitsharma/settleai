@@ -25,3 +25,18 @@ export function securityHeaders(env: string | undefined = process.env.NODE_ENV):
   if (!dev) headers.push({ key: "Strict-Transport-Security", value: "max-age=31536000; includeSubDomains" });
   return headers;
 }
+
+/** Non-financial, public, identical-for-every-user API reads that browsers and CDNs may cache. Nothing else. */
+export const CACHEABLE_API_ROUTES = ["/api/keys/platform"] as const;
+
+/**
+ * Cache rules for next.config headers(). Order matters: Next.js lets a later matching rule override the same
+ * header key. Every API response defaults to no-store, so balances, escrow, payouts, jobs and receipts are never
+ * cached by a browser, proxy or CDN; only the allowlisted public reads above get a short max-age.
+ */
+export function cacheRules(): { source: string; headers: { key: string; value: string }[] }[] {
+  return [
+    { source: "/api/:path*", headers: [{ key: "Cache-Control", value: "no-store" }] },
+    ...CACHEABLE_API_ROUTES.map((source) => ({ source, headers: [{ key: "Cache-Control", value: "public, max-age=300, stale-while-revalidate=60" }] })),
+  ];
+}
