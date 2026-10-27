@@ -88,17 +88,20 @@ flowchart TD
 
 ---
 
-## 5. Capacity & Scalability Analysis (Back-of-Envelope)
+## 5. Capacity & Scalability Analysis (Back-of-Envelope Estimates — Not Measured)
 
-- **Throughput Target:** 150 operations/sec on core API, 50 verification jobs/min.
-- **Verification Pipeline:**
+> [!NOTE]
+> **Load Test Status:** `k6` is not installed on this local environment, so standalone load tests were never executed against live endpoints. All throughput and capacity numbers below are theoretical back-of-the-envelope architectural estimates, not measured benchmarks. High-concurrency safety is verified functionally via Vitest failure drills (`tests/failure_drills/webhook-storms.test.ts` with 50 concurrent racing webhooks and idempotency locks).
+
+- **Throughput Target (Estimate, not measured):** ~150 operations/sec on core API, 50 verification jobs/min.
+- **Verification Pipeline (Estimate, not measured):**
   - Image downscale & hash: ~45 ms CPU time.
   - LLM Vision Inference: ~850 ms (via Groq Qwen-2.5-VL / Llama-3.2-Vision).
-- **Storage Growth:**
+- **Storage Growth (Estimate, not measured):**
   - Metadata + Ledger entries: ~2.4 KB per job.
   - Evidence images (downscaled JPEG, quality 85): ~320 KB per milestone.
   - At 10,000 jobs/month: ~3.2 GB S3 storage, ~24 MB Postgres records.
-- **Cost Estimation per 1,000 Jobs:**
+- **Cost Estimation per 1,000 Jobs (Estimate, not measured):**
   - ECS Fargate (0.5 vCPU, 1 GB RAM): ~$0.48 / 1,000 requests.
   - S3 Evidence Storage (3.2 GB-month): ~$0.08.
   - Vision LLM API (Groq tokens): ~$0.30 per 1,000 verifications.
@@ -106,8 +109,13 @@ flowchart TD
 
 ---
 
-## 6. Service Level Objectives (SLOs)
-- **API Availability:** 99.95% uptime.
-- **Mandate Guard Evaluation Latency:** p50 < 25 ms, p95 < 60 ms.
-- **Evidence Verification Latency:** p50 < 1.2 s, p95 < 2.5 s.
+## 6. Service Level Objectives (SLOs) (Target Goals — Not Measured)
+- **API Availability:** 99.95% uptime target.
+- **Mandate Guard Evaluation Latency (Target SLO):** p50 < 25 ms, p95 < 60 ms (estimate, not measured).
+- **Evidence Verification Latency (Target SLO):** p50 < 1.2 s, p95 < 2.5 s (estimate, not measured).
 - **Ledger Invariant Enforcement:** 100% (zero violation tolerance: `debit == credit` strictly enforced).
+
+---
+
+## 7. Known Scope Limitations
+- **Digital Deliverable Uploads (Scenarios S07 & S08 Not Built):** Only physical delivery photo proofs with EXIF and perceptual hashing are supported in the MVP. Document/PDF deliverables with section extraction (scenarios S07 and S08 in `eval/scenarios.json`) are not built.

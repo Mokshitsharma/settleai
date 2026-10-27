@@ -154,6 +154,8 @@ pnpm verify-receipt receipt.json --platform-keys keys.json   # offline receipt c
   production would use passkeys or a KMS/HSM.
 - A production system holding customer funds needs licensing or a regulated partner and a third-party security review.
   See [docs/SECURITY-REVIEW.md](docs/SECURITY-REVIEW.md).
+- **Digital document deliverable uploads (scenarios S07/S08 in eval/scenarios.json) are not built:** Only physical delivery proofs (photos with GPS/EXIF metadata and perceptual hashes) are implemented in the current milestone verification engine. Document/PDF section parsing is not built.
+- **Load test & capacity numbers are unmeasured estimates:** k6 was not executed in this environment; all throughput, capacity and latency figures in docs/architecture.md are back-of-the-envelope estimates, not measured benchmarks. Concurrency safety is verified functionally via 50 concurrent racing webhook tests in 	ests/failure_drills/webhook-storms.test.ts.
 
 ## Repository map
 
