@@ -7,7 +7,7 @@ but they can never fund or pay: the principal funds through PayPal, and payouts 
 ## Run
 
 ```bash
-SETTLEAI_URL=http://localhost:3000 SETTLEAI_API_KEY=sk_demo_procurebot_9f2c pnpm exec tsx src/mcp/server.ts
+SETTLEAI_URL=http://localhost:3000 SETTLEAI_API_KEY=<your-PROCUREBOT_API_KEY> pnpm exec tsx src/mcp/server.ts
 ```
 
 The demo key belongs to the seeded agent **ProcureBot** (owner: Ravi Traders). It is a demo-only credential.
@@ -20,7 +20,7 @@ The demo key belongs to the seeded agent **ProcureBot** (owner: Ravi Traders). I
     "settleai": {
       "command": "pnpm",
       "args": ["--dir", "<path-to-settleai>", "exec", "tsx", "src/mcp/server.ts"],
-      "env": { "SETTLEAI_URL": "http://localhost:3000", "SETTLEAI_API_KEY": "sk_demo_procurebot_9f2c" }
+      "env": { "SETTLEAI_URL": "http://localhost:3000", "SETTLEAI_API_KEY": "<your-PROCUREBOT_API_KEY>" }
     }
   }
 }

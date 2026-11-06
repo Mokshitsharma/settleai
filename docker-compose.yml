@@ -7,9 +7,9 @@ services:
       - "3000:3000"
     environment:
       - NODE_ENV=production
-      - DATABASE_URL=postgres://settleai:settleai_pass@db:5432/settleai
-      - API_KEY_PEPPER=local-dev-pepper-do-not-use-in-prod-12345
-      - SESSION_SECRET=local-session-secret-at-least-32-chars-long
+      - DATABASE_URL=postgres://settleai:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}@db:5432/settleai
+      - API_KEY_PEPPER=${API_KEY_PEPPER:?Set API_KEY_PEPPER}
+      - SESSION_SECRET=${SESSION_SECRET:?Set SESSION_SECRET}
     depends_on:
       db:
         condition: service_healthy
@@ -19,7 +19,7 @@ services:
     restart: unless-stopped
     environment:
       POSTGRES_USER: settleai
-      POSTGRES_PASSWORD: settleai_pass
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
       POSTGRES_DB: settleai
     ports:
       - "5432:5432"

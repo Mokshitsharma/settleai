@@ -7,10 +7,11 @@ import { loadConfig } from "@/core/config";
 import { createContainer } from "@/core/container";
 import { openTestDb } from "@/core/db/client";
 import { seed } from "@/core/db/seed";
-import { DEMO_PROCUREBOT_KEY, seedDemo } from "@/core/db/seed-demo";
+import { seedDemo } from "@/core/db/seed-demo";
 import { FixedClock } from "@/core/ports/clock";
 import { T0 } from "../helpers";
 
+const KEY = process.env.PROCUREBOT_API_KEY!;
 const deployedEnv = { DATABASE_URL: "postgres://deployed.example/settleai", API_KEY_PEPPER: "a-real-pepper" };
 
 async function containerFor(env: Record<string, string>) {
@@ -20,8 +21,8 @@ async function containerFor(env: Record<string, string>) {
 }
 
 afterEach(() => {
-  delete process.env.PROCUREBOT_API_KEY;
   vi.unstubAllEnvs();
+  process.env.PROCUREBOT_API_KEY = KEY;
 });
 
 describe("API key pepper", () => {
@@ -45,16 +46,18 @@ describe("ProcureBot demo key", () => {
   it("is used locally when no key is set", async () => {
     const c = await containerFor({});
     await seedDemo(c);
-    await expect(authenticateAgent(c, `Bearer ${DEMO_PROCUREBOT_KEY}`)).resolves.toBeTruthy();
+    await expect(authenticateAgent(c, `Bearer ${process.env.PROCUREBOT_API_KEY}`)).resolves.toBeTruthy();
   });
 
   it("is refused on a deployment, which must set its own key", async () => {
+    delete process.env.PROCUREBOT_API_KEY;
     const c = await containerFor(deployedEnv);
     await expect(seedDemo(c)).rejects.toThrow(/PROCUREBOT_API_KEY/);
   });
 
   it("is refused on a production deployment on the embedded database too (Render free plan)", async () => {
     const c = await containerFor({});
+    delete process.env.PROCUREBOT_API_KEY;
     vi.stubEnv("NODE_ENV", "production");
     await expect(seedDemo(c)).rejects.toThrow(/PROCUREBOT_API_KEY/);
   });
@@ -64,6 +67,6 @@ describe("ProcureBot demo key", () => {
     const c = await containerFor(deployedEnv);
     await seedDemo(c);
     await expect(authenticateAgent(c, "Bearer sk_live_own_key_for_test")).resolves.toBeTruthy();
-    await expect(authenticateAgent(c, `Bearer ${DEMO_PROCUREBOT_KEY}`)).rejects.toMatchObject({ code: "UNAUTHENTICATED" });
+    await expect(authenticateAgent(c, `Bearer other-${KEY}`)).rejects.toMatchObject({ code: "UNAUTHENTICATED" });
   });
 });

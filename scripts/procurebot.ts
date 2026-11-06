@@ -7,7 +7,6 @@ import "./_env";
 import path from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
-import { DEMO_PROCUREBOT_KEY } from "@/core/db/seed-demo";
 
 const TASK =
   process.argv.slice(2).join(" ") ||
@@ -27,7 +26,7 @@ async function connect(): Promise<Client> {
     env: {
       ...process.env,
       SETTLEAI_URL: process.env.SETTLEAI_URL ?? "http://localhost:3000",
-      SETTLEAI_API_KEY: process.env.SETTLEAI_API_KEY ?? DEMO_PROCUREBOT_KEY,
+      SETTLEAI_API_KEY: process.env.SETTLEAI_API_KEY ?? process.env.PROCUREBOT_API_KEY ?? "",
     } as Record<string, string>,
     stderr: "inherit",
   });

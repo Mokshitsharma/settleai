@@ -105,7 +105,7 @@ beforeAll(async () => {
   const { createContainer } = await import("@/core/container");
   const { openTestDb } = await import("@/core/db/client");
   const { seed } = await import("@/core/db/seed");
-  const { seedDemo, DEMO_PROCUREBOT_KEY } = await import("@/core/db/seed-demo");
+  const { seedDemo } = await import("@/core/db/seed-demo");
   const { FixedClock } = await import("@/core/ports/clock");
   const { T0 } = await import("../helpers");
   const dbHandle = await openTestDb();
@@ -113,7 +113,7 @@ beforeAll(async () => {
   const c = await createContainer(loadConfig({}), { dbHandle, clock: new FixedClock(T0), payments: new MockPayPalAdapter() });
   await seedDemo(c);
   state.container = Promise.resolve(c);
-  agentKey = DEMO_PROCUREBOT_KEY;
+  agentKey = process.env.PROCUREBOT_API_KEY!;
 });
 afterAll(async () => (await state.container)?.dbHandle.close());
 

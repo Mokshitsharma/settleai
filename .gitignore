@@ -48,3 +48,27 @@ next-env.d.ts
 # Playwright
 /test-results/
 /playwright-report/
+
+# Security hardening
+*.key
+serviceAccountKey.json
+google-services.json
+GoogleService-Info.plist
+firebase-applet-config.json
+__pycache__/
+*.pyc
+.venv/
+venv/
+node_modules/
+dist/
+build/
+*.db
+*.sqlite
+*.pt
+*.pkl
+*.joblib
+*.h5
+*.onnx
+*.zip
+.idea/
+.vscode/

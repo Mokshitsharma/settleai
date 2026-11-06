@@ -1,3 +1,4 @@
+import { randomBytes } from "node:crypto";
 import { defineConfig, devices } from "@playwright/test";
 
 // E2E runs against a fresh PGlite database in MOCK mode with the offline AI stub, so it is
@@ -27,6 +28,7 @@ export default defineConfig({
     reuseExistingServer: false,
     env: {
       APP_MODE: "MOCK",
+      PROCUREBOT_API_KEY: process.env.PROCUREBOT_API_KEY ?? randomBytes(24).toString("hex"),
       LLM_PROVIDER: "stub",
       PGLITE_DATA_DIR: ".data/e2e",
       CHALLENGE_WINDOW_SECONDS: "30", // long enough to open a dispute through the UI

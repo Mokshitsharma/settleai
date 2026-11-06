@@ -13,7 +13,7 @@ import { createContainer, type Container } from "@/core/container";
 import { openTestDb } from "@/core/db/client";
 import { ledgerEntries, payouts, refunds, releases } from "@/core/db/schema";
 import { seed } from "@/core/db/seed";
-import { DEMO_PROCUREBOT_KEY, seedDemo } from "@/core/db/seed-demo";
+import { seedDemo } from "@/core/db/seed-demo";
 import { FixedClock } from "@/core/ports/clock";
 import { directBackend } from "@/mcp/direct-backend";
 import { createSettleMcpServer, httpBackend, type SettleBackend } from "@/mcp/server";
@@ -111,7 +111,7 @@ describe("MCP tools against a live system cannot move money", () => {
     const clock = new FixedClock(T0);
     c = await createContainer(loadConfig({ CHALLENGE_WINDOW_SECONDS: "3600" }), { dbHandle, clock, payments: paypal, llm: createStubLlm() });
     const [mandateId] = (await seedDemo(c)).mandateIds;
-    const agent = await authenticateAgent(c, `Bearer ${DEMO_PROCUREBOT_KEY}`);
+    const agent = await authenticateAgent(c, `Bearer ${process.env.PROCUREBOT_API_KEY}`);
     const client = await connect(directBackend(new AgentApi(c, agent)));
     const json = (r: unknown) => JSON.parse(((r as { content: { text: string }[] }).content[0]?.text ?? "").replace(/^[^{[]*\n\n/, ""));
 

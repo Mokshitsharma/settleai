@@ -7,7 +7,6 @@ import { apiClients, mandates } from "./schema";
 
 export const PROCUREBOT_CLIENT_ID = "cli_procurebot";
 /** Demo-only API key for the reference agent. Never use a fixed key outside the demo. */
-export const DEMO_PROCUREBOT_KEY = "sk_demo_procurebot_9f2c";
 
 export function hashApiKey(key: string, pepper: string): string {
   return sha256Hex(`${pepper}:${key}`);
@@ -15,13 +14,10 @@ export function hashApiKey(key: string, pepper: string): string {
 
 const INDORE = { lat: 22.7196, lng: 75.8577, radiusKm: 25, label: "Indore" };
 
-// The demo key is published in this repository, so it only works locally. A deployment (NODE_ENV=production or
-// real Postgres) must set its own PROCUREBOT_API_KEY, or anyone reading the repository could call the agent API on
-// the live demo.
+// PROCUREBOT_API_KEY has no default, locally or deployed, so no key is ever published in this repository.
 function procurebotKey(c: Container): string {
-  const deployed = process.env.NODE_ENV === "production" || Boolean(c.config.DATABASE_URL);
-  const key = process.env.PROCUREBOT_API_KEY ?? (deployed ? undefined : DEMO_PROCUREBOT_KEY);
-  if (!key) throw new Error("PROCUREBOT_API_KEY must be set on a deployment; the demo key is public");
+  const key = process.env.PROCUREBOT_API_KEY;
+  if (!key) throw new Error("PROCUREBOT_API_KEY must be set before seeding the demo");
   return key;
 }
 

@@ -11,7 +11,7 @@ import { createContainer, type Container } from "@/core/container";
 import { openTestDb } from "@/core/db/client";
 import { apiClients } from "@/core/db/schema";
 import { seed } from "@/core/db/seed";
-import { DEMO_PROCUREBOT_KEY, PROCUREBOT_CLIENT_ID, seedDemo } from "@/core/db/seed-demo";
+import { PROCUREBOT_CLIENT_ID, seedDemo } from "@/core/db/seed-demo";
 import { FixedClock } from "@/core/ports/clock";
 import { directBackend } from "@/mcp/direct-backend";
 import { createSettleMcpServer } from "@/mcp/server";
@@ -29,7 +29,7 @@ beforeAll(async () => {
   await seed(dbHandle.db);
   c = await createContainer(loadConfig({}), { dbHandle, clock: new FixedClock(T0), payments: new MockPayPalAdapter() });
   [deliveryMandate] = (await seedDemo(c)).mandateIds;
-  const agent = await authenticateAgent(c, `Bearer ${DEMO_PROCUREBOT_KEY}`);
+  const agent = await authenticateAgent(c, `Bearer ${process.env.PROCUREBOT_API_KEY}`);
   const server = createSettleMcpServer(directBackend(new AgentApi(c, agent)));
   const [clientT, serverT] = InMemoryTransport.createLinkedPair();
   await server.connect(serverT);
@@ -85,7 +85,7 @@ describe("SettleAI MCP server", () => {
 
   it("a suspended agent key is refused", async () => {
     await c.dbHandle.db.update(apiClients).set({ status: "suspended" }).where(eq(apiClients.id, PROCUREBOT_CLIENT_ID));
-    await expect(authenticateAgent(c, `Bearer ${DEMO_PROCUREBOT_KEY}`)).rejects.toMatchObject({ code: "AGENT_SUSPENDED" });
+    await expect(authenticateAgent(c, `Bearer ${process.env.PROCUREBOT_API_KEY}`)).rejects.toMatchObject({ code: "AGENT_SUSPENDED" });
     await expect(authenticateAgent(c, "Bearer nope")).rejects.toMatchObject({ code: "UNAUTHENTICATED" });
   });
 });
