@@ -55,6 +55,7 @@ export default async function JobPage({ params }: PageProps<"/jobs/[id]">) {
       evidence: v.evidence.map((e) => ({ id: e.id, side: side(e.submitterId), kind: e.kind, content: e.content })),
       proposal: v.proposal ? { ...(v.proposal.proposalJson as DisputeProposal), payerResponse: v.proposal.payerResponse, workerResponse: v.proposal.workerResponse } : null,
       reportSummary: v.report?.summary ?? null,
+      reportClauses: v.report?.clauses ?? [],
       resolution: (v.dispute.resolutionJson as DisputeProps["resolution"]) ?? null,
     });
   }

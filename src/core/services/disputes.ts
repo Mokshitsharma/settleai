@@ -17,8 +17,8 @@ import {
   riskAssessments,
   verifications,
 } from "@/core/db/schema";
-import { DisputeProposal, assertProposalInvariant, type AcceptanceCriterion, type FaultClass } from "@/core/contracts";
-import { arbitrate, type ComplianceReport } from "@/core/agents/arbiter";
+import { DisputeProposal, assertProposalInvariant, type AcceptanceCriterion, type FaultClass, type IntentMandatePayload, type JobMandatePayload, type PaymentMandatePayload } from "@/core/contracts";
+import { arbitrate, type ComplianceReport, type MandateClause } from "@/core/agents/arbiter";
 import { forModel } from "@/core/checks/image";
 import { emitterFor, type EventHub } from "@/core/events/hub";
 import { newId } from "@/core/ids";
@@ -164,9 +164,10 @@ export class DisputeService {
   }
 
   /** Deterministic mandate-compliance report (spec §7.5): system truth the Arbiter cannot override. */
-  async complianceReport(disputeId: string, jobId: string): Promise<ComplianceReport> {
+  async complianceReport(disputeId: string, jobId: string, milestoneSeq?: number): Promise<ComplianceReport> {
     const [job] = await this.db.select().from(jobs).where(eq(jobs.id, jobId));
     const id = newId("cr");
+    const clauses = await this.mandateClauses(job, milestoneSeq);
     let checks: ComplianceReport["checks"] = [];
     const violations: string[] = [];
     if (job.intentMandateId) {
@@ -208,9 +209,39 @@ export class DisputeService {
         : violations.length
           ? `Out-of-mandate actions found: ${violations.join(", ")}.`
           : `Every agent action on this job passed the Mandate Guard (${checks.length} checks).`,
+      clauses,
     };
     await this.db.insert(complianceReports).values({ id, disputeId, jobId, resultJson: report });
     return report;
+  }
+
+  /** The signed clauses that govern this milestone, read from the job's stored mandates. */
+  private async mandateClauses(job: typeof jobs.$inferSelect, milestoneSeq?: number): Promise<MandateClause[]> {
+    const clauses: MandateClause[] = [];
+    const [pm] = await this.db.select().from(mandates).where(and(eq(mandates.type, "payment"), eq(mandates.subjectId, job.id))).orderBy(desc(mandates.createdAt)).limit(1);
+    if (pm) {
+      const conditions = (pm.payloadJson as PaymentMandatePayload).settlementConditions;
+      const cond = conditions.find((c) => c.milestoneSeq === milestoneSeq) ?? conditions[0];
+      if (cond) {
+        clauses.push({
+          ref: `mandate:payment:${pm.id}#settlementConditions[milestoneSeq=${cond.milestoneSeq}]`,
+          text: `Payment Mandate, milestone ${cond.milestoneSeq}: ${formatMinor(cond.amountMinor)} settles only when ${cond.requires.join(", ")} hold, under acceptance criteria ${cond.criteriaHash.slice(0, 12)}…`,
+        });
+      }
+    }
+    const [jm] = await this.db.select().from(mandates).where(and(eq(mandates.type, "job"), eq(mandates.subjectId, job.id))).orderBy(desc(mandates.createdAt)).limit(1);
+    if (jm) {
+      clauses.push({ ref: `mandate:job:${jm.id}#criteriaHash`, text: `Job Mandate: the signed acceptance criteria (${(jm.payloadJson as JobMandatePayload).criteriaHash.slice(0, 12)}…) define what counts as delivered.` });
+    }
+    if (job.intentMandateId) {
+      const [intent] = await this.db.select().from(mandates).where(eq(mandates.id, job.intentMandateId));
+      if (intent) {
+        const p = intent.payloadJson as IntentMandatePayload;
+        clauses.push({ ref: `mandate:intent:${intent.id}#scope`, text: `Intent Mandate: ${p.agent.name} may hire ${p.scope.categories.join(", ").replaceAll("_", " ")} up to ${formatMinor(p.scope.maxPerJobMinor)} per job.` });
+        clauses.push({ ref: `mandate:intent:${intent.id}#conditions.requireVerificationBeforeRelease`, text: "Intent Mandate: payment is released only after the work is verified." });
+      }
+    }
+    return clauses;
   }
 
   /** Runs the Arbiter (window closed, or a party asked to proceed). Low confidence or rejection escalates. */
@@ -220,7 +251,7 @@ export class DisputeService {
     const [ms] = await this.db.select().from(milestones).where(eq(milestones.id, d.dispute.milestoneId));
     const [job] = await this.db.select().from(jobs).where(eq(jobs.id, ms.jobId));
     const emit = emitterFor(this.events, `job:${job.id}`);
-    const report = await this.complianceReport(disputeId, job.id);
+    const report = await this.complianceReport(disputeId, job.id, ms.seq);
     emit("agent.step", `Compliance report: ${report.summary}`);
     const [ver] = await this.db.select().from(verifications).where(eq(verifications.milestoneId, ms.id)).orderBy(desc(verifications.createdAt)).limit(1);
     const [risk] = await this.db.select().from(riskAssessments).where(eq(riskAssessments.milestoneId, ms.id)).orderBy(desc(riskAssessments.createdAt)).limit(1);

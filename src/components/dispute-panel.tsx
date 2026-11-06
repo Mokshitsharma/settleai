@@ -17,6 +17,7 @@ export interface DisputeProps {
   evidence: { id: string; side: "payer" | "worker"; kind: string; content: string | null }[];
   proposal: (DisputeProposal & { payerResponse: string | null; workerResponse: string | null }) | null;
   reportSummary: string | null;
+  reportClauses: { ref: string; text: string }[];
   resolution: { releaseToWorkerMinor: number; refundToPayerMinor: number; faultClass: string; resolvedBy: string } | null;
 }
 
@@ -196,12 +197,27 @@ export function DisputePanel({ d, viewer }: { d: DisputeProps; viewer: "payer" |
             </dd>
             <dt className="text-ink-soft">Based on</dt>
             <dd>
-              {d.proposal.liability.basis.map((b) => (
+              {d.proposal.liability.basis.filter((b) => !b.startsWith("mandate:")).map((b) => (
                 <code key={b} className="mr-1.5 font-mono text-xs text-ink-soft">
                   {b}
                 </code>
               ))}
             </dd>
+            {d.proposal.liability.basis.some((b) => b.startsWith("mandate:")) ? (
+              <>
+                <dt className="text-ink-soft">Mandate clause</dt>
+                <dd>
+                  <ul className="space-y-1">
+                    {d.proposal.liability.basis.filter((b) => b.startsWith("mandate:")).map((b) => (
+                      <li key={b}>
+                        {d.reportClauses.find((c) => c.ref === b)?.text}
+                        <code className="block break-all font-mono text-xs text-ink-soft">{b}</code>
+                      </li>
+                    ))}
+                  </ul>
+                </dd>
+              </>
+            ) : null}
             {d.reportSummary ? (
               <>
                 <dt className="text-ink-soft">Mandate check</dt>

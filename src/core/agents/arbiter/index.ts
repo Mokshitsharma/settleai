@@ -7,6 +7,12 @@ import type { LlmContent } from "@/core/ports/llm";
 import { dataBlock, runAgent, type AgentDeps } from "../runtime";
 import { ARBITER_PROMPT_VERSION, ARBITER_SYSTEM_PROMPT } from "./prompt";
 
+/** A specific clause of a signed mandate, in a form the Arbiter can cite and a person can read. */
+export interface MandateClause {
+  ref: string; // mandate:<type>:<id>#<clause>
+  text: string;
+}
+
 export interface ComplianceReport {
   id: string;
   jobId: string;
@@ -16,6 +22,8 @@ export interface ComplianceReport {
   violations: string[];
   agentScopeViolation: boolean;
   summary: string;
+  /** The clauses of this job's signed mandates that govern the disputed milestone. System truth. */
+  clauses: MandateClause[];
 }
 
 export interface ArbiterInput {
@@ -79,6 +87,7 @@ export function enforceProposal(raw: DisputeProposal, input: ArbiterInput, injec
     p.requiresHuman = true;
   }
   if (!p.liability.bearer) p.liability.bearer = DEFAULT_BEARER[p.liability.faultClass];
+  p.liability.basis = citeMandateClauses(p.liability.basis, p.liability.faultClass, input.report);
   if (injected) {
     reasons.push("A statement contains instructions aimed at the arbiter");
     p.requiresHuman = true;
@@ -89,6 +98,24 @@ export function enforceProposal(raw: DisputeProposal, input: ArbiterInput, injec
   }
   p.reasonsIfHuman = [...new Set(reasons)];
   return DisputeProposalSchema.parse(p);
+}
+
+/**
+ * A liability finding must cite the mandate. Clauses the report does not contain are dropped (a model cannot invent
+ * one), and if no real clause remains the one governing this fault class is added. Clauses come first.
+ */
+export function citeMandateClauses(basis: string[], faultClass: FaultClass, report: ComplianceReport): string[] {
+  const known = new Set(report.clauses.map((c) => c.ref));
+  const cited = basis.filter((b) => b.startsWith("mandate:") && known.has(b));
+  const others = basis.filter((b) => !b.startsWith("mandate:"));
+  if (cited.length === 0 && report.clauses.length > 0) {
+    const governing =
+      faultClass === "AGENT_SCOPE_VIOLATION"
+        ? report.clauses.find((c) => c.ref.startsWith("mandate:intent:") && c.ref.endsWith("#scope"))
+        : report.clauses.find((c) => c.ref.startsWith("mandate:payment:"));
+    cited.push((governing ?? report.clauses[0]).ref);
+  }
+  return [...new Set([...cited, ...others])];
 }
 
 export async function arbitrate(deps: AgentDeps, input: ArbiterInput): Promise<{ proposal: DisputeProposal | null; model: string; traceId: string }> {

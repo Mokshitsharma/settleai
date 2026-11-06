@@ -2,7 +2,7 @@
 import { eq, sql } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { MockPayPalAdapter } from "@/core/adapters/paypal/mock";
-import { enforceProposal, type ArbiterInput } from "@/core/agents/arbiter";
+import { citeMandateClauses, enforceProposal, type ArbiterInput, type ComplianceReport } from "@/core/agents/arbiter";
 import { makeSamplePhoto } from "@/core/checks/sample-photos";
 import { loadConfig } from "@/core/config";
 import { createContainer, type Container } from "@/core/container";
@@ -104,6 +104,8 @@ describe("J3 disputes", () => {
     const dispute = await c.disputes.open({ milestoneId, userId: "usr_ravi", reason: "Not happy" });
     const p = (await c.disputes.proposeNow({ disputeId: dispute.id, userId: "usr_ravi" }))!.proposalJson as DisputeProposal;
     expect(p.liability.faultClass).toBe("PAYER_UNSUPPORTED_CLAIM");
+    expect(p.liability.basis[0]).toContain("#settlementConditions[milestoneSeq=");
+    expect(p.liability.basis[0].startsWith("mandate:payment:")).toBe(true);
     expect(p.proposal).toMatchObject({ releaseToWorkerMinor: 4000, refundToPayerMinor: 0 });
     const payerBefore = await trust("usr_ravi");
     await c.disputes.respond({ disputeId: dispute.id, userId: "usr_ravi", accept: true });
@@ -168,7 +170,7 @@ describe("arbiter invariants are enforced in code", () => {
     decision: null,
     statements: [],
     images: [],
-    report: { id: "cr_1", jobId: "j", agentInitiated: false, intentMandateId: null, checks: [], violations: [], agentScopeViolation: false, summary: "", ...over },
+    report: { id: "cr_1", jobId: "j", agentInitiated: false, intentMandateId: null, checks: [], violations: [], agentScopeViolation: false, summary: "", clauses: [], ...over },
     openedBy: "payer",
     reason: "x",
   });
@@ -198,5 +200,36 @@ describe("arbiter invariants are enforced in code", () => {
 
   it("injection in statements forces human review", () => {
     expect(enforceProposal(sampleDisputeProposal, input(), true).requiresHuman).toBe(true);
+  });
+});
+
+describe("liability findings cite the mandate", () => {
+  const report: ComplianceReport = {
+    id: "cr_1",
+    jobId: "job_1",
+    agentInitiated: true,
+    intentMandateId: "mnd_i",
+    checks: [],
+    violations: [],
+    agentScopeViolation: false,
+    summary: "",
+    clauses: [
+      { ref: "mandate:payment:mnd_p#settlementConditions[milestoneSeq=1]", text: "pay" },
+      { ref: "mandate:job:mnd_j#criteriaHash", text: "job" },
+      { ref: "mandate:intent:mnd_i#scope", text: "scope" },
+    ],
+  };
+
+  it("adds the governing clause when the model cites none, keeping criteria and evidence", () => {
+    expect(citeMandateClauses(["criterion:c1", "evidence:e1"], "WORKER_PARTIAL", report)).toEqual(["mandate:payment:mnd_p#settlementConditions[milestoneSeq=1]", "criterion:c1", "evidence:e1"]);
+  });
+
+  it("cites the scope clause for an agent scope violation", () => {
+    expect(citeMandateClauses([], "AGENT_SCOPE_VIOLATION", report)).toEqual(["mandate:intent:mnd_i#scope"]);
+  });
+
+  it("drops a clause the model made up and keeps real ones", () => {
+    expect(citeMandateClauses(["mandate:intent:fake#scope", "mandate:job:mnd_j#criteriaHash", "criterion:c1"], "WORKER_PARTIAL", report)).toEqual(["mandate:job:mnd_j#criteriaHash", "criterion:c1"]);
+    expect(citeMandateClauses(["mandate:intent:fake#scope"], "WORKER_PARTIAL", report)).toEqual(["mandate:payment:mnd_p#settlementConditions[milestoneSeq=1]"]);
   });
 });
