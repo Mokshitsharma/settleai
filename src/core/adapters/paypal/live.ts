@@ -56,6 +56,23 @@ const PayoutItemResponse = z.object({
   transaction_status: z.string(),
   errors: z.object({ name: z.string().optional(), message: z.string().optional() }).optional(),
 });
+const PayoutBatchDetails = z.object({
+  items: z
+    .array(
+      z.object({
+        payout_item_id: z.string(),
+        transaction_status: z.string().optional(),
+        errors: z.object({ name: z.string().optional(), message: z.string().optional() }).optional(),
+      }),
+    )
+    .optional(),
+});
+const CaptureDetails = z.object({
+  id: z.string(),
+  status: z.string(),
+  amount: z.object({ value: z.string() }),
+  supplementary_data: z.object({ related_ids: z.object({ order_id: z.string().optional() }).optional() }).optional(),
+});
 const RefundResponse = z.object({ id: z.string(), status: z.enum(["COMPLETED", "PENDING", "FAILED", "CANCELLED"]) });
 const VerifyResponse = z.object({ verification_status: z.enum(["SUCCESS", "FAILURE"]) });
 const WebhookBody = z.object({ id: z.string(), event_type: z.string(), resource: z.record(z.string(), z.unknown()) });
@@ -152,6 +169,21 @@ export class PayPalAdapter implements PaymentsPort {
             amount: { currency_code: input.currency, value: toPayPalValue(input.amountMinor) },
           },
         ],
+        ...(input.returnUrl
+          ? {
+              payment_source: {
+                paypal: {
+                  experience_context: {
+                    brand_name: "SettleAI",
+                    shipping_preference: "NO_SHIPPING",
+                    user_action: "PAY_NOW",
+                    return_url: input.returnUrl,
+                    cancel_url: input.cancelUrl ?? input.returnUrl,
+                  },
+                },
+              },
+            }
+          : {}),
       },
       input.requestId,
     );
@@ -206,6 +238,30 @@ export class PayPalAdapter implements PaymentsPort {
       status: mapPayoutStatus(item.transaction_status),
       failureReason: item.errors?.name ?? item.errors?.message,
       raw,
+    };
+  }
+
+  async getPayoutBatch(batchId: string): Promise<PayoutResult> {
+    const raw = await this.call("GET", `/v1/payments/payouts/${encodeURIComponent(batchId)}`);
+    const batch = PayoutBatchDetails.parse(raw);
+    const item = batch.items?.[0];
+    return {
+      batchId,
+      itemId: item?.payout_item_id,
+      status: item ? mapPayoutStatus(item.transaction_status ?? "") : "PENDING",
+      failureReason: item?.errors?.name ?? item?.errors?.message,
+      raw,
+    };
+  }
+
+  async getCapture(captureId: string) {
+    const raw = await this.call("GET", `/v2/payments/captures/${encodeURIComponent(captureId)}`);
+    const capture = CaptureDetails.parse(raw);
+    return {
+      captureId: capture.id,
+      status: capture.status,
+      amountMinor: fromPayPalValue(capture.amount.value),
+      orderId: capture.supplementary_data?.related_ids?.order_id,
     };
   }
 

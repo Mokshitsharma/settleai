@@ -3,6 +3,7 @@ import { z } from "zod";
 // Every variable is optional: the app must start in MOCK mode with zero secrets set.
 const EnvSchema = z.object({
   APP_MODE: z.enum(["MOCK", "LIVE"]).optional(),
+  APP_URL: z.string().optional(),
   DATABASE_URL: z.string().optional(),
   PGLITE_DATA_DIR: z.string().optional(),
   PAYPAL_ENV: z.enum(["sandbox", "live"]).default("sandbox"),
@@ -43,7 +44,8 @@ export interface AppConfig extends Env {
 const DEFAULT_MODELS = { xai: "grok-4.7", groq: "qwen/qwen3.8-27b", anthropic: "claude-sonnet-5-5", stub: "stub" } as const;
 
 export function loadConfig(source: Record<string, string | undefined> = process.env): AppConfig {
-  const env = EnvSchema.parse(source);
+  // An empty value (KEY= in a copied .env.example) means unset, so the default applies.
+  const env = EnvSchema.parse(Object.fromEntries(Object.entries(source).filter(([, v]) => v !== "")));
   const hasPayPal = Boolean(env.PAYPAL_CLIENT_ID && env.PAYPAL_CLIENT_SECRET);
   const paymentsLive = env.APP_MODE === "MOCK" ? false : hasPayPal;
   if (env.APP_MODE === "LIVE" && !hasPayPal) throw new Error("APP_MODE=LIVE requires PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET");

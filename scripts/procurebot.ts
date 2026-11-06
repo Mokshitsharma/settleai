@@ -66,11 +66,14 @@ async function scripted(client: Client) {
   say("agent", `Done. Ravi: please review and fund the delivery with PayPal at ${confirm.approvalUrl}. The AC repair is outside what you allowed me to buy.`);
 }
 
-/** Live mode: Grok picks the tools (OpenAI-compatible function calling on api.x.ai). */
+/** Live mode: a real model picks the tools (OpenAI-compatible function calling on Groq or xAI). */
 async function live(client: Client) {
-  const key = process.env.XAI_API_KEY;
-  if (!key) throw new Error("PROCUREBOT_MODE=live needs XAI_API_KEY");
-  const model = process.env.PROCUREBOT_MODEL ?? process.env.LLM_MODEL ?? "grok-4.7";
+  const useXai = process.env.LLM_PROVIDER === "xai" || !process.env.GROQ_API_KEY;
+  const key = useXai ? process.env.XAI_API_KEY : process.env.GROQ_API_KEY;
+  if (!key) throw new Error("PROCUREBOT_MODE=live needs GROQ_API_KEY or XAI_API_KEY");
+  const endpoint = useXai ? "https://api.x.ai/v1/chat/completions" : "https://api.groq.com/openai/v1/chat/completions";
+  const model = process.env.PROCUREBOT_MODEL ?? (useXai ? "grok-4.7" : "openai/gpt-oss-120b");
+  say("agent", `Model: ${model}`);
   const { tools } = await client.listTools();
   const fnTools = tools.map((t) => ({ type: "function", function: { name: t.name, description: t.description ?? "", parameters: t.inputSchema } }));
   const messages: Record<string, unknown>[] = [
@@ -84,12 +87,12 @@ async function live(client: Client) {
   ];
   say("agent", `Task: ${TASK}`);
   for (let step = 0; step < 12; step++) {
-    const res = await fetch("https://api.x.ai/v1/chat/completions", {
+    const res = await fetch(endpoint, {
       method: "POST",
       headers: { "content-type": "application/json", authorization: `Bearer ${key}` },
       body: JSON.stringify({ model, temperature: 0.2, messages, tools: fnTools, tool_choice: "auto" }),
     });
-    if (!res.ok) throw new Error(`xAI request failed with HTTP ${res.status}`);
+    if (!res.ok) throw new Error(`Model request failed with HTTP ${res.status}: ${(await res.text()).slice(0, 300)}`);
     const data = (await res.json()) as { choices: { message: { content: string | null; tool_calls?: { id: string; function: { name: string; arguments: string } }[] } }[] };
     const msg = data.choices[0].message;
     messages.push(msg as unknown as Record<string, unknown>);

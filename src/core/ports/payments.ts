@@ -9,6 +9,9 @@ export interface CreateOrderInput {
   customId: string; // smd_<jobShortId>_<16 hex of PaymentMandate hash> (≤255 chars)
   invoiceId: string; // funding id (≤127 chars, unique per merchant)
   description: string;
+  /** Where PayPal sends the buyer after approving or cancelling (LIVE checkout). */
+  returnUrl?: string;
+  cancelUrl?: string;
 }
 
 export interface OrderResult {
@@ -86,6 +89,10 @@ export interface PaymentsPort {
   captureOrder(orderId: string, requestId: string): Promise<CaptureResult>;
   createPayout(input: CreatePayoutInput): Promise<PayoutResult>;
   getPayoutItem(itemId: string): Promise<PayoutResult>;
+  /** Item status for a batch; used when a payout webhook has not arrived. */
+  getPayoutBatch(batchId: string): Promise<PayoutResult>;
+  /** Capture status from PayPal; used when the capture webhook has not arrived. */
+  getCapture(captureId: string): Promise<{ captureId: string; status: string; amountMinor: number; orderId?: string }>;
   refundCapture(input: RefundInput): Promise<RefundResult>;
   /** Returns the parsed event only when the signature verifies; otherwise null. */
   verifyWebhook(headers: Record<string, string>, body: string): Promise<WebhookEvent | null>;

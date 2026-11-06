@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { JetBrains_Mono, Schibsted_Grotesk } from "next/font/google";
 import { currentUser } from "@/core/auth/session";
-import { ModeBadge } from "@/components/mode-badge";
+import { ModeBadge, StubBanner } from "@/components/mode-badge";
 import { RoleSwitcher } from "@/components/role-switcher";
 import "./globals.css";
 
@@ -59,6 +59,7 @@ export default async function RootLayout({ children }: LayoutProps<"/">) {
             </div>
           </div>
         </header>
+        <StubBanner />
         <div className="mx-auto w-full max-w-[1120px] flex-1 px-4 py-8 sm:px-6">{children}</div>
       </body>
     </html>

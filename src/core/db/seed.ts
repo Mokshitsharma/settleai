@@ -16,7 +16,12 @@ export const SEED_USERS = [
 
 export async function seed(db: Db): Promise<void> {
   await db.transaction(async (tx) => {
-    await tx.insert(users).values(SEED_USERS.map((u) => ({ ...u }))).onConflictDoNothing();
+    // SANDBOX_WORKER_EMAIL points payouts at a real PayPal sandbox account in LIVE mode.
+    const sandboxWorker = process.env.SANDBOX_WORKER_EMAIL;
+    await tx
+      .insert(users)
+      .values(SEED_USERS.map((u) => ({ ...u, paypalEmail: u.paypalEmail && sandboxWorker ? sandboxWorker : u.paypalEmail })))
+      .onConflictDoNothing();
     const policy = Policy.parse(defaultPolicy);
     await tx
       .insert(policies)

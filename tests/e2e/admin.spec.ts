@@ -3,6 +3,7 @@ import { as, shot } from "./helpers";
 
 test("admin console: overview with history, AG Grid tables, evaluation and a new policy version", async ({ page }) => {
   await page.goto("/");
+  await expect(page.getByText("AI agents are running on the offline stub")).toBeVisible();
   await as(page, "Admin");
   await page.goto("/admin");
   await expect(page.getByRole("heading", { name: "Overview" })).toBeVisible();

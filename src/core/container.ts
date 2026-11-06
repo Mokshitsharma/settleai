@@ -171,7 +171,7 @@ export async function createContainer(
     evidenceWindowSeconds: cfg.DISPUTE_EVIDENCE_WINDOW_SECONDS,
   });
   const receipts = new ReceiptService(db, jobs, attestations, keys, clock);
-  const reconciliation = new ReconciliationService(db, guardedPayments, ledger, treasury);
+  const reconciliation = new ReconciliationService(db, guardedPayments, ledger, treasury, webhooks);
 
   function verifyInBackground(milestoneId: string): void {
     void verification.run(milestoneId).catch((err) => console.error("verification failed", milestoneId, err));
@@ -235,6 +235,10 @@ export function getContainer(): Promise<Container> {
         .then(() => c.outbox.runDue())
         .catch((err) => console.error("release timer", err));
     }, 2000);
+    // LIVE only: webhook safety net. Mock events are delivered by the timer above.
+    if (c.payments.mode === "LIVE") {
+      setInterval(() => void c.reconciliation.repairInFlight().catch((err) => console.error("repair timer", err)), 10_000);
+    }
     return c;
   }));
 }

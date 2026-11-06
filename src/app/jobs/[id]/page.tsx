@@ -23,9 +23,10 @@ const CHECK_LABEL: Record<AcceptanceCriterion["check"], string> = {
   human: "Checked by a person",
 };
 
-export default async function JobPage({ params }: PageProps<"/jobs/[id]">) {
+export default async function JobPage({ params, searchParams }: PageProps<"/jobs/[id]">) {
   const user = await pageUser();
   const { id } = await params;
+  const query = await searchParams;
   const c = await getContainer();
   // Snapshot events BEFORE reading the job: anything newer than the page's data then arrives over the
   // stream as unseen and triggers a refresh (reading in the other order can miss an update).
@@ -83,7 +84,7 @@ export default async function JobPage({ params }: PageProps<"/jobs/[id]">) {
           <MoneyStrip {...money} expectedMinor={job.totalMinor + job.feeMinor} />
           {funding?.paypalCaptureId ? (
             <p className="mt-3 text-xs text-ink-faint">
-              PayPal capture <Hash value={funding.paypalCaptureId} chars={20} /> confirmed by webhook
+              PayPal capture <Hash value={funding.paypalCaptureId} chars={20} /> confirmed by PayPal
             </p>
           ) : null}
         </Panel>
@@ -180,7 +181,13 @@ export default async function JobPage({ params }: PageProps<"/jobs/[id]">) {
         {isPayer && (job.status === "SCOPED" || job.status === "AWAITING_FUNDING") ? (
           <Panel className="p-5">
             <h2 className="mb-3 font-semibold">Fund this job</h2>
-            <FundPanel jobId={job.id} totalMinor={job.totalMinor} feeMinor={job.feeMinor} />
+            <FundPanel
+              jobId={job.id}
+              totalMinor={job.totalMinor}
+              feeMinor={job.feeMinor}
+              returnedOrderId={query.paypal === "approved" && typeof query.token === "string" ? query.token : undefined}
+              captured={d.funding.some((f) => f.status === "CAPTURED")}
+            />
           </Panel>
         ) : null}
         {user.role === "worker" && job.status === "FUNDED" ? (

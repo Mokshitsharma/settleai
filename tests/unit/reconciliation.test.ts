@@ -85,4 +85,26 @@ describe("reconciliation (F20)", () => {
     expect(report.mismatches.filter((m) => m.kind === "payout_lookup_failed")).toEqual([]);
     expect(report.unverifiable).toBeGreaterThan(0);
   });
+
+  it("repairInFlight confirms a captured job when the webhook never arrived, once", async () => {
+    const job = await c.jobs.createFromSpec({ payerId: "usr_ravi", spec: sampleJobSpec, createdBy: "user:usr_ravi" });
+    const order = await c.funding.start({ jobId: job.id, payerId: "usr_ravi" });
+    mock.approveOrder(order.orderId);
+    await c.funding.capture({ jobId: job.id, payerId: "usr_ravi", orderId: order.orderId });
+    mock.drainOutbox(); // the webhook is lost
+    expect((await c.jobs.getRow(job.id))!.status).toBe("AWAITING_FUNDING");
+    expect(await c.reconciliation.repairInFlight()).toHaveLength(1);
+    expect((await c.jobs.getRow(job.id))!.status).toBe("FUNDED");
+    expect(await c.reconciliation.repairInFlight()).toEqual([]);
+    expect((await c.jobs.detail(job.id))!.money.fundedMinor).toBe(order.amountMinor);
+    await expect(c.ledger.checkInvariants()).resolves.toEqual([]);
+  });
+
+  it("repairInFlight applies a payout result when the webhook never arrived", async () => {
+    const p = await paidMilestone();
+    mock.drainOutbox(); // the payout webhook is lost, so SettleAI still sees it in flight (as with real, asynchronous PayPal)
+    await c.dbHandle.db.update(payouts).set({ status: "PROCESSING" }).where(eq(payouts.id, p.id));
+    await c.reconciliation.repairInFlight();
+    expect((await c.dbHandle.db.select().from(payouts).where(eq(payouts.id, p.id)))[0].status).toBe("SUCCEEDED");
+  });
 });

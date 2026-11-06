@@ -4,6 +4,8 @@
 import { and, eq, inArray } from "drizzle-orm";
 import type { Db } from "@/core/db/client";
 import { fundingOrders, ledgerTxns, payouts, refunds } from "@/core/db/schema";
+import { toPayPalValue } from "@/core/ports/payments";
+import type { WebhookService } from "./webhooks";
 import type { PaymentsPort } from "@/core/ports/payments";
 import type { LedgerService } from "./ledger";
 import type { TreasuryService } from "./treasury";
@@ -23,7 +25,41 @@ export class ReconciliationService {
     private readonly payments: PaymentsPort,
     private readonly ledger: LedgerService,
     private readonly treasury: TreasuryService,
+    private readonly webhooks: WebhookService,
   ) {}
+
+  /**
+   * Webhooks can be late, and a sleeping free server misses them entirely. This asks PayPal directly about captures and
+   * payouts still in flight and applies the answer through the same state-machine-safe paths. Returns what changed.
+   */
+  async repairInFlight(): Promise<string[]> {
+    const repaired: string[] = [];
+    const captured = await this.db.select().from(fundingOrders).where(eq(fundingOrders.status, "CAPTURED"));
+    for (const f of captured) {
+      if (!f.paypalCaptureId) continue;
+      try {
+        const remote = await this.payments.getCapture(f.paypalCaptureId);
+        if (remote.status !== "COMPLETED") continue;
+        const outcome = await this.webhooks.confirmCapture(remote.captureId, f.paypalOrderId ?? remote.orderId, toPayPalValue(remote.amountMinor));
+        if (outcome === "processed") repaired.push(`funding ${f.id}: confirmed from PayPal`);
+      } catch (err) {
+        console.error("capture status check failed", f.id, (err as Error).message);
+      }
+    }
+    const inFlight = await this.db.select().from(payouts).where(inArray(payouts.status, ["PROCESSING", "PENDING"]));
+    for (const p of inFlight) {
+      if (!p.paypalBatchId) continue;
+      try {
+        const remote = await this.payments.getPayoutBatch(p.paypalBatchId);
+        if (remote.status === "PENDING" && (p.paypalItemId || !remote.itemId)) continue;
+        const applied = await this.treasury.applyPayoutStatus({ payoutId: p.id, status: remote.status, itemId: remote.itemId, failureReason: remote.failureReason }, "system:reconciliation");
+        if (applied === "applied") repaired.push(`payout ${p.id}: ${p.status} -> ${remote.status}`);
+      } catch (err) {
+        console.error("payout status check failed", p.id, (err as Error).message);
+      }
+    }
+    return repaired;
+  }
 
   async run(): Promise<ReconciliationReport> {
     const mismatches: ReconciliationReport["mismatches"] = [];

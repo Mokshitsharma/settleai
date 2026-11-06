@@ -31,6 +31,7 @@ export default async function Home() {
           <div className="mt-8">
             <p className="mb-3 text-sm font-medium text-ink-soft">Try the demo as</p>
             <RoleSwitcher size="large" />
+            <p className="mt-3 text-sm text-ink-soft">First load may take ~50s while the free server wakes up.</p>
           </div>
         </div>
 

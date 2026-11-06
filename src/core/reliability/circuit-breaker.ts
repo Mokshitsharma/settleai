@@ -76,7 +76,7 @@ export class CircuitBreaker {
   }
 }
 
-const GUARDED: readonly (keyof PaymentsPort)[] = ["createOrder", "captureOrder", "createPayout", "getPayoutItem", "refundCapture", "verifyWebhook"];
+const GUARDED: readonly (keyof PaymentsPort)[] = ["createOrder", "captureOrder", "createPayout", "getPayoutItem", "getPayoutBatch", "getCapture", "refundCapture", "verifyWebhook"];
 
 /**
  * Wraps every network method of a PaymentsPort in the breaker. Other members (mode, mock helpers) pass

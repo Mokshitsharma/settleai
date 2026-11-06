@@ -1,14 +1,14 @@
 # Render blueprint (spec §17). Deploy: Render dashboard > New > Blueprint > this repo.
 # Secrets marked sync:false are entered in the dashboard and never committed.
 # Free plan: the embedded database (PGlite) runs inside the service, and migrations and demo data run on every start,
-# so the demo starts fresh after each restart. The free service sleeps when idle; the first visit wakes it.
+# wiped and reseeded on every boot, so a restart always gives a clean demo. The free service sleeps when idle; the first visit wakes it.
 services:
   - type: web
     name: settleai
     runtime: node
     plan: free
     buildCommand: corepack enable && pnpm install --frozen-lockfile --prod=false && pnpm build
-    startCommand: pnpm db:migrate && pnpm db:seed && pnpm start
+    startCommand: pnpm db:reset && pnpm start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_VERSION
@@ -19,7 +19,9 @@ services:
         generateValue: true
       - key: API_KEY_PEPPER
         generateValue: true
-      - key: PROCUREBOT_API_KEY # set in the dashboard; use the same value as SETTLEAI_API_KEY in the MCP client
+      - key: PROCUREBOT_API_KEY # optional; unset keeps the agent API closed. Use the same value as SETTLEAI_API_KEY in an MCP client
+        sync: false
+      - key: SANDBOX_WORKER_EMAIL # the PayPal sandbox account that receives payouts
         sync: false
       - key: PLATFORM_SIGNING_KEY_JWK
         sync: false

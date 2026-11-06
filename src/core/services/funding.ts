@@ -35,7 +35,7 @@ export class FundingService {
   ) {}
 
   /** Creates the PayPal order for milestones total + platform fee. Idempotent per attempt. */
-  async start(args: { jobId: string; payerId: string }) {
+  async start(args: { jobId: string; payerId: string; baseUrl?: string }) {
     const job = await this.jobs.getRow(args.jobId);
     if (!job) throw new JobError("NOT_FOUND", "Job not found");
     if (job.payerId !== args.payerId) throw new JobError("FORBIDDEN", "Only the payer can fund this job");
@@ -95,6 +95,8 @@ export class FundingService {
       customId,
       invoiceId: fundingId,
       description: `SettleAI escrow: ${job.title}`,
+      returnUrl: args.baseUrl ? `${args.baseUrl}/jobs/${job.id}?paypal=approved` : undefined,
+      cancelUrl: args.baseUrl ? `${args.baseUrl}/jobs/${job.id}?paypal=cancelled` : undefined,
     });
     await this.db.transaction(async (tx) => {
       await tx

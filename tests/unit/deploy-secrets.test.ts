@@ -93,3 +93,13 @@ describe("ProcureBot demo key", () => {
     await expect(authenticateAgent(c, `Bearer other-${KEY}`)).rejects.toMatchObject({ code: "UNAUTHENTICATED" });
   });
 });
+
+describe("config", () => {
+  it("treats an empty value (copied .env.example) as unset, so MOCK mode and defaults still apply", () => {
+    const cfg = loadConfig({ PAYPAL_CLIENT_ID: "", PAYPAL_CLIENT_SECRET: "", PLATFORM_FEE_BPS: "", CHALLENGE_WINDOW_SECONDS: "", KEY_MODE: "", LLM_PROVIDER: "" });
+    expect(cfg.mode).toBe("MOCK");
+    expect(cfg.PLATFORM_FEE_BPS).toBe(200);
+    expect(cfg.CHALLENGE_WINDOW_SECONDS).toBe(86400);
+    expect(cfg.llmProvider).toBe("stub");
+  });
+});

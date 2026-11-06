@@ -103,6 +103,11 @@ export class WebhookService {
     }
   }
 
+  /** Same state-machine-safe path as the webhook, for when PayPal's API says a capture completed first. */
+  confirmCapture(captureId: string, orderId: string | undefined, value: string): Promise<WebhookOutcome> {
+    return this.onCaptureCompleted(captureId, orderId, value);
+  }
+
   private async onCaptureCompleted(captureId: string, orderId: string | undefined, value: string | undefined): Promise<WebhookOutcome> {
     const result = await this.db.transaction(async (tx) => {
       const [funding] = await tx

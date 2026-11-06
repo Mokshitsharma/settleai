@@ -127,6 +127,17 @@ export class MockPayPalAdapter implements PaymentsPort {
     return payout;
   }
 
+  async getPayoutBatch(batchId: string): Promise<PayoutResult> {
+    for (const payout of this.payouts.values()) if (payout.batchId === batchId) return payout;
+    throw Object.assign(new Error(`Unknown mock payout batch ${batchId}`), { retryable: false });
+  }
+
+  async getCapture(captureId: string) {
+    const capture = this.captures.get(captureId);
+    if (!capture) throw Object.assign(new Error(`Unknown mock capture ${captureId}`), { retryable: false });
+    return { captureId, status: "COMPLETED", amountMinor: capture.amountMinor };
+  }
+
   async refundCapture(input: RefundInput): Promise<RefundResult> {
     return this.idempotent(input.requestId, () => {
       const capture = this.captures.get(input.captureId);

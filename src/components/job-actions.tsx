@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { formatMinor } from "@/core/money";
 import { api } from "@/lib/api";
 import { Button } from "./ui";
@@ -18,8 +18,23 @@ interface FundResponse {
  * Funding: create the PayPal order, have the buyer approve it, then capture. In MOCK mode a clearly
  * labelled simulated PayPal sheet stands in for the popup; in LIVE mode the buyer approves on PayPal sandbox.
  */
-export function FundPanel({ jobId, totalMinor, feeMinor }: { jobId: string; totalMinor: number; feeMinor: number }) {
+export function FundPanel({
+  jobId,
+  totalMinor,
+  feeMinor,
+  returnedOrderId,
+  captured,
+}: {
+  jobId: string;
+  totalMinor: number;
+  feeMinor: number;
+  /** Set when PayPal sent the buyer back after approving: capture right away. */
+  returnedOrderId?: string;
+  /** PayPal captured the money and SettleAI is waiting for PayPal's confirmation. */
+  captured?: boolean;
+}) {
   const router = useRouter();
+  const captureStarted = useRef(false);
   const [order, setOrder] = useState<FundResponse | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -34,6 +49,31 @@ export function FundPanel({ jobId, totalMinor, feeMinor }: { jobId: string; tota
     } finally {
       setBusy(false);
     }
+  }
+
+  useEffect(() => {
+    if (!returnedOrderId || captured || captureStarted.current) return;
+    captureStarted.current = true;
+    void run(async () => {
+      await api(`/api/jobs/${jobId}/fund/capture`, { body: { orderId: returnedOrderId } });
+      router.replace(`/jobs/${jobId}`);
+      router.refresh();
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [returnedOrderId, captured, jobId]);
+
+  useEffect(() => {
+    if (!captured) return;
+    const timer = setInterval(() => router.refresh(), 3000);
+    return () => clearInterval(timer);
+  }, [captured, router]);
+
+  if (captured || (returnedOrderId && !error)) {
+    return (
+      <p role="status" className="text-sm">
+        {captured ? "PayPal captured the payment. Waiting for PayPal to confirm it…" : "Payment approved. Capturing with PayPal…"}
+      </p>
+    );
   }
 
   const start = () => run(async () => setOrder(await api<FundResponse>(`/api/jobs/${jobId}/fund`, { method: "POST" })));
@@ -79,12 +119,10 @@ export function FundPanel({ jobId, totalMinor, feeMinor }: { jobId: string; tota
         </div>
       ) : (
         <div className="mt-4 space-y-2">
-          <a href={order.approveUrl} target="_blank" rel="noreferrer" className="block rounded-md bg-[#ffc439] px-4 py-2 text-center text-sm font-semibold text-ink">
+          <a href={order.approveUrl} className="block rounded-md bg-[#ffc439] px-4 py-2 text-center text-sm font-semibold text-ink">
             Approve on PayPal sandbox
           </a>
-          <Button variant="secondary" onClick={approveAndCapture} disabled={busy} className="w-full">
-            {busy ? "Capturing…" : "I approved it, capture now"}
-          </Button>
+          <p className="text-xs text-ink-soft">You come back here after approving, and the payment is captured automatically.</p>
         </div>
       )}
       {error ? <p role="alert" className="mt-3 text-sm text-deny">{error}</p> : null}
