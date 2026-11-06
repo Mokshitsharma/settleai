@@ -12,6 +12,7 @@ const EnvSchema = z.object({
   PAYPAL_WEBHOOK_ID: z.string().optional(),
   LLM_PROVIDER: z.enum(["xai", "groq", "anthropic", "stub"]).optional(),
   LLM_MODEL: z.string().optional(),
+  LLM_TEXT_MODEL: z.string().optional(),
   XAI_API_KEY: z.string().optional(),
   GROQ_API_KEY: z.string().optional(),
   ANTHROPIC_API_KEY: z.string().optional(),

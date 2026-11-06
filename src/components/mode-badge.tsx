@@ -1,3 +1,4 @@
+import { GROQ_DEFAULT_TEXT_MODEL } from "@/core/adapters/llm/groq";
 import { config } from "@/core/config";
 
 /** Full-width notice whenever AI answers are canned, so a stub result is never mistaken for a real model's. */
@@ -29,7 +30,7 @@ export function ModeBadge() {
         title="Model used by the AI agents"
         className={cfg.llmProvider === "stub" ? "rounded-full bg-hold-wash px-2.5 py-1 font-semibold text-hold" : "hidden text-ink-faint sm:inline"}
       >
-        {cfg.llmProvider === "stub" ? "Offline AI stub" : `AI: ${cfg.llmModel}`}
+        {cfg.llmProvider === "stub" ? "Offline AI stub" : `AI: ${cfg.llmModel}${cfg.llmProvider === "groq" ? ` + ${cfg.LLM_TEXT_MODEL ?? GROQ_DEFAULT_TEXT_MODEL}` : ""}`}
       </span>
     </span>
   );

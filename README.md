@@ -44,14 +44,15 @@ pnpm dev                 # terminal 1
 pnpm procurebot          # terminal 2: an agent hires through the MCP server; one request is denied, one is created
 ```
 
-Any MCP client can connect; see [src/mcp/README.md](src/mcp/README.md). Agents can create and track jobs but can never
+`pnpm procurebot` runs the scripted agent; `PROCUREBOT_MODE=live` lets a real model choose the tools. Any MCP client can connect; see [src/mcp/README.md](src/mcp/README.md). Agents can create and track jobs but can never
 fund or pay.
 
 ### Live mode (optional)
 
 ```bash
 # .env.local
-XAI_API_KEY=...            # xAI Grok for the scoping, verification and arbiter agents (and ProcureBot live mode)
+GROQ_API_KEY=...           # real AI: Qwen vision for verification, gpt-oss for scoping and the arbiter (or XAI_API_KEY for Grok)
+SANDBOX_WORKER_EMAIL=...   # the PayPal sandbox account that receives payouts
 PAYPAL_CLIENT_ID=...       # PayPal sandbox: switches payments to LIVE (sandbox)
 PAYPAL_CLIENT_SECRET=...
 PAYPAL_WEBHOOK_ID=...
@@ -111,7 +112,7 @@ All agent output is Zod-validated, retried once with the error, then falls back 
 ## Evidence it works
 
 <!-- RESULTS:START -->
-Evaluation across 28 automated scenarios (28/28 passed, 2 skipped). 95% exact Clopper-Pearson confidence bounds. Run `20261027-165621-settleai-eval`.
+Evaluation across 28 automated scenarios on the offline AI stub (28/28 passed, 2 skipped). 95% exact Clopper-Pearson confidence bounds. Run `20261027-165621-settleai-eval`.
 
 | Metric | Measured | 95% Confidence Interval | Sample Size |
 |---|---|---|---|
@@ -126,7 +127,7 @@ Full numbers: `results/runs/20261027-165621-settleai-eval/report.md` and `metric
 <!-- RESULTS:END -->
 
 
-`pnpm eval` runs the spec's 30 scenarios through the real services ([eval/report.json](eval/report.json), also at **Admin > Evaluation**):
+`pnpm eval` runs the spec's 30 scenarios through the real services, **on the offline AI stub** so results are repeatable. They prove the rules, ledger, mandates and receipts, not model quality; a banner in the app says whenever the stub is in use ([eval/report.json](eval/report.json), also at **Admin > Evaluation**):
 
 | Metric | Result |
 |---|---|
@@ -137,7 +138,7 @@ Full numbers: `results/runs/20261027-165621-settleai-eval/report.md` and `metric
 | Prompt injection detected | **100%** |
 | Dispute splits that did not add up | **0** |
 
-Plus 142 unit and integration tests, 10 Playwright journeys (including a WCAG AA audit and a phone-sized run),
+Plus 450+ unit and integration tests, 10 Playwright journeys (including a WCAG AA audit and a phone-sized run),
 failure drills (webhook storms, PayPal outage, LLM outage, database restart), and `pnpm demo:smoke`.
 
 ```bash
@@ -159,7 +160,7 @@ pnpm verify-receipt receipt.json --platform-keys keys.json   # offline receipt c
 - A production system holding customer funds needs licensing or a regulated partner and a third-party security review.
   See [docs/SECURITY-REVIEW.md](docs/SECURITY-REVIEW.md).
 - **Digital document deliverable uploads (scenarios S07/S08 in eval/scenarios.json) are not built:** Only physical delivery proofs (photos with GPS/EXIF metadata and perceptual hashes) are implemented in the current milestone verification engine. Document/PDF section parsing is not built.
-- **Load test & capacity numbers are unmeasured estimates:** k6 was not executed in this environment; all throughput, capacity and latency figures in docs/architecture.md are back-of-the-envelope estimates, not measured benchmarks. Concurrency safety is verified functionally via 50 concurrent racing webhook tests in 	ests/failure_drills/webhook-storms.test.ts.
+- **Load test & capacity numbers are unmeasured estimates:** k6 was not executed in this environment; all throughput, capacity and latency figures in docs/architecture.md are back-of-the-envelope estimates, not measured benchmarks. Concurrency safety is verified functionally by the webhook storm in `tests/unit/drills.test.ts` and the 50-way spend-cap race in `tests/unit/mandates.test.ts`.
 
 ## Repository map
 
@@ -168,7 +169,7 @@ pnpm verify-receipt receipt.json --platform-keys keys.json   # offline receipt c
 | `src/core/services` | Jobs, funding, treasury, ledger, verification, releases, disputes, mandates, Mandate Guard, receipts |
 | `src/core/agents` | Scoping, verification and arbiter agents (prompts, schemas, offline stubs) |
 | `src/core/mandates`, `src/core/verifier` | Canonical JSON, ES256 JWS, proof chain, offline receipt verifier |
-| `src/core/adapters` | PayPal (live REST + mock), xAI Grok, storage |
+| `src/core/adapters` | PayPal (live REST + mock), Groq, xAI Grok, storage |
 | `src/mcp` | MCP server for external agents |
 | `src/app` | Next.js pages and API routes |
 | `eval`, `tests` | Scenario evaluation, unit, integration and Playwright tests |

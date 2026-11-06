@@ -87,7 +87,14 @@ export function enforceProposal(raw: DisputeProposal, input: ArbiterInput, injec
     p.requiresHuman = true;
   }
   if (!p.liability.bearer) p.liability.bearer = DEFAULT_BEARER[p.liability.faultClass];
-  p.liability.basis = citeMandateClauses(p.liability.basis, p.liability.faultClass, input.report);
+  const basis = citeMandateClauses(p.liability.basis, p.liability.faultClass, input.report);
+  // A finding always names the criteria and evidence too, using only ids that exist.
+  const criterionIds = new Set(input.milestone.criteria.map((c) => `criterion:${c.id}`));
+  const evidenceIds = new Set([...input.statements, ...input.images].map((e) => `evidence:${e.evidenceId}`));
+  const real = basis.filter((b) => b.startsWith("mandate:") || b.startsWith("compliance:") || criterionIds.has(b) || evidenceIds.has(b));
+  if (![...real].some((b) => b.startsWith("criterion:")) && criterionIds.size) real.push([...criterionIds][0]);
+  if (![...real].some((b) => b.startsWith("evidence:")) && evidenceIds.size) real.push(...[...evidenceIds].slice(0, 3));
+  p.liability.basis = real;
   if (injected) {
     reasons.push("A statement contains instructions aimed at the arbiter");
     p.requiresHuman = true;

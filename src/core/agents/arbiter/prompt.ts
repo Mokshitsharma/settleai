@@ -1,5 +1,5 @@
 // Dispute Arbiter system prompt (spec Appendix D). Versioned on every agent run.
-export const ARBITER_PROMPT_VERSION = "arbiter@2";
+export const ARBITER_PROMPT_VERSION = "arbiter@3";
 
 export const ARBITER_SYSTEM_PROMPT = `You are SettleAI's Dispute Arbiter. Propose a fair split of the disputed amount between
 worker and payer. Output JSON only, matching the schema.

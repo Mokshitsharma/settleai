@@ -175,6 +175,14 @@ describe("arbiter invariants are enforced in code", () => {
     reason: "x",
   });
 
+  it("a finding always names a real criterion and real evidence, and drops ids that do not exist", () => {
+    const raw = structuredClone(sampleDisputeProposal);
+    raw.liability.basis = ["criterion:made-up", "evidence:made-up"];
+    const base = input();
+    const out = enforceProposal(raw, { ...base, milestone: { ...base.milestone, criteria: [{ id: "c9", text: "x" }] }, statements: [{ evidenceId: "ev1", party: "payer", kind: "text", text: "crushed" }] }, false);
+    expect(out.liability.basis).toEqual(["criterion:c9", "evidence:ev1"]);
+  });
+
   it("corrects amounts that do not add up and sends the case to a person", () => {
     const bad = structuredClone(sampleDisputeProposal);
     bad.proposal.releaseToWorkerMinor = 5000;

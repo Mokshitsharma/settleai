@@ -97,7 +97,7 @@ export function buildLlm(cfg: AppConfig): LlmPort {
     case "xai":
       return new XaiLlmAdapter(cfg.XAI_API_KEY!, cfg.llmModel);
     case "groq":
-      return new GroqLlmAdapter(cfg.GROQ_API_KEY!, cfg.llmModel);
+      return new GroqLlmAdapter(cfg.GROQ_API_KEY!, cfg.llmModel, undefined, cfg.LLM_TEXT_MODEL);
     case "anthropic":
       throw new Error("Anthropic adapter not included; use LLM_PROVIDER=xai or stub");
     default:

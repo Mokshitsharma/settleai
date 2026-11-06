@@ -22,6 +22,9 @@
     "mcp": "tsx src/mcp/server.ts",
     "reconcile": "tsx scripts/reconcile.ts",
     "paypal:probe": "tsx scripts/paypal-sandbox-probe.ts",
+    "ai:check": "tsx scripts/ai-live-check.ts",
+    "live:flow": "tsx scripts/live-flow.ts",
+    "paypal:webhook": "tsx scripts/paypal-webhook.ts",
     "eval": "tsx eval/run.ts"
   },
   "dependencies": {

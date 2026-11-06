@@ -175,3 +175,15 @@ Prize-stacking limit comes from `docs/STATUS.md`; confirm on Devpost.
 2. Approve the CUT list.
 3. Which branch to build from: `hardening-gaps` plus the security session's uncommitted changes (recommended).
 4. Free Render (cold start and data reset; recommended by your free-only rule) vs anything paid.
+
+# Session log
+
+## 6 Nov 2026
+
+- **Committed:** security changes as `08ca596` on `hardening-gaps` (443/443), then `hackathon/final` from it.
+- **Fixed:** random demo key at seed; Arbiter findings cite a real mandate clause, criteria and evidence; PayPal breaker tripped by seeded payout lookups, the real cause of the flaky J1 (e2e 10/10, three consecutive runs, now on a production build); LIVE checkout return and auto-capture; polling safety net for missed webhooks; stub banner; wake-up notice; reseed on boot; `.env.example` names only.
+- **Secret scan:** gitleaks 8.28.0, full history, 30 commits, 0 findings. `.env` and `.env.local` are ignored and were never committed. History still holds the removed demo key and old local compose values (not production credentials).
+- **Real AI (`pnpm ai:check`):** Scoping and the Arbiter work on `openai/gpt-oss-120b`, Verification calls `qwen/qwen3.8-27b`. Groq's free tier allows 8,000 tokens a minute per model; a 429 waits for retry-after, then falls back to a person.
+- **Blocked:** payouts return 403 `PAYOUT_NOT_AVAILABLE` on `APP-1J968271LM1368825`, the old India app; the new app's credentials are not in `.env.local`.
+- **Blocked:** generated sample photos do not pass the real model, which reads them as graphics. The auto-release path needs real photos.
+- **Requirement:** the live demo must stay up and free through 15 Dec 2026.
