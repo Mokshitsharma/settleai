@@ -33,7 +33,7 @@ AI agents are starting to buy things for people. Signed mandates can prove a per
 | Webhooks, with signature verification | Confirms funding and payout state, deduplicated by event id and safe for out-of-order delivery |
 | Payments and Payouts lookups | A safety net that asks PayPal directly when a webhook is late or missed |
 
-Sandbox evidence from a full run: order {{ORDER_ID}}, capture {{CAPTURE_ID}}, payout batch {{PAYOUT_BATCH_ID}}, refund {{REFUND_ID}}.
+Sandbox evidence from a full run: order `92519580C8449544Y`, capture `5MN932607D407762A`, payout batch `PLC3LNKRSJPHS`, refund `0MB22901981041614`.
 
 **AI on the critical path**
 

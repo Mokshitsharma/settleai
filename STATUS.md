@@ -30,8 +30,8 @@ Branches: `main` 213c106 (pushed). `hardening/2026-10` (98c466f) has 9 unmerged 
 | T004 contracts | DONE | `tests/unit/contracts.test.ts` |
 | T005 ledger, audit chain | DONE | `tests/property/money-properties.test.ts`, smoke "ledger invariants hold" |
 | T006 docs | PARTIAL | Exists; `docs/paypal-notes.md` is stale on pending items |
-| T101 live orders, webhooks | PARTIAL | Order create works on sandbox; capture never completed; no webhook registered |
-| T102 payouts, refunds | BROKEN (live) | Probe: `403 PAYOUT_NOT_AVAILABLE`; refund never run live; mock passes |
+| T101 live orders, webhooks | PARTIAL | Create and capture verified live (see live flow); webhook delivery awaits a public URL |
+| T102 payouts, refunds | DONE | Live flow: payout SUCCESS, refund COMPLETED |
 | T111 agent runtime | DONE | `tests/unit/agents.test.ts`, S18 |
 | T112 Scoping | PARTIAL | Stub passes; live blocked by LLM key |
 | T121 crypto | DONE | `tests/unit/crypto.test.ts`, `canonical.test.ts` |
@@ -71,12 +71,12 @@ Branches: `main` 213c106 (pushed). `hardening/2026-10` (98c466f) has 9 unmerged 
 | Area | Status | Evidence |
 |---|---|---|
 | Orders create | DONE (real) | Real sandbox order through the app, 6 Nov |
-| Orders capture | PARTIAL | Reaches PayPal (`422 ORDER_NOT_APPROVED` when unapproved); success path never run |
-| Payouts | BROKEN | `403 PAYOUT_NOT_AVAILABLE`. Notes blame the India-region account; needs a US sandbox business account |
-| Refunds | PARTIAL | Code calls the real endpoint; never run live |
+| Orders capture | DONE (real) | Live flow, capture COMPLETED |
+| Payouts | DONE (real) | Live flow, SUCCESS, on the US sandbox business account |
+| Refunds | DONE (real) | Live flow, COMPLETED |
 | Webhook verification | PARTIAL | Code calls PayPal's verify API. List is empty, `PAYPAL_WEBHOOK_ID` unset, unsigned POST gets 500 |
 | Invoicing, Agent Toolkit | MISSING | Not in code or `package.json`; app token has the invoicing scope |
-| LLM | BROKEN (live) | Groq key returns 401; xAI key commented out |
+| LLM | DONE (real) | `pnpm ai:check`; Scoping, Verification and Arbiter on real models |
 | Contract tests | Not real | `tests/fixtures/paypal` is hand-written, not recorded |
 | Mandates | PARTIAL | Signing, G1-G4, revocation work. Guard is agent-job only at G1 (direct jobs skip by design) |
 | Reason codes without a named test | Gap | `NOT_YET_VALID`, `CHAIN_INVALID`, `COUNTERPARTY_REJECTED`, `STEP_UP_REQUIRED`, `RELEASE_CONDITION_UNMET` (S28 covers step-up via result) |
@@ -204,6 +204,23 @@ Prize-stacking limit comes from `docs/STATUS.md`; confirm on Devpost.
 - **`pnpm live:flow` not run:** `SANDBOX_BUYER_PASSWORD` is empty in `.env.local`. Order, capture, payout and refund evidence pending.
 - **Groq key not rotated in `.env.local`:** its SHA-256 still matches the key pasted in chat, and that key still answers.
 - **Done:** funding records `confirmedVia` (webhook or poll) with tests both ways; per-key, per-caller and daily model budgets plus a global daily cap; classifier handles "move" and plurals, and service words win.
+
+## 6 Nov 2026, 23:30: live PayPal sandbox flow PASSED
+
+`pnpm live:flow` on app `APP-7AG6617399957750C`, run at 2026-11-06T17:59:07Z. Each id below was read back from PayPal afterwards. Full record: `docs/live-evidence.json`.
+
+| Step | PayPal id | Result |
+|---|---|---|
+| Order (buyer approved in the sandbox checkout) | `92519580C8449544Y` | $102.00 |
+| Capture | `5MN932607D407762A` | COMPLETED |
+| Payout batch / item (dispute share to worker) | `PLC3LNKRSJPHS` / `Z75WDLUTTSDMN` | SUCCESS, $28.00 |
+| Refund (dispute share plus fee to payer) | `0MB22901981041614` | COMPLETED, $12.24 |
+
+Earlier probe: batch `VNCSGP8CUS53S`, item `UTMBHJ9JNRFJN`, final status SUCCESS, $1.00, transaction `71479612EW818183A`.
+
+Limits of this run: the AI steps used the labelled stub, because it tests PayPal (`pnpm ai:check` tests the AI). Funding and payout were confirmed by polling PayPal; no webhook is registered until there is a public URL, so webhook delivery and signature checks are still unproven live.
+
+Groq: the pasted key returns 401 (revoked); the new key differs by hash and works on both models.
 
 # After submission
 
