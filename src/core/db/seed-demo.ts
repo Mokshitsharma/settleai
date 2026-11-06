@@ -3,7 +3,7 @@
 import { randomBytes } from "node:crypto";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import path from "node:path";
-import { and, eq } from "drizzle-orm";
+import { and, eq, gt } from "drizzle-orm";
 import type { Container } from "@/core/container";
 import { sha256Hex } from "@/core/mandates/canonical";
 import { apiClients, mandates } from "./schema";
@@ -51,11 +51,11 @@ export async function seedDemo(c: Container): Promise<{ mandateIds: string[] }> 
     })
     .onConflictDoNothing();
 
-  // Skip if ProcureBot already holds an active mandate.
+  // Skip if ProcureBot already holds an active, unexpired mandate (a restored template can hold expired ones).
   const existing = await db
     .select({ id: mandates.id })
     .from(mandates)
-    .where(and(eq(mandates.subjectId, PROCUREBOT_CLIENT_ID), eq(mandates.status, "active")));
+    .where(and(eq(mandates.subjectId, PROCUREBOT_CLIENT_ID), eq(mandates.status, "active"), gt(mandates.notAfter, c.clock.now())));
   if (existing.length) return { mandateIds: existing.map((m) => m.id) };
 
   const keyId = await c.keys.ensureManagedKey("user", "usr_ravi");

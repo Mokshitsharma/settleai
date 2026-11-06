@@ -72,3 +72,6 @@ build/
 *.zip
 .idea/
 .vscode/
+
+# Original demo photos can carry GPS and device metadata; only assets/demo-photos/ (stripped) ships
+/demo-photos/

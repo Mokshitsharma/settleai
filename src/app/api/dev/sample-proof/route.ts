@@ -1,7 +1,8 @@
 import { and, desc, eq, isNotNull, ne } from "drizzle-orm";
 import { z } from "zod";
 import type { AcceptanceCriterion, JobSpec } from "@/core/contracts";
-import { makeSamplePhoto, offsetPoint } from "@/core/checks/sample-photos";
+import { differenceHash, hammingDistance } from "@/core/checks/image";
+import { makeProofPhoto, offsetPoint } from "@/core/checks/sample-photos";
 import { getContainer } from "@/core/container";
 import { jobs, milestones, proofs } from "@/core/db/schema";
 import { HttpError, handle, limit, readJson, requireUser } from "../../_lib";
@@ -40,12 +41,23 @@ export const POST = handle(async (req: Request) => {
     if (!prior?.key) throw new HttpError(409, "NO_PRIOR_PHOTO", "There is no photo from another job to reuse yet. Complete one job first.");
     bytes = await c.storage.get(prior.key);
   } else {
-    bytes = await makeSamplePhoto({
-      seed: `${ms.id}-${variant}-${Date.now()}`,
-      caption: `${ms.title}: ${spec.title}`.slice(0, 60),
-      takenAt: variant === "noexif" ? undefined : takenAt,
-      location: variant === "noexif" ? undefined : variant === "far" ? offsetPoint(target, 5000) : offsetPoint(target, 25),
-    });
+    // Only the "reused" variant is meant to be a duplicate: keep drawing until this crop is unlike any earlier proof.
+    const prior = (await db.select({ phash: proofs.phash }).from(proofs).where(isNotNull(proofs.phash))).map((p) => p.phash!);
+    const { dupImagePhashMaxDistance } = await c.policy.active();
+    const make = (attempt: number) =>
+      makeProofPhoto({
+        kind: /pick/i.test(ms.title) ? "pickup" : "dropoff",
+        seed: `${ms.id}-${variant}-${Date.now()}-${attempt}`,
+        caption: `${ms.title}: ${spec.title}`.slice(0, 60),
+        takenAt: variant === "noexif" ? undefined : takenAt,
+        location: variant === "noexif" ? undefined : variant === "far" ? offsetPoint(target, 5000) : offsetPoint(target, 25),
+      });
+    bytes = await make(0);
+    for (let attempt = 1; attempt < 12; attempt++) {
+      const hash = await differenceHash(bytes);
+      if (prior.every((p) => hammingDistance(p, hash) > dupImagePhashMaxDistance)) break;
+      bytes = await make(attempt);
+    }
   }
   const proof = await c.proofs.addPhoto({ milestoneId, workerId: user.id, bytes, declaredMime: "image/jpeg", source: "demo_sample" });
   return Response.json({ proofId: proof.id });

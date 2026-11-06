@@ -1,14 +1,15 @@
 # Render blueprint (spec §17). Deploy: Render dashboard > New > Blueprint > this repo.
 # Secrets marked sync:false are entered in the dashboard and never committed.
 # Free plan: the embedded database (PGlite) runs inside the service, and migrations and demo data run on every start,
-# wiped and reseeded on every boot, so a restart always gives a clean demo. The free service sleeps when idle; the first visit wakes it.
+# built into a pristine template at deploy time and restored on every boot, so a restart always gives a clean demo
+# and a 0.1 CPU instance does not have to reseed two weeks of history while a visitor waits. The free service sleeps when idle; the first visit wakes it.
 services:
   - type: web
     name: settleai
     runtime: node
     plan: free
-    buildCommand: corepack enable && pnpm install --frozen-lockfile --prod=false && pnpm build
-    startCommand: pnpm db:reset && pnpm start
+    buildCommand: corepack enable && pnpm install --frozen-lockfile --prod=false && pnpm build && pnpm db:template
+    startCommand: pnpm db:boot && pnpm start
     healthCheckPath: /api/health
     envVars:
       - key: NODE_VERSION

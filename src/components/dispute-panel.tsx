@@ -18,6 +18,8 @@ export interface DisputeProps {
   proposal: (DisputeProposal & { payerResponse: string | null; workerResponse: string | null }) | null;
   reportSummary: string | null;
   reportClauses: { ref: string; text: string }[];
+  /** A real demo photo of damaged goods is installed, so judges can attach one without their own picture. */
+  hasDamageSample?: boolean;
   resolution: { releaseToWorkerMinor: number; refundToPayerMinor: number; faultClass: string; resolvedBy: string } | null;
 }
 
@@ -176,6 +178,15 @@ export function DisputePanel({ d, viewer }: { d: DisputeProps; viewer: "payer" |
             <Button variant="secondary" disabled={busy || (!text.trim() && !photo)} onClick={() => run(addEvidence)}>
               Add evidence
             </Button>
+            {d.hasDamageSample ? (
+              <Button
+                variant="secondary"
+                disabled={busy}
+                onClick={() => run(() => api("/api/dev/sample-damage", { body: { disputeId: d.id } }))}
+              >
+                Add demo photo of the damage
+              </Button>
+            ) : null}
             <Button disabled={busy} onClick={() => run(() => api(`/api/disputes/${d.id}/propose`, { method: "POST" }))}>
               {busy ? "Working…" : "Ask the arbiter now"}
             </Button>

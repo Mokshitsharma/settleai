@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { notFound, redirect } from "next/navigation";
 import type { AcceptanceCriterion, JobSpec } from "@/core/contracts";
+import { listDemoPhotos } from "@/core/checks/demo-photos";
 import { getContainer } from "@/core/container";
 import { pageUser } from "@/lib/page-auth";
 import { ActivityPanel } from "@/components/activity-panel";
@@ -57,6 +58,7 @@ export default async function JobPage({ params, searchParams }: PageProps<"/jobs
       proposal: v.proposal ? { ...(v.proposal.proposalJson as DisputeProposal), payerResponse: v.proposal.payerResponse, workerResponse: v.proposal.workerResponse } : null,
       reportSummary: v.report?.summary ?? null,
       reportClauses: v.report?.clauses ?? [],
+      hasDamageSample: listDemoPhotos("damage").length > 0,
       resolution: (v.dispute.resolutionJson as DisputeProps["resolution"]) ?? null,
     });
   }

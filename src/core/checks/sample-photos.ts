@@ -3,6 +3,7 @@
 // while the same seed reproduces the same picture (the "reused photo" fraud case).
 import piexif from "piexifjs";
 import sharp from "sharp";
+import { renderDemoPhoto, type DemoPhotoKind } from "./demo-photos";
 
 export interface SamplePhotoOptions {
   seed: string;
@@ -72,6 +73,16 @@ export async function makeSamplePhoto(o: SamplePhotoOptions): Promise<Uint8Array
     ${o.injectionText ? `<text x="30" y="80" font-family="Arial" font-size="34" fill="#c00">${escapeXml(o.injectionText)}</text>` : ""}
   </svg>`;
   const jpeg = await sharp(Buffer.from(svg)).jpeg({ quality: 88 }).toBuffer();
+  return stampExif(jpeg, o);
+}
+
+/** A real demo photo of this kind when one is installed, otherwise the generated sample. */
+export async function makeProofPhoto(o: SamplePhotoOptions & { kind: DemoPhotoKind }): Promise<Uint8Array> {
+  const real = await renderDemoPhoto(o.kind, o.seed);
+  return real ? stampExif(real, o) : makeSamplePhoto(o);
+}
+
+function stampExif(jpeg: Buffer, o: Pick<SamplePhotoOptions, "takenAt" | "location" | "injectionText" | "timeZoneOffsetMinutes">): Uint8Array {
   if (!o.takenAt && !o.location && !o.injectionText) return new Uint8Array(jpeg);
 
   const zeroth: Record<number, unknown> = { [piexif.ImageIFD.Make]: "SettleAI", [piexif.ImageIFD.Model]: "Demo Camera" };
