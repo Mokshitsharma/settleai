@@ -6,7 +6,7 @@ The accountability layer for agentic commerce: mandates, verified outcomes, PayP
 
 Hackathon: PayPal AI Hackathon 2026: Build What's Next with PayPal and AI
 
-Submission window: 1 Oct 2026 to 12 Nov 2026, 2:00 p.m. Pacific Time
+Submission window: 1 Oct 2026 to 12 Nov 2026, 12:00 p.m. Pacific Time
 
 Owner: Mokshit Sharma
 
@@ -1029,7 +1029,7 @@ Publish docs/AP2-EXTENSION.md as a short technical write-up (mapping to AP2, wha
 - Devpost text: inspiration, what it does, how we built it, challenges, accomplishments, what we learned, what is next. Name every PayPal API and every sponsor tool used.
 - Screenshots: Decision Card, Agent Activity panel, risk queue grid, ledger grid, dispute proposal, MCP session.
 - Re-read the official rules for eligibility, required tool usage, IP and multiple-prize limits. Add the team or individual details Devpost asks for.
-- Submit at least 24 hours before the deadline (12 Nov 2026, 2:00 p.m. Pacific Time; this is about 3:30 a.m. IST on 13 Nov, assuming Pacific Standard Time). Then use remaining time only for non-risky polish.
+- Submit at least 24 hours before the deadline (12 Nov 2026, 12:00 p.m. Pacific Time; this is 1:30 a.m. IST on 13 Nov). Then use remaining time only for non-risky polish.
 ## 19. Phased build plan and parallel tracks
 
 ```

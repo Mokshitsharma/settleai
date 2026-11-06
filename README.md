@@ -10,11 +10,10 @@ Built for the **PayPal AI Hackathon 2026**. MIT licensed.
 
 ---
 
-## Try it in two minutes (no paid keys needed)
+## Try it in two minutes (no keys needed)
 
 ```bash
 pnpm install
-export PROCUREBOT_API_KEY=$(openssl rand -hex 24)   # the demo agent's key; choose your own
 pnpm db:reset      # embedded Postgres (PGlite) with two weeks of demo history
 pnpm dev           # http://localhost:3000
 ```

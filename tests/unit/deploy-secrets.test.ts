@@ -1,3 +1,6 @@
+import { existsSync, mkdtempSync, readFileSync } from "node:fs";
+import { tmpdir } from "node:os";
+import path from "node:path";
 // A deployment never runs on the secrets published in this repository: the API key pepper must be set, and the
 // ProcureBot agent key must be its own, not the public demo key. Local runs keep working with zero secrets.
 import { afterEach, describe, expect, it, vi } from "vitest";
@@ -7,7 +10,7 @@ import { loadConfig } from "@/core/config";
 import { createContainer } from "@/core/container";
 import { openTestDb } from "@/core/db/client";
 import { seed } from "@/core/db/seed";
-import { seedDemo } from "@/core/db/seed-demo";
+import { procurebotKeyFile, seedDemo } from "@/core/db/seed-demo";
 import { FixedClock } from "@/core/ports/clock";
 import { T0 } from "../helpers";
 
@@ -43,26 +46,46 @@ describe("API key pepper", () => {
 });
 
 describe("ProcureBot demo key", () => {
-  it("is used locally when no key is set", async () => {
+  it("uses the configured key when one is set", async () => {
     const c = await containerFor({});
     await seedDemo(c);
     await expect(authenticateAgent(c, `Bearer ${process.env.PROCUREBOT_API_KEY}`)).resolves.toBeTruthy();
   });
 
-  it("is refused on a deployment, which must set its own key", async () => {
+  it("locally, with no key set, generates a random one, saves it to the ignored file and reuses it", async () => {
+    vi.stubEnv("PROCUREBOT_KEY_FILE", path.join(mkdtempSync(path.join(tmpdir(), "settleai-key-")), "key"));
     delete process.env.PROCUREBOT_API_KEY;
-    const c = await containerFor(deployedEnv);
-    await expect(seedDemo(c)).rejects.toThrow(/PROCUREBOT_API_KEY/);
+    const c = await containerFor({});
+    await seedDemo(c);
+    const key = readFileSync(procurebotKeyFile(), "utf8").trim();
+    expect(key).toMatch(/^sk_[0-9a-f]{48}$/);
+    await expect(authenticateAgent(c, `Bearer ${key}`)).resolves.toBeTruthy();
+    const again = await containerFor({});
+    await seedDemo(again);
+    expect(readFileSync(procurebotKeyFile(), "utf8").trim()).toBe(key);
+    await expect(authenticateAgent(again, `Bearer ${key}`)).resolves.toBeTruthy();
   });
 
-  it("is refused on a production deployment on the embedded database too (Render free plan)", async () => {
+  it("on a deployment with no key set, seeds but stores no key, and the removed public key is refused", async () => {
+    vi.stubEnv("PROCUREBOT_KEY_FILE", path.join(mkdtempSync(path.join(tmpdir(), "settleai-key-")), "key"));
+    delete process.env.PROCUREBOT_API_KEY;
+    const c = await containerFor(deployedEnv);
+    await seedDemo(c);
+    expect(existsSync(procurebotKeyFile())).toBe(false);
+    await expect(authenticateAgent(c, "Bearer sk_demo_procurebot_9f2c")).rejects.toMatchObject({ code: "UNAUTHENTICATED" });
+  });
+
+  it("does the same on a production deployment on the embedded database (Render free plan)", async () => {
+    vi.stubEnv("PROCUREBOT_KEY_FILE", path.join(mkdtempSync(path.join(tmpdir(), "settleai-key-")), "key"));
     const c = await containerFor({});
     delete process.env.PROCUREBOT_API_KEY;
     vi.stubEnv("NODE_ENV", "production");
-    await expect(seedDemo(c)).rejects.toThrow(/PROCUREBOT_API_KEY/);
+    await seedDemo(c);
+    expect(existsSync(procurebotKeyFile())).toBe(false);
+    await expect(authenticateAgent(c, "Bearer sk_demo_procurebot_9f2c")).rejects.toMatchObject({ code: "UNAUTHENTICATED" });
   });
 
-  it("is replaced by the deployment's own key, and the public one no longer works", async () => {
+  it("is replaced by the deployment's own key, and any other key does not work", async () => {
     process.env.PROCUREBOT_API_KEY = "sk_live_own_key_for_test";
     const c = await containerFor(deployedEnv);
     await seedDemo(c);

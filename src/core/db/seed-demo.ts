@@ -1,12 +1,14 @@
 // Demo seed (spec §16.1, T141): ProcureBot agent client and its pre-signed Intent Mandates.
 // Mandates are signed with Ravi's managed demo key and are valid from seed time, so re-seed before demos.
+import { randomBytes } from "node:crypto";
+import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
+import path from "node:path";
 import { and, eq } from "drizzle-orm";
 import type { Container } from "@/core/container";
 import { sha256Hex } from "@/core/mandates/canonical";
 import { apiClients, mandates } from "./schema";
 
 export const PROCUREBOT_CLIENT_ID = "cli_procurebot";
-/** Demo-only API key for the reference agent. Never use a fixed key outside the demo. */
 
 export function hashApiKey(key: string, pepper: string): string {
   return sha256Hex(`${pepper}:${key}`);
@@ -14,10 +16,23 @@ export function hashApiKey(key: string, pepper: string): string {
 
 const INDORE = { lat: 22.7196, lng: 75.8577, radiusKm: 25, label: "Indore" };
 
-// PROCUREBOT_API_KEY has no default, locally or deployed, so no key is ever published in this repository.
+/** Where a local (non-deployed) seed keeps its generated key, so `pnpm procurebot` can read it. Git-ignored. */
+export function procurebotKeyFile(): string {
+  return path.resolve(process.env.PROCUREBOT_KEY_FILE ?? ".data/procurebot-key");
+}
+
+// No key is ever published in this repository. PROCUREBOT_API_KEY wins when set. Otherwise each seed uses a random key:
+// locally it is saved to a git-ignored file (and reused, so re-seeding keeps working); on a deployment it is never
+// stored or logged, so the agent API stays closed until the owner sets a key.
 function procurebotKey(c: Container): string {
-  const key = process.env.PROCUREBOT_API_KEY;
-  if (!key) throw new Error("PROCUREBOT_API_KEY must be set before seeding the demo");
+  if (process.env.PROCUREBOT_API_KEY) return process.env.PROCUREBOT_API_KEY;
+  const deployed = process.env.NODE_ENV === "production" || Boolean(c.config.DATABASE_URL);
+  const key = `sk_${randomBytes(24).toString("hex")}`;
+  if (deployed) return key;
+  const file = procurebotKeyFile();
+  if (existsSync(file)) return readFileSync(file, "utf8").trim();
+  mkdirSync(path.dirname(file), { recursive: true });
+  writeFileSync(file, key, { mode: 0o600 });
   return key;
 }
 

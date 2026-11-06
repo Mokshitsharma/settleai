@@ -4,7 +4,7 @@ Phase plan: docs/SPEC.md §19. Feature freeze 8 Nov 2026; submit by 11 Nov 2026.
 
 ## Official rules check (2026-10-03): overrides the spec where they differ
 
-- **Deadline: 12 Nov 2026, 12:00 pm PT** (spec said 2:00 pm) = 20:00 UTC = ~01:30 IST on 13 Nov. Target remains submit by 11 Nov.
+- **Deadline: 12 Nov 2026, 12:00 pm PT** = 20:00 UTC = 01:30 IST on 13 Nov. Target remains submit by 11 Nov.
 - **Judging: 1–15 Dec 2026.** Hosted demo, sandbox credentials and LLM budget must stay alive until 15 Dec.
 - Demo access: hosted URL **or** complete local setup instructions. Provide both: Render URL + zero-key MOCK quick start + sandbox buyer login in README.
 - Must integrate the **PayPal sandbox**: Stage One checks it "reasonably applies the required APIs". MOCK-only is a real risk, so we need sandbox credentials before Phase 5.

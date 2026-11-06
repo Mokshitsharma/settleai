@@ -1,8 +1,7 @@
 # SettleAI hackathon status
 
-**Cutoff (unconfirmed): 12 Nov 2026, 12:00 pm PT = 13 Nov, 1:30 am IST.** Source: rules check in `docs/STATUS.md` and one
-secondary listing. The spec says 2:00 pm PT (3:30 am IST). Devpost blocks automated reads, so confirm it on the page.
-Spec has no Appendix F. Target: submit 11 Nov IST.
+**Cutoff (confirmed by owner): 12 Nov 2026, 12:00 PM PT = 13 Nov, 1:30 AM IST.** Target: submit 11 Nov IST.
+**Requirement:** the live demo must stay up and free through 15 Dec 2026 (judging period).
 
 Audited 6 Nov 2026 on `hardening-gaps` (30e6574) plus 17 uncommitted changes from the security session. Spec on disk is
 v2.0, not v2.1; the build plan is §19. History and deviations remain in `docs/STATUS.md`.

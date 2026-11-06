@@ -10,7 +10,7 @@ but they can never fund or pay: the principal funds through PayPal, and payouts 
 SETTLEAI_URL=http://localhost:3000 SETTLEAI_API_KEY=<your-PROCUREBOT_API_KEY> pnpm exec tsx src/mcp/server.ts
 ```
 
-The demo key belongs to the seeded agent **ProcureBot** (owner: Ravi Traders). It is a demo-only credential.
+The key belongs to the seeded agent **ProcureBot** (owner: Ravi Traders). Locally, `pnpm db:reset` generates it in `.data/procurebot-key`; or set `PROCUREBOT_API_KEY`.
 
 ### Claude Desktop / any stdio MCP client
 

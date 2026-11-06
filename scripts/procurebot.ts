@@ -7,6 +7,8 @@ import "./_env";
 import path from "node:path";
 import { Client } from "@modelcontextprotocol/sdk/client/index.js";
 import { StdioClientTransport } from "@modelcontextprotocol/sdk/client/stdio.js";
+import { existsSync, readFileSync } from "node:fs";
+import { procurebotKeyFile } from "@/core/db/seed-demo";
 
 const TASK =
   process.argv.slice(2).join(" ") ||
@@ -26,7 +28,7 @@ async function connect(): Promise<Client> {
     env: {
       ...process.env,
       SETTLEAI_URL: process.env.SETTLEAI_URL ?? "http://localhost:3000",
-      SETTLEAI_API_KEY: process.env.SETTLEAI_API_KEY ?? process.env.PROCUREBOT_API_KEY ?? "",
+      SETTLEAI_API_KEY: process.env.SETTLEAI_API_KEY ?? process.env.PROCUREBOT_API_KEY ?? (existsSync(procurebotKeyFile()) ? readFileSync(procurebotKeyFile(), "utf8").trim() : ""),
     } as Record<string, string>,
     stderr: "inherit",
   });
