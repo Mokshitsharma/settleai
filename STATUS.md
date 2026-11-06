@@ -212,11 +212,13 @@ Prize-stacking limit comes from `docs/STATUS.md`; confirm on Devpost.
 | Step | PayPal id | Result |
 |---|---|---|
 | Order (buyer approved in the sandbox checkout) | `92519580C8449544Y` | $102.00 |
-| Capture | `5MN932607D407762A` | COMPLETED |
+| Capture | `5MN932607D407762A` | COMPLETED at capture; PayPal now reports PARTIALLY_REFUNDED after the refund |
 | Payout batch / item (dispute share to worker) | `PLC3LNKRSJPHS` / `Z75WDLUTTSDMN` | SUCCESS, $28.00 |
 | Refund (dispute share plus fee to payer) | `0MB22901981041614` | COMPLETED, $12.24 |
 
 Earlier probe: batch `VNCSGP8CUS53S`, item `UTMBHJ9JNRFJN`, final status SUCCESS, $1.00, transaction `71479612EW818183A`.
+
+The order and capture both carry `custom_id` `smd_EX21P43VRR_3eafbb35fce231e5`, the Payment Mandate binding. PayPal's fee left a net of $97.95 on the capture; the ledger does not record PayPal's fees (the optional `PAYPAL_FEES` account), so its balance runs above the real sandbox balance by that fee.
 
 Limits of this run: the AI steps used the labelled stub, because it tests PayPal (`pnpm ai:check` tests the AI). Funding and payout were confirmed by polling PayPal; no webhook is registered until there is a public URL, so webhook delivery and signature checks are still unproven live.
 
