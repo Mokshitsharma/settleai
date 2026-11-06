@@ -196,3 +196,18 @@ Prize-stacking limit comes from `docs/STATUS.md`; confirm on Devpost.
 - **Render:** `render.yaml` provisions one free web service and no database; the demo uses embedded PGlite, so Render's 30-day free Postgres expiry does not apply. Boot restores a build-time template (about 6 s here). Wake time on 0.1 CPU to be measured after deploy.
 - **Photos:** `demo-photos/` (git-ignored) and `pnpm photos:prepare` are ready; names must start with pickup, dropoff or damage.
 - **Drafts:** `docs/video/SCRIPT.md`, `docs/DEVPOST.md`.
+
+## 6 Nov 2026, 23:30
+
+- **New PayPal app confirmed:** `APP-7AG6617399957750C`.
+- **Payout 403 cleared:** direct $1 sandbox payout returned 201, batch `VNCSGP8CUS53S` (a probe, not the full flow).
+- **`pnpm live:flow` not run:** `SANDBOX_BUYER_PASSWORD` is empty in `.env.local`. Order, capture, payout and refund evidence pending.
+- **Groq key not rotated in `.env.local`:** its SHA-256 still matches the key pasted in chat, and that key still answers.
+- **Done:** funding records `confirmedVia` (webhook or poll) with tests both ways; per-key, per-caller and daily model budgets plus a global daily cap; classifier handles "move" and plurals, and service words win.
+
+# After submission
+
+Requirement: the demo stays live and free through 15 Dec 2026.
+
+- [ ] Set up a free uptime ping every 10 minutes for 1 to 15 Dec.
+- [ ] Redeploy once around 30 Nov, so the demo history is fresh.
