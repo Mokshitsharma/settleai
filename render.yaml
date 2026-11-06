@@ -8,14 +8,20 @@ services:
     name: settleai
     runtime: node
     plan: free
-    buildCommand: corepack enable && pnpm install --frozen-lockfile --prod=false && pnpm build && pnpm db:template
-    startCommand: pnpm db:boot && pnpm start
+    buildCommand: corepack enable && pnpm install --frozen-lockfile --prod=false && pnpm build && pnpm db:template && pnpm build:standalone
+    # Plain node: no pnpm, corepack or tsx at runtime. Flags are here, not in NODE_OPTIONS, so they do not limit the build.
+    # --liftoff-only: V8's optimizing compiler pushes PGlite's WASM startup from about 230 MB to about 600 MB.
+    startCommand: cd .next/standalone && node --max-old-space-size=320 --liftoff-only db-boot.cjs boot && exec node --max-old-space-size=320 --liftoff-only server.js
     healthCheckPath: /api/health
     envVars:
       - key: NODE_VERSION
         value: "24"
       - key: NODE_ENV
         value: production
+      - key: HOSTNAME
+        value: 0.0.0.0
+      - key: MALLOC_ARENA_MAX
+        value: "2"
       - key: SESSION_SECRET
         generateValue: true
       - key: API_KEY_PEPPER

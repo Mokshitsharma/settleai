@@ -1,6 +1,6 @@
 // pnpm db:migrate | pnpm db:seed | pnpm db:reset
 import "./_env";
-import { cp, rm } from "node:fs/promises";
+import { cp, rm, writeFile } from "node:fs/promises";
 import { existsSync } from "node:fs";
 import { loadConfig } from "@/core/config";
 import { createContainer } from "@/core/container";
@@ -25,6 +25,9 @@ async function main() {
     const { mandateIds } = await seedDemo(c); // demo mandates last 24 hours, so an old template gets fresh ones
     console.log(`Clean demo restored. ProcureBot mandates: ${mandateIds.join(", ")}`);
     await h.close();
+    const peakMb = Math.round(process.resourceUsage().maxRSS / 1024);
+    await writeFile(".data/boot-peak-rss-mb", String(peakMb));
+    console.log(`Boot peak RSS: ${peakMb} MB`);
     return;
   }
   if (cmd === "reset" || cmd === "template" || cmd === "boot") {

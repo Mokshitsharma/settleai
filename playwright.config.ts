@@ -23,7 +23,7 @@ export default defineConfig({
   ],
   webServer: {
     // Production build: dev-server compiles on first hit made time-sensitive journeys flaky (challenge window).
-    command: `pnpm build && pnpm db:reset && pnpm exec next start -p ${PORT}`,
+    command: `pnpm build && pnpm db:template && pnpm build:standalone && cd .next/standalone && node --max-old-space-size=320 --liftoff-only db-boot.cjs boot && node --max-old-space-size=320 --liftoff-only server.js`,
     url: `http://localhost:${PORT}/api/health`,
     timeout: 300_000,
     reuseExistingServer: false,
@@ -33,6 +33,8 @@ export default defineConfig({
       LLM_PROVIDER: "stub",
       API_KEY_PEPPER: "e2e-only-pepper",
       SESSION_SECRET: "e2e-only-session-secret-at-least-32-chars",
+      PORT: String(PORT),
+      HOSTNAME: "127.0.0.1",
       PGLITE_DATA_DIR: ".data/e2e",
       CHALLENGE_WINDOW_SECONDS: "30", // long enough to open a dispute through the UI
     },

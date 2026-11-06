@@ -5,6 +5,10 @@ import { fileTypeFromBuffer } from "file-type";
 import sharp from "sharp";
 import { sha256Hex } from "@/core/mandates/canonical";
 
+// One image at a time and no decoded-image cache: libvips memory sits outside the JS heap limit.
+sharp.cache(false);
+sharp.concurrency(1);
+
 export const IMAGE_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif"] as const;
 export const MAX_IMAGE_BYTES = 12 * 1024 * 1024;
 /** Longest side and total pixels accepted before decoding (decompression-bomb guard). */

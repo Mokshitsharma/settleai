@@ -224,6 +224,21 @@ Limits of this run: the AI steps used the labelled stub, because it tests PayPal
 
 Groq: the pasted key returns 401 (revoked); the new key differs by hash and works on both models.
 
+## 7 Nov 2026: Render out-of-memory fix
+
+Cause: V8's optimizing WASM compiler during PGlite startup, on top of pnpm, corepack and tsx at runtime.
+Fix: standalone server started with plain node and `--liftoff-only`; compiled boot script; `exifr` external (also ends the "Couldn't load fs/zlib" lines); sharp cache off, concurrency 1.
+
+Peak RSS on Windows with a 512 MB job-object limit. No Docker or WSL on this machine, so this is not the requested Linux container test.
+
+| Phase | Before | After |
+|---|---|---|
+| Boot and restore | 782 MB | 257 MB |
+| Server idle | 295 MB (833 MB startup peak) | 294 MB (313 MB startup peak) |
+| Full flow: real Scoping and Verification, 12 MP upload, admin pages | 375 MB (833 MB peak) | 357 MB (381 MB peak) |
+
+Not yet covered: the Arbiter on the real model through this server (needs real photos), and any Linux measurement. `/api/health` now reports `memoryMb`, the real test on Render.
+
 # After submission
 
 Requirement: the demo stays live and free through 15 Dec 2026.

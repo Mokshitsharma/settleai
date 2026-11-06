@@ -1,3 +1,4 @@
+import { readFile } from "node:fs/promises";
 import { sql } from "drizzle-orm";
 import { getContainer } from "@/core/container";
 
@@ -17,6 +18,11 @@ export async function GET() {
       db: { status: "ok", driver: c.dbHandle.driver },
       ledger: { invariantsOk: ledgerProblems.length === 0, problems: ledgerProblems },
       audit: auditChain,
+      memoryMb: {
+        rss: Math.round(process.memoryUsage().rss / 1048576),
+        peakRss: Math.round(process.resourceUsage().maxRSS / 1024),
+        bootPeakRss: Number(await readFile(".data/boot-peak-rss-mb", "utf8").catch(() => "")) || null,
+      },
     });
   } catch (err) {
     return Response.json({ status: "error", error: (err as Error).message }, { status: 503 });
