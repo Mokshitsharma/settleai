@@ -137,7 +137,7 @@ export class WebhookService {
       return { jobId: job.id, amountMinor };
     });
     if (!result) return "ignored";
-    this.events.publish(`job:${result.jobId}`, "job.funded", `Escrow funded: ${formatMinor(result.amountMinor)} confirmed by PayPal webhook`);
+    this.events.publish(`job:${result.jobId}`, "job.funded", `Escrow funded: ${formatMinor(result.amountMinor)} confirmed by PayPal`);
     return "processed";
   }
 }
