@@ -1,10 +1,10 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
-import { MockPayPalAdapter } from "@/core/adapters/paypal/mock";
+import { MOCK_WEBHOOK_HEADER, MockPayPalAdapter } from "@/core/adapters/paypal/mock";
 import { loadConfig } from "@/core/config";
 import { createContainer, type Container } from "@/core/container";
 import { openTestDb } from "@/core/db/client";
-import { milestones, payouts, releases } from "@/core/db/schema";
+import { auditLog, fundingOrders, milestones, payouts, releases } from "@/core/db/schema";
 import { seed } from "@/core/db/seed";
 import { newId } from "@/core/ids";
 import { FixedClock } from "@/core/ports/clock";
@@ -106,5 +106,53 @@ describe("reconciliation (F20)", () => {
     await c.dbHandle.db.update(payouts).set({ status: "PROCESSING" }).where(eq(payouts.id, p.id));
     await c.reconciliation.repairInFlight();
     expect((await c.dbHandle.db.select().from(payouts).where(eq(payouts.id, p.id)))[0].status).toBe("SUCCEEDED");
+  });
+
+  describe("how funding was confirmed", () => {
+    async function capturedJob() {
+      const job = await c.jobs.createFromSpec({ payerId: "usr_ravi", spec: sampleJobSpec, createdBy: "user:usr_ravi" });
+      const order = await c.funding.start({ jobId: job.id, payerId: "usr_ravi" });
+      mock.approveOrder(order.orderId);
+      await c.funding.capture({ jobId: job.id, payerId: "usr_ravi", orderId: order.orderId });
+      return { job, order };
+    }
+    const funded = async (jobId: string) => {
+      const [f] = await c.dbHandle.db.select().from(fundingOrders).where(eq(fundingOrders.jobId, jobId));
+      const chain = await c.attestations.chain(jobId);
+      const att = chain.filter((a) => a.payload.kind === "funding_captured");
+      const audit = await c.dbHandle.db.select().from(auditLog).where(and(eq(auditLog.action, "job.funded"), eq(auditLog.entityId, jobId)));
+      return { via: (f.rawJson as { confirmedVia?: string }).confirmedVia, att, audit };
+    };
+
+    it("webhook first: recorded as webhook-confirmed, and a later poll changes nothing", async () => {
+      const { job, order } = await capturedJob();
+      await c.deliverMockWebhooks();
+      const after = await funded(job.id);
+      expect(after.via).toBe("webhook");
+      expect(after.att.map((a) => a.payload.confirmedVia)).toEqual(["webhook"]);
+      expect(after.audit.map((a) => a.actor)).toEqual(["paypal"]);
+
+      expect(await c.reconciliation.repairInFlight()).toEqual([]);
+      const again = await funded(job.id);
+      expect(again.via).toBe("webhook");
+      expect(again.att).toHaveLength(1);
+      expect((await c.jobs.detail(job.id))!.money.fundedMinor).toBe(order.amountMinor);
+    });
+
+    it("poll first: recorded as poll-confirmed, and a late webhook does not overwrite it or post twice", async () => {
+      const { job, order } = await capturedJob();
+      const late = mock.drainOutbox();
+      await c.reconciliation.repairInFlight();
+      const after = await funded(job.id);
+      expect(after.via).toBe("poll");
+      expect(after.audit.map((a) => a.actor)).toEqual(["system:reconciliation"]);
+
+      for (const e of late) await c.webhooks.process({ [MOCK_WEBHOOK_HEADER]: "1" }, JSON.stringify({ id: e.id, event_type: e.eventType, resource: e.resource }));
+      const again = await funded(job.id);
+      expect(again.via).toBe("poll");
+      expect(again.att).toHaveLength(1);
+      expect((await c.jobs.detail(job.id))!.money.fundedMinor).toBe(order.amountMinor);
+      await expect(c.ledger.checkInvariants()).resolves.toEqual([]);
+    });
   });
 });

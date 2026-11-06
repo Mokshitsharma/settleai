@@ -86,7 +86,7 @@ export default async function JobPage({ params, searchParams }: PageProps<"/jobs
           <MoneyStrip {...money} expectedMinor={job.totalMinor + job.feeMinor} />
           {funding?.paypalCaptureId ? (
             <p className="mt-3 text-xs text-ink-faint">
-              PayPal capture <Hash value={funding.paypalCaptureId} chars={20} /> confirmed by PayPal
+              PayPal capture <Hash value={funding.paypalCaptureId} chars={20} /> {(funding.rawJson as { confirmedVia?: string } | null)?.confirmedVia === "poll" ? "confirmed by a PayPal status check" : "confirmed by PayPal webhook"}
             </p>
           ) : null}
         </Panel>

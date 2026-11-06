@@ -79,7 +79,7 @@ export class WebhookService {
       case "CHECKOUT.ORDER.APPROVED":
         return "ignored"; // capture is explicit (spec §6.3)
       case "PAYMENT.CAPTURE.COMPLETED":
-        return this.onCaptureCompleted(String(r.id), r.supplementary_data?.related_ids?.order_id, r.amount?.value);
+        return this.onCaptureCompleted(String(r.id), r.supplementary_data?.related_ids?.order_id, r.amount?.value, "webhook");
       case "PAYMENT.CAPTURE.DENIED":
       case "PAYMENT.CAPTURE.DECLINED":
       case "PAYMENT.CAPTURE.REVERSED":
@@ -105,10 +105,10 @@ export class WebhookService {
 
   /** Same state-machine-safe path as the webhook, for when PayPal's API says a capture completed first. */
   confirmCapture(captureId: string, orderId: string | undefined, value: string): Promise<WebhookOutcome> {
-    return this.onCaptureCompleted(captureId, orderId, value);
+    return this.onCaptureCompleted(captureId, orderId, value, "poll");
   }
 
-  private async onCaptureCompleted(captureId: string, orderId: string | undefined, value: string | undefined): Promise<WebhookOutcome> {
+  private async onCaptureCompleted(captureId: string, orderId: string | undefined, value: string | undefined, confirmedVia: "webhook" | "poll"): Promise<WebhookOutcome> {
     const result = await this.db.transaction(async (tx) => {
       const [funding] = await tx
         .select()
@@ -119,7 +119,7 @@ export class WebhookService {
       const amountMinor = value ? fromPayPalValue(value) : funding.amountMinor;
       await tx
         .update(fundingOrders)
-        .set({ status: "CONFIRMED", paypalCaptureId: captureId, updatedAt: this.clock.now() })
+        .set({ status: "CONFIRMED", paypalCaptureId: captureId, rawJson: { ...(funding.rawJson as object | null), confirmedVia }, updatedAt: this.clock.now() })
         .where(eq(fundingOrders.id, funding.id));
       await this.ledger.recordFunding({ jobId: funding.jobId, fundingId: funding.id, amountMinor }, tx);
       const [job] = await tx.select().from(jobs).where(and(eq(jobs.id, funding.jobId))).for("update");
@@ -127,17 +127,17 @@ export class WebhookService {
         await tx.update(jobs).set({ status: "FUNDED", updatedAt: this.clock.now() }).where(eq(jobs.id, job.id));
       }
       await this.audit.append(
-        { actor: "paypal", action: "job.funded", entityType: "job", entityId: job.id, payload: { captureId, amountMinor, fundingId: funding.id } },
+        { actor: confirmedVia === "webhook" ? "paypal" : "system:reconciliation", action: "job.funded", entityType: "job", entityId: job.id, payload: { captureId, amountMinor, fundingId: funding.id, confirmedVia } },
         tx,
       );
       await this.attestations.append(
-        { jobId: job.id, type: "evidence", subjectId: funding.id, payload: { kind: "funding_captured", captureId, orderId: funding.paypalOrderId, amountMinor } },
+        { jobId: job.id, type: "evidence", subjectId: funding.id, payload: { kind: "funding_captured", captureId, orderId: funding.paypalOrderId, amountMinor, confirmedVia } },
         tx,
       );
       return { jobId: job.id, amountMinor };
     });
     if (!result) return "ignored";
-    this.events.publish(`job:${result.jobId}`, "job.funded", `Escrow funded: ${formatMinor(result.amountMinor)} confirmed by PayPal`);
+    this.events.publish(`job:${result.jobId}`, "job.funded", `Escrow funded: ${formatMinor(result.amountMinor)} ${confirmedVia === "webhook" ? "confirmed by PayPal webhook" : "confirmed by a PayPal status check"}`);
     return "processed";
   }
 }
