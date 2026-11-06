@@ -18,7 +18,17 @@ export const LIMITS = {
   /** Routes that run an AI agent (scoping, verification submit, arbiter, agent create_job). */
   llm: { capacity: 20, refillPerMinute: 20 },
   /** Agent API calls per client key. */
-  agent: { capacity: 60, refillPerMinute: 120 },
+  agent: { capacity: 60, refillPerMinute: 60 },
+  // Judges share one agent key, and one hire is one Scoping call of several thousand tokens against Groq's free
+  // 8000 tokens a minute. Requests the guard denies never reach the model, so they do not spend these.
+  /** Model calls per agent key: a short burst, then a pace the provider can sustain. */
+  agentLlm: { capacity: 6, refillPerMinute: 3 },
+  /** Model calls per caller on a shared key, so one client cannot lock the others out. */
+  agentLlmPerCaller: { capacity: 2, refillPerMinute: 1 },
+  /** Model calls per agent key per day. */
+  agentLlmDaily: { capacity: 100, refillPerMinute: 100 / 1440 },
+  /** Model calls across the whole app per day, web UI included: the backstop for the provider's quota. */
+  llmGlobalDaily: { capacity: 400, refillPerMinute: 400 / 1440 },
 } as const satisfies Record<string, Limit>;
 
 const buckets = new Map<string, Bucket>();
@@ -48,6 +58,27 @@ export class RateLimitError extends Error {
 export function enforce(key: string, limit: Limit): void {
   const wait = take(key, limit);
   if (wait > 0) throw new RateLimitError(wait);
+}
+
+/** Charges one agent hire that is about to call the model. Throws RateLimitError when any budget is spent. */
+export function chargeAgentLlm(clientId: string, caller: string): void {
+  enforce(`agentLlm:caller:${clientId}:${caller}`, LIMITS.agentLlmPerCaller);
+  enforce(`agentLlm:key:${clientId}`, LIMITS.agentLlm);
+  enforce(`agentLlm:day:${clientId}`, LIMITS.agentLlmDaily);
+}
+
+/** Wraps a real LLM so every call spends the app-wide daily budget. When it is spent agents fall back to a person. */
+export function withGlobalLlmBudget<L extends { structured: (...args: never[]) => unknown }>(llm: L): L {
+  return new Proxy(llm, {
+    get(target, prop, receiver) {
+      const value = Reflect.get(target, prop, receiver);
+      if (prop !== "structured") return value;
+      return (...args: never[]) => {
+        enforce("llm:global:day", LIMITS.llmGlobalDaily);
+        return target.structured(...args);
+      };
+    },
+  });
 }
 
 /** Client IP from the proxy headers Render (and most hosts) set; falls back to a constant. */

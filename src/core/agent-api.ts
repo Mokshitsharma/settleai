@@ -55,6 +55,7 @@ export class AgentApi {
   constructor(
     private readonly c: Container,
     private readonly client: AgentClient,
+    private readonly beforeLlm?: () => void,
   ) {}
 
   private requireScope(scope: string) {
@@ -113,6 +114,7 @@ export class AgentApi {
     await this.ownMandate(args.mandateId);
     const description = args.deadline ? `${args.description}\nDeadline: ${args.deadline}` : args.description;
     const r = await this.c.agentJobs.create({
+      beforeLlm: this.beforeLlm,
       clientId: this.client.id,
       mandateId: args.mandateId,
       description,

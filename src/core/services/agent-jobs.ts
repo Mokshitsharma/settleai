@@ -16,6 +16,8 @@ import type { JobRow, JobService } from "./jobs";
 import type { MandateService } from "./mandates";
 
 export interface AgentJobRequest {
+  /** Runs after the guard allows the request and before the model is called. May throw to refuse it. */
+  beforeLlm?: () => void;
   clientId: string;
   mandateId: string;
   description: string;
@@ -59,6 +61,7 @@ export class AgentJobService {
       return { ok: false, decision: pre, stage: "precheck" };
     }
 
+    req.beforeLlm?.(); // rate limits charge only what actually reaches the model
     // The budget is stated in the text, so the Scoping Agent's never-invent-amounts guard enforces it exactly.
     const scoped = await scopeJob(
       { db: this.db, llm: this.llm, emit },

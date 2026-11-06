@@ -10,6 +10,7 @@ import { loadConfig } from "@/core/config";
 import { createContainer, type Container } from "@/core/container";
 import { openTestDb } from "@/core/db/client";
 import { apiClients } from "@/core/db/schema";
+import { RateLimitError } from "@/core/rate-limit";
 import { seed } from "@/core/db/seed";
 import { PROCUREBOT_CLIENT_ID, seedDemo } from "@/core/db/seed-demo";
 import { FixedClock } from "@/core/ports/clock";
@@ -24,12 +25,14 @@ let deliveryMandate: string;
 const text = (r: unknown) => ((r as { content: { text: string }[] }).content[0]?.text ?? "");
 const json = (r: unknown) => JSON.parse(text(r).replace(/^[^{[]*\n\n/, ""));
 
+let activeAgent: Awaited<ReturnType<typeof authenticateAgent>> | undefined;
 beforeAll(async () => {
   const dbHandle = await openTestDb();
   await seed(dbHandle.db);
   c = await createContainer(loadConfig({}), { dbHandle, clock: new FixedClock(T0), payments: new MockPayPalAdapter() });
   [deliveryMandate] = (await seedDemo(c)).mandateIds;
   const agent = await authenticateAgent(c, `Bearer ${process.env.PROCUREBOT_API_KEY}`);
+  activeAgent = agent;
   const server = createSettleMcpServer(directBackend(new AgentApi(c, agent)));
   const [clientT, serverT] = InMemoryTransport.createLinkedPair();
   await server.connect(serverT);
@@ -81,6 +84,18 @@ describe("SettleAI MCP server", () => {
     const human = await c.jobs.createFromSpec({ payerId: "usr_ravi", spec: (await import("../fixtures/contracts")).sampleJobSpec, createdBy: "user:usr_ravi" });
     const r = await client.callTool({ name: "get_job_status", arguments: { jobId: human.id } });
     expect(r.isError).toBe(true);
+  });
+
+  it("a hire the guard denies never spends the model budget; an allowed one does, before the model runs", async () => {
+    let charged = 0;
+    const api = new AgentApi(c, activeAgent!, () => charged++);
+    const denied = (await api.createJob({ mandateId: deliveryMandate, description: "Repair the office AC at the shop", budgetMinor: 5000 })) as { created: boolean };
+    expect(denied.created).toBe(false);
+    expect(charged).toBe(0);
+    const refused = new AgentApi(c, activeAgent!, () => {
+      throw new RateLimitError(30);
+    });
+    await expect(refused.createJob({ mandateId: deliveryMandate, description: "Deliver 5 cartons of tea from Rajwada to Vijay Nagar", budgetMinor: 5000 })).rejects.toBeInstanceOf(RateLimitError);
   });
 
   it("a suspended agent key is refused", async () => {

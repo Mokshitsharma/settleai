@@ -10,6 +10,7 @@ import { createStubLlm } from "@/core/agents/stub-fixtures";
 import { config, type AppConfig } from "@/core/config";
 import { openDb, type DbHandle } from "@/core/db/client";
 import { EventHub } from "@/core/events/hub";
+import { withGlobalLlmBudget } from "@/core/rate-limit";
 import { systemClock, type ClockPort } from "@/core/ports/clock";
 import { setTimeSource } from "@/core/ports/time-source";
 import type { LlmPort } from "@/core/ports/llm";
@@ -95,9 +96,9 @@ export function buildPayments(cfg: AppConfig): PaymentsPort {
 export function buildLlm(cfg: AppConfig): LlmPort {
   switch (cfg.llmProvider) {
     case "xai":
-      return new XaiLlmAdapter(cfg.XAI_API_KEY!, cfg.llmModel);
+      return withGlobalLlmBudget(new XaiLlmAdapter(cfg.XAI_API_KEY!, cfg.llmModel));
     case "groq":
-      return new GroqLlmAdapter(cfg.GROQ_API_KEY!, cfg.llmModel, undefined, cfg.LLM_TEXT_MODEL);
+      return withGlobalLlmBudget(new GroqLlmAdapter(cfg.GROQ_API_KEY!, cfg.llmModel, undefined, cfg.LLM_TEXT_MODEL));
     case "anthropic":
       throw new Error("Anthropic adapter not included; use LLM_PROVIDER=xai or stub");
     default:
