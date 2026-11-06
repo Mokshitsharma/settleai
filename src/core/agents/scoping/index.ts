@@ -23,7 +23,9 @@ export function prohibitedHits(text: string): string[] {
 }
 
 export function guessCategory(text: string): Category {
-  if (/\b(deliver|delivery|pick ?up|parcel|courier|carton|drop[- ]?off|ship)\b/i.test(text)) return "delivery";
+  // Service words win, so adding "deliver" or "move" to a repair request cannot slip it into a delivery-only mandate.
+  if (/\b(repair\w*|fix\w*|install\w*|servic(e|es|ing)|maintenance|clean\w*|paint\w*|plumb\w*|electrician|carpent\w*)\b/i.test(text)) return "onsite_service";
+  if (/\b(deliver(y|ies|s|ed|ing)?|pick ?ups?|parcels?|couriers?|cartons?|boxes|crates?|sacks?|drop[- ]?offs?|ship(s|ping|ment|ments)?|move|moves|moving|transport\w*|haul\w*)\b/i.test(text)) return "delivery";
   if (/\b(design|logo|document|report|pdf|write|translate|spreadsheet|deck|data entry|figma)\b/i.test(text)) return "digital_deliverable";
   return "onsite_service";
 }

@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { StubLlmAdapter } from "@/core/adapters/llm/stub";
 import { runAgent } from "@/core/agents/runtime";
-import { scopeJob, statedAmounts } from "@/core/agents/scoping";
+import { guessCategory, scopeJob, statedAmounts } from "@/core/agents/scoping";
 import { createStubLlm } from "@/core/agents/stub-fixtures";
 import { JobSpec } from "@/core/contracts";
 import { agentRuns } from "@/core/db/schema";
@@ -93,5 +93,21 @@ describe("scoping agent (stub)", () => {
       expect(r.output.riskNotes.join(" ")).toMatch(/gift card/);
       expect(r.output.confidence).toBeLessThanOrEqual(0.3);
     }
+  });
+});
+
+describe("guessCategory", () => {
+  it.each([
+    ["Move 20 cartons of tea from Rajwada to Vijay Nagar", "delivery"],
+    ["Deliver 12 cartons of tea to my shop", "delivery"],
+    ["Transport 8 sacks of sugar to Palasia", "delivery"],
+    ["Pick up two parcels and drop off at the depot", "delivery"],
+    ["Repair the office AC at the shop", "onsite_service"],
+    ["Fix the leaking tap", "onsite_service"],
+    ["Deliver and repair the AC at the shop", "onsite_service"],
+    ["Move the AC, then install and service it", "onsite_service"],
+    ["Design a logo for the shop", "digital_deliverable"],
+  ])("%s -> %s", (text, expected) => {
+    expect(guessCategory(text)).toBe(expected);
   });
 });
