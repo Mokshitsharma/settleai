@@ -18,7 +18,7 @@ const INDORE = { lat: 22.7196, lng: 75.8577, radiusKm: 25, label: "Indore" };
 
 /** Where a local (non-deployed) seed keeps its generated key, so `pnpm procurebot` can read it. Git-ignored. */
 export function procurebotKeyFile(): string {
-  return path.resolve(process.env.PROCUREBOT_KEY_FILE ?? ".data/procurebot-key");
+  return path.resolve(/*turbopackIgnore: true*/ process.env.PROCUREBOT_KEY_FILE ?? ".data/procurebot-key");
 }
 
 // No key is ever published in this repository. PROCUREBOT_API_KEY wins when set. Otherwise each seed uses a random key:

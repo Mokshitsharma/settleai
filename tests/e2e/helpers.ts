@@ -4,7 +4,7 @@ export const SHOTS = ".data/screens";
 
 /** Screenshots are for design review, not assertions: never fail a test because capture failed. */
 export async function shot(page: Page, name: string) {
-  await page.waitForLoadState("networkidle").catch(() => {});
+  await page.waitForLoadState("networkidle", { timeout: 3_000 }).catch(() => {}); // the live event stream may never idle
   for (const fullPage of [true, false]) {
     try {
       await page.screenshot({ path: `${SHOTS}/${name}.png`, fullPage });

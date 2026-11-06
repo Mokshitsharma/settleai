@@ -66,4 +66,23 @@ describe("reconciliation (F20)", () => {
     expect(after.releasedMinor).toBe(before.releasedMinor);
     expect(await c.ledger.checkInvariants()).toEqual([]);
   });
+
+  it("repeated lookups of payouts this process did not make do not open the PayPal breaker", async () => {
+    await paidMilestone();
+    const other = new MockPayPalAdapter();
+    const c2 = await createContainer(loadConfig({}), { dbHandle: c.dbHandle, clock: new FixedClock(T0), payments: other });
+    for (let i = 0; i < 6; i++) expect((await c2.reconciliation.run()).unverifiable).toBeGreaterThan(0);
+    expect(c2.paypalBreaker.state).toBe("closed");
+  });
+
+  it("in LIVE mode, seeded mock payouts are unverifiable, not mismatches, and PayPal is not asked", async () => {
+    await paidMilestone();
+    const live = new Proxy(new MockPayPalAdapter(), {
+      get: (t, k, r) => (k === "mode" ? "LIVE" : k === "getPayoutItem" ? () => { throw new Error("must not call PayPal"); } : Reflect.get(t, k, r)),
+    });
+    const c2 = await createContainer(loadConfig({}), { dbHandle: c.dbHandle, clock: new FixedClock(T0), payments: live });
+    const report = await c2.reconciliation.run();
+    expect(report.mismatches.filter((m) => m.kind === "payout_lookup_failed")).toEqual([]);
+    expect(report.unverifiable).toBeGreaterThan(0);
+  });
 });

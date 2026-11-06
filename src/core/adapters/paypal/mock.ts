@@ -123,7 +123,7 @@ export class MockPayPalAdapter implements PaymentsPort {
 
   async getPayoutItem(itemId: string): Promise<PayoutResult> {
     const payout = this.payouts.get(itemId);
-    if (!payout) throw new Error(`Unknown mock payout item ${itemId}`);
+    if (!payout) throw Object.assign(new Error(`Unknown mock payout item ${itemId}`), { retryable: false }); // like PayPal's 404: not an outage
     return payout;
   }
 

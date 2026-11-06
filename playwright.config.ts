@@ -22,14 +22,17 @@ export default defineConfig({
     { name: "desktop", use: { ...devices["Desktop Chrome"] } },
   ],
   webServer: {
-    command: `pnpm db:reset && pnpm exec next dev -p ${PORT}`,
+    // Production build: dev-server compiles on first hit made time-sensitive journeys flaky (challenge window).
+    command: `pnpm build && pnpm db:reset && pnpm exec next start -p ${PORT}`,
     url: `http://localhost:${PORT}/api/health`,
-    timeout: 180_000,
+    timeout: 300_000,
     reuseExistingServer: false,
     env: {
       APP_MODE: "MOCK",
       PROCUREBOT_API_KEY: process.env.PROCUREBOT_API_KEY ?? randomBytes(24).toString("hex"),
       LLM_PROVIDER: "stub",
+      API_KEY_PEPPER: "e2e-only-pepper",
+      SESSION_SECRET: "e2e-only-session-secret-at-least-32-chars",
       PGLITE_DATA_DIR: ".data/e2e",
       CHALLENGE_WINDOW_SECONDS: "30", // long enough to open a dispute through the UI
     },

@@ -62,6 +62,7 @@ export class CircuitBreaker {
       return out;
     } catch (err) {
       if (this.isFailure(err)) {
+        console.error(`${this.name} call failed:`, (err as Error).message);
         this.failures++;
         if (state === "half_open" || this.failures >= this.threshold) {
           this.state_ = "open";

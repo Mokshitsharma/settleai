@@ -21,7 +21,7 @@ test("J3: payer disputes in the challenge window; arbiter splits 70/30 with a li
   await expect(dispute.getByText("Arbiter proposal")).toBeVisible();
   await expect(dispute.getByText("$28.00")).toBeVisible();
   await expect(dispute.getByText("Work partly done")).toBeVisible();
-  await expect(dispute.getByText(/Payment Mandate, milestone 1: $40.00 settles only when/)).toBeVisible();
+  await expect(dispute.getByText("Payment Mandate, milestone 1: $40.00 settles only when")).toBeVisible();
   await shot(page, "20-dispute-proposal");
   await page.getByRole("button", { name: "Accept", exact: true }).click();
   await expect(dispute.getByText(/Payer: accept/)).toBeVisible();

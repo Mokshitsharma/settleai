@@ -38,6 +38,11 @@ export class ReconciliationService {
 
     const pays = await this.db.select().from(payouts).where(inArray(payouts.status, ["PROCESSING", "PENDING", "SUCCEEDED", "UNCLAIMED", "ONHOLD"]));
     for (const p of pays) {
+      // Seeded demo history was paid by the mock; PayPal cannot be asked about those ids.
+      if (p.paypalItemId?.startsWith("MOCK-") && this.payments.mode === "LIVE") {
+        unverifiable++;
+        continue;
+      }
       if (!p.paypalItemId) {
         mismatches.push({ kind: "payout_without_item", ref: p.id, detail: "PayPal never returned a payout item id for this batch" });
         continue;
