@@ -51,6 +51,7 @@ const MATRIX: Record<string, Caller[] | "public" | "skip"> = {
   "POST dev/agent-request": ["payer"],
   "POST dev/mock-paypal/approve": ["payer"],
   "POST dev/sample-proof": ["worker"],
+  "POST dev/sample-damage": ["payer", "worker"],
   "POST dev/simulate-webhook": ["admin"],
   "GET dispute-evidence/[id]/image": ANY_USER,
   "POST disputes/[id]/evidence": ["payer", "worker"],

@@ -187,3 +187,12 @@ Prize-stacking limit comes from `docs/STATUS.md`; confirm on Devpost.
 - **Blocked:** payouts return 403 `PAYOUT_NOT_AVAILABLE` on `APP-1J968271LM1368825`, the old India app; the new app's credentials are not in `.env.local`.
 - **Blocked:** generated sample photos do not pass the real model, which reads them as graphics. The auto-release path needs real photos.
 - **Requirement:** the live demo must stay up and free through 15 Dec 2026.
+
+## 6 Nov 2026, later
+
+- **`pnpm live:flow` not run:** `.env.local` still holds `APP-1J968271LM1368825` (old app) and no `SANDBOX_BUYER_PASSWORD`. PayPal evidence: order, capture, payout batch and refund ids pending.
+- **Groq:** one real call each to `qwen/qwen3.8-27b` and `openai/gpt-oss-120b` returned 200. The key in `.env.local` is still the one pasted in chat, so it is not rotated yet.
+- **ProcureBot live:** ran on `openai/gpt-oss-20b` through MCP against a local server; out-of-scope hires denied, in-scope job created.
+- **Render:** `render.yaml` provisions one free web service and no database; the demo uses embedded PGlite, so Render's 30-day free Postgres expiry does not apply. Boot restores a build-time template (about 6 s here). Wake time on 0.1 CPU to be measured after deploy.
+- **Photos:** `demo-photos/` (git-ignored) and `pnpm photos:prepare` are ready; names must start with pickup, dropoff or damage.
+- **Drafts:** `docs/video/SCRIPT.md`, `docs/DEVPOST.md`.
