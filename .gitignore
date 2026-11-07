@@ -78,3 +78,6 @@ build/
 
 # Private signing key; only docs/platform-public-key.json is published
 /.secrets/
+
+# The demo video is uploaded to YouTube, not stored in git
+docs/video/*.mp4

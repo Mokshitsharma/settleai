@@ -51,6 +51,9 @@ pnpm procurebot          # terminal 2: an agent hires through the MCP server; on
 `pnpm procurebot` runs the scripted agent; `PROCUREBOT_MODE=live` lets a real model choose the tools. Any MCP client can connect; see [src/mcp/README.md](src/mcp/README.md). Agents can create and track jobs but can never
 fund or pay.
 
+Against the live demo, an MCP client uses `SETTLEAI_URL=https://settleai-07ue.onrender.com` and the ProcureBot key given to
+judges in the Devpost testing instructions. The key is never in this repository.
+
 ### Live mode (optional)
 
 ```bash

@@ -17,13 +17,12 @@ Re-check each source before quoting it; mark the date you checked.
 
 | Claim | Figure | Source | Checked |
 |---|---|---|---|
-| Size of India's gig workforce | 7.7 million in 2020-21, projected 23.5 million by 2029-30 | NITI Aayog, *India's Booming Gig and Platform Economy* (June 2022); [PIB release](https://pib.gov.in/PressReleasePage.aspx?PRID=1837277) | {{date}} |
-| Freelancers who struggle to get paid (US) | 1 in 2 had trouble getting paid in a year; nonpayment cost the average respondent 13% of income | Freelancers Union nonpayment survey of 5,358 freelancers ([report PDF](https://onlabor.org/wp-content/uploads/2017/05/FU_NonpaymentReport_r3.pdf)) | {{date}} |
-| Late or unpaid work (New York) | 74% had experienced nonpayment or late payment | NYC Mayor's Office, *Freelancing in New York* (2019, [PDF](https://www.nyc.gov/assets/mome/pdf/freelancing-ny-report-09062019.pdf)) | {{date}} |
-| {{An India-specific figure on delayed payment to gig or delivery workers, if a primary source exists}} | {{figure}} | {{primary source}} | {{date}} |
+| Size of India's gig workforce | 7.7 million in 2020-21, projected 23.5 million by 2029-30 | NITI Aayog, *India's Booming Gig and Platform Economy* (June 2022); [PIB release](https://pib.gov.in/PressReleasePage.aspx?PRID=1837277) | 7 Nov 2026, via search results; primary document not re-read |
+| Freelancers who struggle to get paid (US) | 1 in 2 had trouble getting paid in a year; nonpayment cost the average respondent 13% of income | Freelancers Union nonpayment survey of 5,358 freelancers ([report PDF](https://onlabor.org/wp-content/uploads/2017/05/FU_NonpaymentReport_r3.pdf)) | 7 Nov 2026, via search results; primary document not re-read |
+| Late or unpaid work (New York) | 74% had experienced nonpayment or late payment | NYC Mayor's Office, *Freelancing in New York* (2019, [PDF](https://www.nyc.gov/assets/mome/pdf/freelancing-ny-report-09062019.pdf)) | 7 Nov 2026, via search results; primary document not re-read |
 
-Use the US figures as context, not as India figures. If no India-specific primary source on late payment is found, say so
-instead of borrowing a number.
+Use the US figures as context, not as India figures. No India-specific primary source on late payment was found, so none is
+quoted.
 
 ## 2. What we heard: conversations
 
@@ -33,9 +32,9 @@ small jobs. Use [INTERVIEW-GUIDE.md](INTERVIEW-GUIDE.md). Store each as `intervi
 
 | # | Role | City | Date | Key finding (one line) | Quote approved for use |
 |---|---|---|---|---|---|
-| 1 | {{role}} | {{city}} | {{date}} | {{finding}} | {{yes / no}} |
-| 2 | {{role}} | {{city}} | {{date}} | {{finding}} | {{yes / no}} |
-| 3 | {{role}} | {{city}} | {{date}} | {{finding}} | {{yes / no}} |
+| 1 | {{role}} | {{city}} | 7 Nov 2026, via search results; primary document not re-read | {{finding}} | {{yes / no}} |
+| 2 | {{role}} | {{city}} | 7 Nov 2026, via search results; primary document not re-read | {{finding}} | {{yes / no}} |
+| 3 | {{role}} | {{city}} | 7 Nov 2026, via search results; primary document not re-read | {{finding}} | {{yes / no}} |
 | 4 | {{optional}} | | | | |
 | 5 | {{optional}} | | | | |
 

@@ -1,0 +1,168 @@
+1
+00:00:04,200 --> 00:00:07,076
+AI agents are starting to spend money and hire
+
+2
+00:00:07,076 --> 00:00:09,632
+people. When an agent overspends, or the work
+
+3
+00:00:09,632 --> 00:00:11,230
+never happens, who is accountable?
+
+4
+00:00:12,530 --> 00:00:15,127
+SettleAI is the accountability layer. A person
+
+5
+00:00:15,127 --> 00:00:18,467
+signs what an agent may do. The money waits,
+
+6
+00:00:18,467 --> 00:00:21,436
+proof is checked, and every decision leaves a
+
+7
+00:00:21,436 --> 00:00:22,920
+receipt anyone can verify.
+
+8
+00:00:24,220 --> 00:00:26,624
+Ravi has signed a mandate for his agent:
+
+9
+00:00:26,624 --> 00:00:29,027
+delivery jobs only, up to one hundred fifty
+
+10
+00:00:29,027 --> 00:00:30,830
+dollars each, four hundred in total.
+
+11
+00:00:32,130 --> 00:00:35,176
+The agent tries a five hundred dollar job
+
+12
+00:00:35,176 --> 00:00:37,460
+outside that mandate. Mandate Guard is
+
+13
+00:00:37,460 --> 00:00:39,745
+deterministic code. It denies the request
+
+14
+00:00:39,745 --> 00:00:42,410
+before any money moves, and says why.
+
+15
+00:00:43,710 --> 00:00:46,503
+Inside the mandate, the agent hires a courier.
+
+16
+00:00:46,503 --> 00:00:49,645
+Ravi funds the job on the PayPal sandbox, with
+
+17
+00:00:49,645 --> 00:00:52,786
+Orders version two. The money is held on the
+
+18
+00:00:52,786 --> 00:00:55,230
+platform account until the work is proven.
+
+19
+00:00:56,530 --> 00:00:59,613
+The worker submits a photo. Rules check
+
+20
+00:00:59,613 --> 00:01:02,696
+location, time and duplicates first. Then a
+
+21
+00:01:02,696 --> 00:01:05,779
+vision model judges each criterion, and policy
+
+22
+00:01:05,779 --> 00:01:07,100
+approves the release.
+
+23
+00:01:08,400 --> 00:01:11,894
+Ravi disputes the delivery and adds a photo of
+
+24
+00:01:11,894 --> 00:01:14,612
+the damage. The arbiter returns a liability
+
+25
+00:01:14,612 --> 00:01:17,329
+finding that cites the mandate clause, the
+
+26
+00:01:17,329 --> 00:01:20,047
+criteria and the evidence. Both sides accept,
+
+27
+00:01:20,047 --> 00:01:21,600
+and PayPal settles it.
+
+28
+00:01:22,900 --> 00:01:25,272
+Someone reuses that photo on another job. The
+
+29
+00:01:25,272 --> 00:01:27,348
+perceptual hash catches it, the payout is
+
+30
+00:01:27,348 --> 00:01:30,313
+held, and it waits in the risk queue for a
+
+31
+00:01:30,313 --> 00:01:30,610
+person.
+
+32
+00:01:31,910 --> 00:01:34,972
+Every step is signed into a receipt. Anyone
+
+33
+00:01:34,972 --> 00:01:38,035
+can verify it, without trusting us. Change one
+
+34
+00:01:38,035 --> 00:01:40,714
+byte, and verification fails, pointing to the
+
+35
+00:01:40,714 --> 00:01:41,480
+broken link.
+
+36
+00:01:42,780 --> 00:01:46,389
+In our repeatable test scenarios, no bad proof
+
+37
+00:01:46,389 --> 00:01:49,547
+was auto-paid, and every tampered receipt was
+
+38
+00:01:49,547 --> 00:01:52,254
+caught. Next: production key custody, a
+
+39
+00:01:52,254 --> 00:01:54,510
+regulated partner, and PayPal Invoicing.
+
+40
+00:01:55,810 --> 00:01:58,660
+This runs on the PayPal sandbox with test
+
+41
+00:01:58,660 --> 00:02:01,510
+money. The mandates are inspired by AP2. They
+
+42
+00:02:01,510 --> 00:02:04,360
+are not official, and not endorsed by PayPal.
+

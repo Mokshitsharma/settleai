@@ -74,6 +74,16 @@ Limits inside a prompt aren't limits; enforcement has to sit in code after the m
 
 PayPal Invoicing through the Agent Toolkit, a Concierge agent, document deliverables, production key custody (KMS or HSM), a regulated partner, and a third-party security review.
 
+## Gallery (docs/devpost/, 1920x1080, from the live site)
+
+1. `1-landing.png`: landing page with the PayPal sandbox badge and the four things to try
+2. `2-denied-before-money-moves.png`: an out-of-mandate agent request denied with reason codes
+3. `3-decision-card-real-model.png`: Decision Card with the real vision model's verdict and a webhook-confirmed capture
+4. `4-liability-finding-cites-mandate.png`: Arbiter proposal and the liability finding citing the Payment Mandate, settled through PayPal
+5. `5-ag-grid-risk-queue.png`: AG Grid review queue with the reused photo held
+
+Video: under 3 minutes on YouTube (link added at upload). Thumbnail and captions in `docs/video/`.
+
 ## Built with
 
 PayPal Orders v2, Payouts v1, Payments v2, Webhooks · Groq (Qwen, gpt-oss) · Model Context Protocol · Next.js · TypeScript · PGlite · Drizzle ORM · Zod · jose · canonicalize · @noble/hashes · sharp · exifr · AG Grid Community · Vitest · Playwright · Render
@@ -98,5 +108,17 @@ No sign-up: click **Payer**, **Worker** or **Admin** on the landing page. To pay
 | Revoke | Payer, **Revoke** a mandate during a challenge window | The payout pauses before any PayPal call |
 | Verify | Open the [showcase receipt](https://settleai-07ue.onrender.com/receipt/showcase), or a job's **Open the public receipt**, or go to **/verify** | All green; change one byte and it fails, pointing at the broken link |
 | Operate | **Admin** | AG Grid console: KPIs, review queue, disputes, ledger, guard checks, AI runs |
+
+**Connect your own AI agent (optional).** SettleAI's agent API and MCP server accept the ProcureBot key given in the private
+testing-instructions field. Run the MCP server locally against the live site:
+
+```bash
+git clone https://github.com/Mokshitsharma/settleai && cd settleai && pnpm install
+SETTLEAI_URL=https://settleai-07ue.onrender.com SETTLEAI_API_KEY=<key from the testing field> pnpm mcp
+```
+
+Or let the reference agent do it: `SETTLEAI_URL=https://settleai-07ue.onrender.com SETTLEAI_API_KEY=<key> pnpm procurebot`.
+Hires the guard denies cost nothing; allowed hires are rate-limited per key and per caller, so one tester cannot use up the
+shared model budget.
 
 **Local, no keys:** `pnpm install && pnpm db:reset && pnpm dev`, then open http://localhost:3000. With no keys, PayPal and AI run as clearly labelled mocks.
