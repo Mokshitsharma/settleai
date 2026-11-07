@@ -179,7 +179,7 @@ export class AnalyticsService {
       at: e.createdAt.toISOString(),
       txn: e.txnId,
       kind: t.kind,
-      account: a.code.startsWith("ESCROW:") ? "Escrow" : a.code === "PAYPAL_BALANCE" ? "PayPal balance" : a.code === "FEE_REVENUE" ? "Fee revenue" : a.code,
+      account: a.code.startsWith("ESCROW:") ? "Escrow" : a.code === "PAYPAL_BALANCE" ? "PayPal balance" : a.code === "PAYPAL_FEES" ? "PayPal fees" : a.code === "FEE_REVENUE" ? "Fee revenue" : a.code,
       job: a.jobId ?? "",
       debitMinor: e.debitMinor || null,
       creditMinor: e.creditMinor || null,

@@ -26,6 +26,8 @@ export interface CaptureResult {
   captureId: string;
   status: "COMPLETED" | "DECLINED" | "PARTIALLY_REFUNDED" | "PENDING" | "REFUNDED" | "FAILED";
   amountMinor: number;
+  /** What PayPal kept (seller_receivable_breakdown.paypal_fee), when reported. */
+  paypalFeeMinor?: number;
   raw: unknown;
 }
 
@@ -54,6 +56,8 @@ export type PayoutItemStatus =
 export const TERMINAL_PAYOUT_FAILURES: readonly PayoutItemStatus[] = ["FAILED", "BLOCKED", "RETURNED", "REVERSED"];
 
 export interface PayoutResult {
+  /** What PayPal charged the sender for this item (payout_item_fee), when reported. */
+  paypalFeeMinor?: number;
   batchId: string;
   itemId?: string; // may be absent until the batch is processed
   status: PayoutItemStatus;
@@ -71,6 +75,8 @@ export interface RefundInput {
 }
 
 export interface RefundResult {
+  /** The part of its original fee PayPal gave back (seller_payable_breakdown.paypal_fee), when reported. */
+  paypalFeeReturnedMinor?: number;
   refundId: string;
   status: "COMPLETED" | "PENDING" | "FAILED" | "CANCELLED";
   raw: unknown;
@@ -92,7 +98,7 @@ export interface PaymentsPort {
   /** Item status for a batch; used when a payout webhook has not arrived. */
   getPayoutBatch(batchId: string): Promise<PayoutResult>;
   /** Capture status from PayPal; used when the capture webhook has not arrived. */
-  getCapture(captureId: string): Promise<{ captureId: string; status: string; amountMinor: number; orderId?: string }>;
+  getCapture(captureId: string): Promise<{ captureId: string; status: string; amountMinor: number; orderId?: string; paypalFeeMinor?: number }>;
   refundCapture(input: RefundInput): Promise<RefundResult>;
   /** Returns the parsed event only when the signature verifies; otherwise null. */
   verifyWebhook(headers: Record<string, string>, body: string): Promise<WebhookEvent | null>;

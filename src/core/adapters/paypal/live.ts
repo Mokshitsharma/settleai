@@ -34,6 +34,8 @@ export class PayPalApiError extends Error {
 
 const TokenResponse = z.object({ access_token: z.string(), expires_in: z.number() });
 const Link = z.object({ href: z.string(), rel: z.string() });
+const FeeBreakdown = z.object({ paypal_fee: z.object({ value: z.string() }).optional() }).optional();
+const feeOf = (b: z.infer<typeof FeeBreakdown>) => (b?.paypal_fee ? fromPayPalValue(b.paypal_fee.value) : undefined);
 const OrderResponse = z.object({ id: z.string(), status: z.string(), links: z.array(Link).optional() });
 const CaptureResponse = z.object({
   id: z.string(),
@@ -41,7 +43,7 @@ const CaptureResponse = z.object({
     z.object({
       payments: z
         .object({
-          captures: z.array(z.object({ id: z.string(), status: z.string(), amount: z.object({ value: z.string() }) })).optional(),
+          captures: z.array(z.object({ id: z.string(), status: z.string(), amount: z.object({ value: z.string() }), seller_receivable_breakdown: FeeBreakdown })).optional(),
         })
         .optional(),
     }),
@@ -55,6 +57,7 @@ const PayoutItemResponse = z.object({
   payout_batch_id: z.string(),
   transaction_status: z.string(),
   errors: z.object({ name: z.string().optional(), message: z.string().optional() }).optional(),
+  payout_item_fee: z.object({ value: z.string() }).optional(),
 });
 const PayoutBatchDetails = z.object({
   items: z
@@ -63,6 +66,7 @@ const PayoutBatchDetails = z.object({
         payout_item_id: z.string(),
         transaction_status: z.string().optional(),
         errors: z.object({ name: z.string().optional(), message: z.string().optional() }).optional(),
+        payout_item_fee: z.object({ value: z.string() }).optional(),
       }),
     )
     .optional(),
@@ -71,9 +75,10 @@ const CaptureDetails = z.object({
   id: z.string(),
   status: z.string(),
   amount: z.object({ value: z.string() }),
+  seller_receivable_breakdown: FeeBreakdown,
   supplementary_data: z.object({ related_ids: z.object({ order_id: z.string().optional() }).optional() }).optional(),
 });
-const RefundResponse = z.object({ id: z.string(), status: z.enum(["COMPLETED", "PENDING", "FAILED", "CANCELLED"]) });
+const RefundResponse = z.object({ id: z.string(), status: z.enum(["COMPLETED", "PENDING", "FAILED", "CANCELLED"]), seller_payable_breakdown: FeeBreakdown });
 const VerifyResponse = z.object({ verification_status: z.enum(["SUCCESS", "FAILURE"]) });
 const WebhookBody = z.object({ id: z.string(), event_type: z.string(), resource: z.record(z.string(), z.unknown()) });
 
@@ -202,6 +207,7 @@ export class PayPalAdapter implements PaymentsPort {
       captureId: capture.id,
       status: capture.status as CaptureResult["status"],
       amountMinor: fromPayPalValue(capture.amount.value),
+      paypalFeeMinor: feeOf(capture.seller_receivable_breakdown),
       raw,
     };
   }
@@ -237,6 +243,7 @@ export class PayPalAdapter implements PaymentsPort {
       itemId: item.payout_item_id,
       status: mapPayoutStatus(item.transaction_status),
       failureReason: item.errors?.name ?? item.errors?.message,
+      paypalFeeMinor: item.payout_item_fee ? fromPayPalValue(item.payout_item_fee.value) : undefined,
       raw,
     };
   }
@@ -250,6 +257,7 @@ export class PayPalAdapter implements PaymentsPort {
       itemId: item?.payout_item_id,
       status: item ? mapPayoutStatus(item.transaction_status ?? "") : "PENDING",
       failureReason: item?.errors?.name ?? item?.errors?.message,
+      paypalFeeMinor: item?.payout_item_fee ? fromPayPalValue(item.payout_item_fee.value) : undefined,
       raw,
     };
   }
@@ -262,6 +270,7 @@ export class PayPalAdapter implements PaymentsPort {
       status: capture.status,
       amountMinor: fromPayPalValue(capture.amount.value),
       orderId: capture.supplementary_data?.related_ids?.order_id,
+      paypalFeeMinor: feeOf(capture.seller_receivable_breakdown),
     };
   }
 
@@ -277,7 +286,7 @@ export class PayPalAdapter implements PaymentsPort {
       input.requestId,
     );
     const refund = RefundResponse.parse(raw);
-    return { refundId: refund.id, status: refund.status, raw };
+    return { refundId: refund.id, status: refund.status, paypalFeeReturnedMinor: feeOf(refund.seller_payable_breakdown), raw };
   }
 
   async verifyWebhook(headers: Record<string, string>, body: string): Promise<WebhookEvent | null> {

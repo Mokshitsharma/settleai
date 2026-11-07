@@ -1,4 +1,5 @@
 import { sha256Hex } from "@/core/mandates/canonical";
+import { toPayPalValue } from "@/core/ports/payments";
 import type {
   CaptureResult,
   CreateOrderInput,
@@ -16,6 +17,8 @@ export interface MockPayPalOptions {
   captureDelayMs?: number;
   /** Prefix that keeps ids unique across processes sharing one database (seed script vs app). */
   idTag?: string;
+  /** PayPal's fees to simulate; off by default. */
+  fees?: { captureMinor?: number; payoutMinor?: number; refundReturnedMinor?: number };
 }
 
 export const MOCK_WEBHOOK_HEADER = "x-settleai-mock-webhook";
@@ -89,6 +92,7 @@ export class MockPayPalAdapter implements PaymentsPort {
         id: captureId,
         amount: { value: (order.amountMinor / 100).toFixed(2), currency_code: "USD" },
         supplementary_data: { related_ids: { order_id: orderId } },
+        ...(this.options.fees?.captureMinor !== undefined ? { seller_receivable_breakdown: { paypal_fee: { value: toPayPalValue(this.options.fees.captureMinor) } } } : {}),
       });
       return { orderId, captureId, status: "COMPLETED" as const, amountMinor: order.amountMinor, raw: { mock: true } };
     });
@@ -101,7 +105,7 @@ export class MockPayPalAdapter implements PaymentsPort {
       const fail = this.shouldFail(input.requestId);
       const result: PayoutResult = fail
         ? { batchId, itemId, status: "FAILED", failureReason: "MOCK_INJECTED_FAILURE", raw: { mock: true } }
-        : { batchId, itemId, status: "SUCCEEDED", raw: { mock: true } };
+        : { batchId, itemId, status: "SUCCEEDED", paypalFeeMinor: this.options.fees?.payoutMinor, raw: { mock: true } };
       this.payouts.set(itemId, result);
       this.emit(fail ? "PAYMENT.PAYOUTS-ITEM.FAILED" : "PAYMENT.PAYOUTS-ITEM.SUCCEEDED", {
         payout_item_id: itemId,
@@ -109,6 +113,7 @@ export class MockPayPalAdapter implements PaymentsPort {
         payout_item: { sender_item_id: input.senderItemId },
         // Real PayPal wording: the event is ...SUCCEEDED but the status field says SUCCESS.
         transaction_status: fail ? "FAILED" : "SUCCESS",
+        ...(this.options.fees?.payoutMinor !== undefined && !fail ? { payout_item_fee: { value: toPayPalValue(this.options.fees.payoutMinor) } } : {}),
       });
       return result;
     });
@@ -135,7 +140,7 @@ export class MockPayPalAdapter implements PaymentsPort {
   async getCapture(captureId: string) {
     const capture = this.captures.get(captureId);
     if (!capture) throw Object.assign(new Error(`Unknown mock capture ${captureId}`), { retryable: false });
-    return { captureId, status: "COMPLETED", amountMinor: capture.amountMinor };
+    return { captureId, status: "COMPLETED", amountMinor: capture.amountMinor, paypalFeeMinor: this.options.fees?.captureMinor };
   }
 
   async refundCapture(input: RefundInput): Promise<RefundResult> {

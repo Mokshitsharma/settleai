@@ -1,0 +1,18 @@
+{
+  "keyIds": [
+    "key_mAY01ASyQW6Rs5thTXH27L_G"
+  ],
+  "keys": [
+    {
+      "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G",
+      "alg": "ES256",
+      "publicJwk": {
+        "kty": "EC",
+        "crv": "P-256",
+        "x": "qjbRqPQZP7ssOhgUlIZ5nTotIyr-8pqphBnr9b1F-VQ",
+        "y": "eIT1oSt1G3qTm_4bKRMiJDaZKvqMrO2L8rAxRKYZ7Yk"
+      },
+      "status": "active"
+    }
+  ]
+}

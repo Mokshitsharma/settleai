@@ -143,7 +143,7 @@ export class TreasuryService {
       .update(payouts)
       .set({ paypalBatchId: result.batchId, paypalItemId: result.itemId ?? null, rawJson: result.raw as object, status: "PROCESSING", updatedAt: this.clock.now() })
       .where(eq(payouts.id, payoutId));
-    await this.applyPayoutStatus({ payoutId, status: result.status, itemId: result.itemId, failureReason: result.failureReason }, actor);
+    await this.applyPayoutStatus({ payoutId, status: result.status, itemId: result.itemId, failureReason: result.failureReason, paypalFeeMinor: result.paypalFeeMinor }, actor);
     const [fresh] = await this.db.select().from(releases).where(eq(releases.id, rel.id));
     return { status: fresh.status, payoutId };
   }
@@ -170,7 +170,7 @@ export class TreasuryService {
    * stale or repeated updates are ignored. On SUCCEEDED: ledger, milestone RELEASED, attestation.
    */
   async applyPayoutStatus(
-    args: { payoutId?: string; senderItemId?: string; itemId?: string; status: PayoutItemStatus; failureReason?: string },
+    args: { payoutId?: string; senderItemId?: string; itemId?: string; status: PayoutItemStatus; failureReason?: string; paypalFeeMinor?: number },
     actor = "system",
   ): Promise<"applied" | "ignored"> {
     const outcome = await this.db.transaction(async (tx) => {
@@ -195,6 +195,7 @@ export class TreasuryService {
         assertTransition("RELEASE", rel.status, "PAYOUT_SUCCEEDED");
         await tx.update(releases).set({ status: "PAYOUT_SUCCEEDED", updatedAt: this.clock.now() }).where(eq(releases.id, rel.id));
         const posted = await this.ledger.recordRelease({ jobId: ms.jobId, releaseId: rel.id, payoutMinor: rel.amountMinor, feeMinor: rel.feeMinor }, tx);
+        if (args.paypalFeeMinor !== undefined) await this.ledger.recordPayPalFee({ refType: "payout", refId: po.id, feeMinor: args.paypalFeeMinor }, tx);
         // A repeated success (late webhook, reconciliation) must not count the same release twice.
         const releasedMinor = posted.duplicate ? ms.releasedMinor : ms.releasedMinor + rel.amountMinor;
         const fullyReleased = releasedMinor >= ms.amountMinor;
@@ -306,6 +307,7 @@ export class TreasuryService {
         .where(eq(refunds.id, refundId));
       if (result.status === "COMPLETED") {
         await this.ledger.recordRefund({ jobId: args.jobId, refundId, amountMinor: args.amountMinor }, tx);
+        if (result.paypalFeeReturnedMinor !== undefined) await this.ledger.recordPayPalFeeReturned({ refType: "refund", refId: refundId, feeMinor: result.paypalFeeReturnedMinor }, tx);
         await this.audit.append(
           { actor: args.actor, action: "refund.completed", entityType: "job", entityId: args.jobId, payload: { refundId, amountMinor: args.amountMinor, paypalRefundId: result.refundId } },
           tx,

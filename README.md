@@ -162,6 +162,20 @@ pnpm verify-receipt receipt.json --platform-keys keys.json   # offline receipt c
 - **Digital document deliverable uploads (scenarios S07/S08 in eval/scenarios.json) are not built:** Only physical delivery proofs (photos with GPS/EXIF metadata and perceptual hashes) are implemented in the current milestone verification engine. Document/PDF section parsing is not built.
 - **Load test & capacity numbers are unmeasured estimates:** k6 was not executed in this environment; all throughput, capacity and latency figures in docs/architecture.md are back-of-the-envelope estimates, not measured benchmarks. Concurrency safety is verified functionally by the webhook storm in `tests/unit/drills.test.ts` and the 50-way spend-cap race in `tests/unit/mandates.test.ts`.
 
+## Verify a receipt yourself
+
+Receipts are signed by this platform key, so you can check one without trusting the server. Download a receipt from any job, then:
+
+```bash
+pnpm verify-receipt receipt.json --platform-keys docs/platform-public-key.json
+```
+
+Key id `key_mAY01ASyQW6Rs5thTXH27L_G` (ES256, P-256). Public key, also in [docs/platform-public-key.json](docs/platform-public-key.json):
+
+```json
+{"kty": "EC", "crv": "P-256", "x": "qjbRqPQZP7ssOhgUlIZ5nTotIyr-8pqphBnr9b1F-VQ", "y": "eIT1oSt1G3qTm_4bKRMiJDaZKvqMrO2L8rAxRKYZ7Yk"}
+```
+
 ## Repository map
 
 | Path | What |

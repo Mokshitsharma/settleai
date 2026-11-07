@@ -40,7 +40,7 @@ export class ReconciliationService {
       try {
         const remote = await this.payments.getCapture(f.paypalCaptureId);
         if (remote.status !== "COMPLETED") continue;
-        const outcome = await this.webhooks.confirmCapture(remote.captureId, f.paypalOrderId ?? remote.orderId, toPayPalValue(remote.amountMinor));
+        const outcome = await this.webhooks.confirmCapture(remote.captureId, f.paypalOrderId ?? remote.orderId, toPayPalValue(remote.amountMinor), remote.paypalFeeMinor);
         if (outcome === "processed") repaired.push(`funding ${f.id}: confirmed from PayPal`);
       } catch (err) {
         console.error("capture status check failed", f.id, (err as Error).message);
@@ -52,7 +52,7 @@ export class ReconciliationService {
       try {
         const remote = await this.payments.getPayoutBatch(p.paypalBatchId);
         if (remote.status === "PENDING" && (p.paypalItemId || !remote.itemId)) continue;
-        const applied = await this.treasury.applyPayoutStatus({ payoutId: p.id, status: remote.status, itemId: remote.itemId, failureReason: remote.failureReason }, "system:reconciliation");
+        const applied = await this.treasury.applyPayoutStatus({ payoutId: p.id, status: remote.status, itemId: remote.itemId, failureReason: remote.failureReason, paypalFeeMinor: remote.paypalFeeMinor }, "system:reconciliation");
         if (applied === "applied") repaired.push(`payout ${p.id}: ${p.status} -> ${remote.status}`);
       } catch (err) {
         console.error("payout status check failed", p.id, (err as Error).message);
@@ -102,7 +102,7 @@ export class ReconciliationService {
       }
       if (p.status === "PROCESSING" || p.status === "PENDING" || p.status === "UNCLAIMED" || p.status === "ONHOLD") {
         // A missed webhook: apply PayPal's status through the same path a webhook would use.
-        const applied = await this.treasury.applyPayoutStatus({ payoutId: p.id, status: remote.status, itemId: p.paypalItemId, failureReason: remote.failureReason }, "system:reconciliation");
+        const applied = await this.treasury.applyPayoutStatus({ payoutId: p.id, status: remote.status, itemId: p.paypalItemId, failureReason: remote.failureReason, paypalFeeMinor: remote.paypalFeeMinor }, "system:reconciliation");
         if (applied === "applied") repaired.push(`payout ${p.id}: ${p.status} -> ${remote.status}`);
         else mismatches.push({ kind: "payout_status", ref: p.id, detail: `SettleAI says ${p.status}, PayPal says ${remote.status}` });
       } else {

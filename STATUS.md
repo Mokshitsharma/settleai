@@ -239,6 +239,22 @@ Peak RSS on Windows with a 512 MB job-object limit. No Docker or WSL on this mac
 
 Not yet covered: the Arbiter on the real model through this server (needs real photos), and any Linux measurement. `/api/health` now reports `memoryMb`, the real test on Render.
 
+## 7 Nov 2026: live on Render, fees in the ledger
+
+- **Render, real instance:** boot peak 272 MB, running 347 MB (512 MB limit), after a real Scoping call and a real order. Full-flow peak there still to be measured.
+- **Webhook:** `6NN14642KV692410V` registered for the deployed URL. Delivery and signature checks still to be tested.
+- **PayPal fees:** capture, payout item and returned refund fees are now ledger entries. Second live run: ledger PayPal balance $57.46, PayPal's own figures $57.46, match. `/v1/reporting/balances` returns 403 for this app, so the check uses PayPal's per-transaction figures, not the account balance.
+
+| Step | PayPal id | Result |
+|---|---|---|
+| Order | `4G283250RL9728624` | $102.00 |
+| Capture | `2CX57095YV3744058` | COMPLETED, fee $4.05 |
+| Payout batch / item | `AL89VSYKMY5DE` / `UJP754LS4GNJN` | SUCCEEDED, $28.00, fee $0.25 |
+| Refund | `2GS3988820212835P` | COMPLETED, $12.24, no fee returned |
+
+- **Signing key:** `key_mAY01ASyQW6Rs5thTXH27L_G`. Private key in `.secrets/` (git-ignored), public key published in the README.
+- **Economics note:** PayPal's fee on a $102 capture ($4.05) is about twice the $2.00 platform fee, and a refund does not return it. A real product would need to price this in.
+
 # After submission
 
 Requirement: the demo stays live and free through 15 Dec 2026.

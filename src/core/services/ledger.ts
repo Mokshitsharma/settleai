@@ -177,6 +177,44 @@ export class LedgerService {
   }
 
   /** Refund to payer: Dr ESCROW, Cr PAYPAL_BALANCE. */
+  /** What PayPal kept: an expense paid out of the platform's PayPal balance. It never touches escrow. Idempotent per ref. */
+  async recordPayPalFee(args: { refType: string; refId: string; feeMinor: Minor }, tx?: DbOrTx) {
+    if (args.feeMinor <= 0) return null;
+    return this.post(
+      {
+        idempotencyKey: `ppfee:${args.refType}:${args.refId}`,
+        kind: "adjustment",
+        memo: "PayPal fee",
+        refType: args.refType,
+        refId: args.refId,
+        lines: [
+          { accountCode: ACCOUNTS.PAYPAL_FEES.code, debitMinor: args.feeMinor },
+          { accountCode: ACCOUNTS.PAYPAL_BALANCE.code, creditMinor: args.feeMinor },
+        ],
+      },
+      tx,
+    );
+  }
+
+  /** A fee PayPal gave back on a refund. */
+  async recordPayPalFeeReturned(args: { refType: string; refId: string; feeMinor: Minor }, tx?: DbOrTx) {
+    if (args.feeMinor <= 0) return null;
+    return this.post(
+      {
+        idempotencyKey: `ppfee-back:${args.refType}:${args.refId}`,
+        kind: "adjustment",
+        memo: "PayPal fee returned",
+        refType: args.refType,
+        refId: args.refId,
+        lines: [
+          { accountCode: ACCOUNTS.PAYPAL_BALANCE.code, debitMinor: args.feeMinor },
+          { accountCode: ACCOUNTS.PAYPAL_FEES.code, creditMinor: args.feeMinor },
+        ],
+      },
+      tx,
+    );
+  }
+
   async recordRefund(args: { jobId: string; refundId: string; amountMinor: Minor }, tx?: DbOrTx) {
     return this.post(
       {

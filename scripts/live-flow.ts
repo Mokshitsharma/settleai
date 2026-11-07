@@ -115,6 +115,18 @@ async function main() {
 
   const problems = await c.ledger.checkInvariants();
   evidence.ledgerInvariantsOk = problems.length === 0;
+
+  // The ledger's PayPal balance must equal what PayPal itself reports having moved.
+  const paypalCapture = await c.payments.getCapture(captured.captureId!);
+  const paypalPayout = await c.payments.getPayoutBatch(String(evidence.payoutBatchId));
+  const expected = paypalCapture.amountMinor - (paypalCapture.paypalFeeMinor ?? 0) - Number(evidence.payoutAmountMinor) - (paypalPayout.paypalFeeMinor ?? 0) - (refund?.amountMinor ?? 0);
+  const actual = await c.ledger.balance("PAYPAL_BALANCE");
+  evidence.paypalCaptureFeeMinor = paypalCapture.paypalFeeMinor;
+  evidence.paypalPayoutFeeMinor = paypalPayout.paypalFeeMinor;
+  evidence.ledgerPaypalBalanceMinor = actual;
+  evidence.paypalReportedNetMinor = expected;
+  console.log(`   Ledger PayPal balance ${actual}, PayPal's own figures ${expected}: ${actual === expected ? "match" : "MISMATCH"}`);
+  if (actual !== expected) problems.push(`ledger PayPal balance ${actual} differs from PayPal's figures ${expected}`);
   save();
   console.log(`6. Ledger invariants ${problems.length === 0 ? "hold" : `FAILED: ${problems.join("; ")}`}. Evidence: docs/live-evidence.json`);
   await dbHandle.close();

@@ -30,6 +30,7 @@
     "ai:check": "tsx scripts/ai-live-check.ts",
     "live:flow": "tsx scripts/live-flow.ts",
     "paypal:webhook": "tsx scripts/paypal-webhook.ts",
+    "platform:key": "tsx scripts/generate-platform-key.ts",
     "eval": "tsx eval/run.ts"
   },
   "dependencies": {

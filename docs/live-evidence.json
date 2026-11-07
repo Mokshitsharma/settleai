@@ -1,17 +1,21 @@
 {
-  "at": "2026-11-06T17:59:07.777Z",
+  "at": "2026-11-06T19:01:21.270Z",
   "env": "sandbox",
-  "orderId": "92519580C8449544Y",
+  "orderId": "4G283250RL9728624",
   "orderAmountMinor": 10200,
-  "captureId": "5MN932607D407762A",
+  "captureId": "2CX57095YV3744058",
   "captureStatus": "COMPLETED",
   "fundingStatus": "CONFIRMED",
-  "refundId": "0MB22901981041614",
+  "refundId": "2GS3988820212835P",
   "refundStatus": "COMPLETED",
   "refundAmountMinor": 1224,
-  "payoutBatchId": "PLC3LNKRSJPHS",
-  "payoutItemId": "Z75WDLUTTSDMN",
+  "payoutBatchId": "AL89VSYKMY5DE",
+  "payoutItemId": "UJP754LS4GNJN",
   "payoutStatus": "SUCCEEDED",
   "payoutAmountMinor": 2800,
-  "ledgerInvariantsOk": true
+  "ledgerInvariantsOk": true,
+  "paypalCaptureFeeMinor": 405,
+  "paypalPayoutFeeMinor": 25,
+  "ledgerPaypalBalanceMinor": 5746,
+  "paypalReportedNetMinor": 5746
 }

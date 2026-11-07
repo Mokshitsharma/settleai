@@ -16,6 +16,8 @@ import type { LedgerService } from "./ledger";
 import type { OutboxService } from "./outbox";
 import type { TreasuryService } from "./treasury";
 
+const feeOf = (value: unknown) => (value === undefined || value === null ? undefined : fromPayPalValue(String(value)));
+
 export type WebhookOutcome = "rejected" | "duplicate" | "processed" | "ignored";
 
 export class WebhookService {
@@ -79,7 +81,7 @@ export class WebhookService {
       case "CHECKOUT.ORDER.APPROVED":
         return "ignored"; // capture is explicit (spec §6.3)
       case "PAYMENT.CAPTURE.COMPLETED":
-        return this.onCaptureCompleted(String(r.id), r.supplementary_data?.related_ids?.order_id, r.amount?.value, "webhook");
+        return this.onCaptureCompleted(String(r.id), r.supplementary_data?.related_ids?.order_id, r.amount?.value, "webhook", feeOf(r.seller_receivable_breakdown?.paypal_fee?.value));
       case "PAYMENT.CAPTURE.DENIED":
       case "PAYMENT.CAPTURE.DECLINED":
       case "PAYMENT.CAPTURE.REVERSED":
@@ -94,6 +96,7 @@ export class WebhookService {
               itemId: r.payout_item_id,
               status: mapPayoutStatus(String(r.transaction_status ?? "")),
               failureReason: r.errors?.name,
+              paypalFeeMinor: feeOf(r.payout_item_fee?.value),
             },
             "paypal",
           );
@@ -104,11 +107,13 @@ export class WebhookService {
   }
 
   /** Same state-machine-safe path as the webhook, for when PayPal's API says a capture completed first. */
-  confirmCapture(captureId: string, orderId: string | undefined, value: string): Promise<WebhookOutcome> {
-    return this.onCaptureCompleted(captureId, orderId, value, "poll");
+  confirmCapture(captureId: string, orderId: string | undefined, value: string, paypalFeeMinor?: number): Promise<WebhookOutcome> {
+    return this.onCaptureCompleted(captureId, orderId, value, "poll", paypalFeeMinor);
   }
 
-  private async onCaptureCompleted(captureId: string, orderId: string | undefined, value: string | undefined, confirmedVia: "webhook" | "poll"): Promise<WebhookOutcome> {
+  private async onCaptureCompleted(captureId: string, orderId: string | undefined, value: string | undefined, confirmedVia: "webhook" | "poll", reportedFeeMinor?: number): Promise<WebhookOutcome> {
+    // The ledger must match what PayPal kept. If this event did not carry the fee, ask PayPal before the transaction.
+    const paypalFeeMinor = reportedFeeMinor ?? (this.payments.mode === "LIVE" ? (await this.payments.getCapture(captureId).catch(() => null))?.paypalFeeMinor : undefined);
     const result = await this.db.transaction(async (tx) => {
       const [funding] = await tx
         .select()
@@ -122,6 +127,7 @@ export class WebhookService {
         .set({ status: "CONFIRMED", paypalCaptureId: captureId, rawJson: { ...(funding.rawJson as object | null), confirmedVia }, updatedAt: this.clock.now() })
         .where(eq(fundingOrders.id, funding.id));
       await this.ledger.recordFunding({ jobId: funding.jobId, fundingId: funding.id, amountMinor }, tx);
+      if (paypalFeeMinor !== undefined) await this.ledger.recordPayPalFee({ refType: "funding_order", refId: funding.id, feeMinor: paypalFeeMinor }, tx);
       const [job] = await tx.select().from(jobs).where(and(eq(jobs.id, funding.jobId))).for("update");
       if (canTransition("JOB", job.status, "FUNDED")) {
         await tx.update(jobs).set({ status: "FUNDED", updatedAt: this.clock.now() }).where(eq(jobs.id, job.id));
