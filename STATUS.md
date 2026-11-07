@@ -276,6 +276,19 @@ Per-transaction figures match exactly: the ledger's PayPal balance equals PayPal
 - **Fee model proven on a finished job:** fee $6.72, PayPal charged $4.71, $2.01 kept.
 - **Correction:** generated sample images are not always refused by the real model. Milestone 1 auto-released on one at 95%, with a text confirmation and location. Verdicts vary between runs.
 
+## 7 Nov 2026: post-deploy checks on 5116cf2
+
+- **Webhook delivery and signatures proven live:** verified events rose 42 to 46 during one live flow: CHECKOUT.ORDER.APPROVED, PAYMENT.CAPTURE.COMPLETED, PAYMENT.PAYOUTS-ITEM.SUCCEEDED, PAYMENT.PAYOUTSBATCH.SUCCESS. That baseline included seeded mock events; the count now excludes them. Unsigned POST: 400.
+- **Webhook-first not seen live:** PayPal emitted the capture event about 20 s after capture, so the status check confirmed funding at about 31 s and the webhook arrived as a harmless duplicate. Webhook-first is covered by unit tests only.
+- **Full flow:** order `5MN58212YH506970K`, capture `0MV37703H8255825X`; peak RSS 401 MB of 512 MB; receipt verified against the published key.
+- **Fix:** demo mandates are reissued hourly while the server runs. Otherwise an uptime ping would let them expire during judging.
+
+## 7 Nov 2026: restart check, wake-up, secret scan
+
+- **Showcase restart check:** identical SHA-256 before and after a sleep and wake (`a5eb30bb2ff18a93...`), same as the committed file; verifies against the published key; page returns 200.
+- **Wake-up:** 74.4 s and 72.5 s after 17 idle minutes. Wording stays ~75s.
+- **gitleaks:** 21 `jwt` findings in `assets/showcase/receipt.json`, all public ES256 signatures, checked by decoding each. `.gitleaks.toml` allows only that rule on only that file. A control confirmed the same token is still caught in other files and API keys are still caught everywhere.
+
 # After submission
 
 Requirement: the demo stays live and free through 15 Dec 2026.

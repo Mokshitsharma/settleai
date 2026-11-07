@@ -1,0 +1,10 @@
+# The showcase receipt is public by design: it holds ES256 signatures (compact JWS), which match the JWT rule.
+# Only that rule, only that one file. Every other rule and every other file stays fully scanned.
+[extend]
+useDefault = true
+
+[[rules]]
+id = "jwt"
+[[rules.allowlists]]
+description = "Public signatures in the frozen showcase receipt"
+paths = ['''^assets/showcase/receipt\.json$''']

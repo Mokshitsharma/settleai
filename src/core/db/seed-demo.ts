@@ -14,6 +14,8 @@ export function hashApiKey(key: string, pepper: string): string {
   return sha256Hex(`${pepper}:${key}`);
 }
 
+const REISSUE_MARGIN_MS = 2 * 3600_000;
+
 const INDORE = { lat: 22.7196, lng: 75.8577, radiusKm: 25, label: "Indore" };
 
 /** Where a local (non-deployed) seed keeps its generated key, so `pnpm procurebot` can read it. Git-ignored. */
@@ -51,11 +53,12 @@ export async function seedDemo(c: Container): Promise<{ mandateIds: string[] }> 
     })
     .onConflictDoNothing();
 
-  // Skip if ProcureBot already holds an active, unexpired mandate (a restored template can hold expired ones).
+  // Skip if ProcureBot holds an active mandate with time left. Otherwise issue fresh ones: a restored template can hold
+  // expired mandates, and a server kept awake never reboots, so the app also calls this hourly.
   const existing = await db
     .select({ id: mandates.id })
     .from(mandates)
-    .where(and(eq(mandates.subjectId, PROCUREBOT_CLIENT_ID), eq(mandates.status, "active"), gt(mandates.notAfter, c.clock.now())));
+    .where(and(eq(mandates.subjectId, PROCUREBOT_CLIENT_ID), eq(mandates.status, "active"), gt(mandates.notAfter, new Date(c.clock.now().getTime() + REISSUE_MARGIN_MS))));
   if (existing.length) return { mandateIds: existing.map((m) => m.id) };
 
   const keyId = await c.keys.ensureManagedKey("user", "usr_ravi");

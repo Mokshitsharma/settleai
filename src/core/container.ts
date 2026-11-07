@@ -236,6 +236,12 @@ export function getContainer(): Promise<Container> {
         .then(() => c.outbox.runDue())
         .catch((err) => console.error("release timer", err));
     }, 2000);
+    // Demo mandates last 24 hours. A server kept awake never reboots, so keep them current while it runs.
+    setInterval(() => {
+      void import("@/core/db/seed-demo")
+        .then(({ seedDemo }) => seedDemo(c))
+        .catch((err) => console.error("mandate refresh", err));
+    }, 3600_000);
     // LIVE only: webhook safety net. Mock events are delivered by the timer above.
     if (c.payments.mode === "LIVE") {
       setInterval(() => void c.reconciliation.repairInFlight({ fundingGraceMs: 20_000, now: c.clock.now() }).catch((err) => console.error("repair timer", err)), 10_000);

@@ -1,5 +1,5 @@
 import { readFile } from "node:fs/promises";
-import { count, desc, sql } from "drizzle-orm";
+import { count, desc, notLike, sql } from "drizzle-orm";
 import { webhookEvents } from "@/core/db/schema";
 import { getContainer } from "@/core/container";
 
@@ -11,8 +11,10 @@ export async function GET() {
     const c = await getContainer();
     await c.dbHandle.db.execute(sql`select 1`);
     const [ledgerProblems, auditChain] = await Promise.all([c.ledger.checkInvariants(), c.audit.verifyChain()]);
-    const [verifiedWebhooks] = await c.dbHandle.db.select({ n: count() }).from(webhookEvents);
-    const [lastWebhook] = await c.dbHandle.db.select({ eventType: webhookEvents.eventType, createdAt: webhookEvents.createdAt }).from(webhookEvents).orderBy(desc(webhookEvents.createdAt)).limit(1);
+    // Seeded demo history went through the mock, so it does not count as verified PayPal delivery.
+    const real = notLike(webhookEvents.paypalEventId, "MOCK-%");
+    const [verifiedWebhooks] = await c.dbHandle.db.select({ n: count() }).from(webhookEvents).where(real);
+    const [lastWebhook] = await c.dbHandle.db.select({ eventType: webhookEvents.eventType, createdAt: webhookEvents.createdAt }).from(webhookEvents).where(real).orderBy(desc(webhookEvents.createdAt)).limit(1);
     return Response.json({
       status: "ok",
       mode: c.config.mode,
