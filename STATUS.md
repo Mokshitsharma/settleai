@@ -269,6 +269,13 @@ Per-transaction figures match exactly: the ledger's PayPal balance equals PayPal
 - **Flaky `audit.test.ts`:** one failure, cause not found. Not reproduced in 30 runs alone, 5 full-suite runs, or a full run each under memory pressure (1.1 GB free) and CPU starvation (8 spinning threads). Test results now persist in `.data/last-test-results.json`, so a repeat leaves its error. No assertion changed.
 - **11 Nov, before making the repo public:** re-run gitleaks over the full git history.
 
+## 7 Nov 2026: showcase receipt
+
+- **Permanent receipt:** `/receipt/showcase` and `/api/receipts/showcase` serve `assets/showcase/receipt.json`, the frozen signed record of one real job. Frozen rather than recreated at boot: ES256 signatures are randomized, and re-running would need PayPal ids for payments that never happened.
+- **Interim version (no real photos yet):** job `job_01M6TB47DAMERFAP7RWPSSAMD6`, COMPLETED. Order `0UK22737FP450481C`, capture `4S025822MT775383E`, payout batches `GRANS43HHT8WQ` and `F7N48A3YCQL3U`, both SUCCEEDED, no dispute. Models: `qwen/qwen3.8-27b`, `openai/gpt-oss-120b`. Milestone 1 AUTO_RELEASE; milestone 2 HUMAN_REVIEW, then approved by a person. To be replaced with `pnpm showcase:make` once real photos are in, for the dispute and Arbiter path.
+- **Fee model proven on a finished job:** fee $6.72, PayPal charged $4.71, $2.01 kept.
+- **Correction:** generated sample images are not always refused by the real model. Milestone 1 auto-released on one at 95%, with a text confirmation and location. Verdicts vary between runs.
+
 # After submission
 
 Requirement: the demo stays live and free through 15 Dec 2026.

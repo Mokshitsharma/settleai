@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getContainer } from "@/core/container";
 import { formatMinor } from "@/core/money";
+import { SHOWCASE_ID, showcaseBundle } from "@/core/receipts/showcase";
+import { verifyReceipt } from "@/core/verifier/receipt";
 import { MoneyStrip } from "@/components/money-strip";
 import { ProofChainView } from "@/components/proof-chain";
 import { VerifyThisReceipt } from "@/components/receipt-verifier";
@@ -14,10 +16,10 @@ export const dynamic = "force-dynamic";
 /** Public, shareable proof of settlement (spec F21). No names, emails or exact addresses. */
 export default async function ReceiptPage({ params }: PageProps<"/receipt/[id]">) {
   const { id } = await params;
-  const c = await getContainer();
-  const bundle = await c.receipts.build(id);
+  const isShowcase = id === SHOWCASE_ID;
+  const bundle = isShowcase ? await showcaseBundle() : await (await getContainer()).receipts.build(id);
   if (!bundle) notFound();
-  const chainOk = (await c.attestations.verify(id)).ok;
+  const chainOk = isShowcase ? (await verifyReceipt(bundle)).ok : (await (await getContainer()).attestations.verify(id)).ok;
 
   return (
     <main className="mx-auto max-w-3xl">
@@ -41,6 +43,12 @@ export default async function ReceiptPage({ params }: PageProps<"/receipt/[id]">
           {bundle.paypal.refundIds.length ? `, refunds ${bundle.paypal.refundIds.join(", ")}` : ""} (masked)
         </p>
       </Panel>
+
+      <p role="note" className="mt-4 text-sm text-ink-soft">
+        {isShowcase
+          ? "The permanent showcase: the signed record of one real job on the PayPal sandbox with test money, frozen so this page and its signatures never change."
+          : "The demo resets after idle time, so this page will not stay online. Download the receipt: a downloaded receipt still verifies offline."}
+      </p>
 
       <Panel className="mt-6 p-5">
         <h2 className="text-lg font-semibold">Fees</h2>

@@ -5,7 +5,6 @@
 import "./_env";
 import { writeFileSync } from "node:fs";
 import { eq } from "drizzle-orm";
-import { chromium } from "@playwright/test";
 import { createStubLlm } from "@/core/agents/stub-fixtures";
 import { scopeJob } from "@/core/agents/scoping";
 import { makeSamplePhoto } from "@/core/checks/sample-photos";
@@ -15,28 +14,9 @@ import type { JobSpec } from "@/core/contracts";
 import { openTestDb } from "@/core/db/client";
 import { fundingOrders, payouts, refunds } from "@/core/db/schema";
 import { seed } from "@/core/db/seed";
+import { buyerApproves } from "./_buyer";
 
 const RETURN_BASE = "https://settleai.invalid";
-
-async function buyerApproves(approveUrl: string, email: string, password: string): Promise<void> {
-  const browser = await chromium.launch();
-  const page = await browser.newPage();
-  try {
-    const returned = page.waitForRequest((r) => r.url().startsWith(RETURN_BASE), { timeout: 150_000 });
-    await page.goto(approveUrl, { waitUntil: "domcontentloaded" });
-    await page.locator("#email").fill(email, { timeout: 60_000 });
-    if (await page.locator("#btnNext").isVisible()) await page.locator("#btnNext").click();
-    await page.locator("#password").fill(password, { timeout: 60_000 });
-    await page.locator("#btnLogin").click();
-    await page.locator('#payment-submit-btn, [data-testid="submit-button-initial"]').first().click({ timeout: 90_000 });
-    await returned;
-  } catch (err) {
-    await page.screenshot({ path: ".data/live-flow-checkout-failure.png" }).catch(() => {});
-    throw new Error(`Sandbox checkout did not complete at ${new URL(page.url()).pathname}: ${(err as Error).message.split("\n")[0]}`);
-  } finally {
-    await browser.close();
-  }
-}
 
 async function main() {
   const { SANDBOX_BUYER_EMAIL, SANDBOX_BUYER_PASSWORD, SANDBOX_WORKER_EMAIL, PAYPAL_ENV = "sandbox" } = process.env;
@@ -62,7 +42,7 @@ async function main() {
   console.log(`1. Order created: ${order.orderId}`);
   save();
 
-  await buyerApproves(order.approveUrl!, SANDBOX_BUYER_EMAIL, SANDBOX_BUYER_PASSWORD);
+  await buyerApproves(order.approveUrl!, RETURN_BASE, SANDBOX_BUYER_EMAIL, SANDBOX_BUYER_PASSWORD);
   console.log("2. Buyer approved in the sandbox checkout");
 
   const captured = await c.funding.capture({ jobId: job.id, payerId: "usr_ravi", orderId: order.orderId });

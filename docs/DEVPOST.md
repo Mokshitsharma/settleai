@@ -2,7 +2,7 @@
 
 **Agents will hire people. SettleAI makes sure the work was done before PayPal pays, and says who is liable when it was not.**
 
-Live demo: {{LIVE_URL}}
+Live demo: https://settleai-07ue.onrender.com
 Code: https://github.com/Mokshitsharma/settleai (MIT)
 
 > **Honest positioning.** SettleAI holds funds as a **ledgered hold**: money is captured to the platform's PayPal account and released by Payouts, because PayPal has no native escrow here. Its mandates are **AP2-inspired, not official AP2 and not endorsed by PayPal or Google**. Everything runs on the PayPal sandbox with test money. A production system holding customer funds would need licensing or a regulated partner.
@@ -80,7 +80,9 @@ PayPal Orders v2, Payouts v1, Payments v2, Webhooks · Groq (Qwen, gpt-oss) · M
 
 ## Testing instructions for judges
 
-**Live:** {{LIVE_URL}}. First load may take ~75s while the free server wakes up. Each restart reseeds a clean demo. The header badge shows `PayPal sandbox` and the AI model in use.
+**Live:** https://settleai-07ue.onrender.com. First load may take ~75s while the free server wakes up. The demo resets after idle time, so jobs you create don't stay online; a receipt you downloaded still verifies offline.
+
+**Permanent showcase:** https://settleai-07ue.onrender.com/receipt/showcase is the signed receipt of one real job on the PayPal sandbox. It never changes, and it verifies at /verify or offline against the public key in the README. The header badge shows `PayPal sandbox` and the AI model in use.
 
 No sign-up: click **Payer**, **Worker** or **Admin** on the landing page. To pay in the sandbox checkout, use the sandbox buyer login given in Devpost's private testing field.
 
@@ -92,7 +94,7 @@ No sign-up: click **Payer**, **Worker** or **Admin** on the landing page. To pay
 | Agent denied | Payer, **Agent mandates**, **Out of scope**, **Send as agent** | Reason codes, and nothing created |
 | Dispute | Payer, **Dispute this milestone** during the challenge window | A split and a liability finding citing the mandate clause |
 | Revoke | Payer, **Revoke** a mandate during a challenge window | The payout pauses before any PayPal call |
-| Verify | **Open the public receipt**, or go to **/verify** | All green; change one byte and it fails, pointing at the broken link |
+| Verify | Open the [showcase receipt](https://settleai-07ue.onrender.com/receipt/showcase), or a job's **Open the public receipt**, or go to **/verify** | All green; change one byte and it fails, pointing at the broken link |
 | Operate | **Admin** | AG Grid console: KPIs, review queue, disputes, ledger, guard checks, AI runs |
 
 **Local, no keys:** `pnpm install && pnpm db:reset && pnpm dev`, then open http://localhost:3000. With no keys, PayPal and AI run as clearly labelled mocks.

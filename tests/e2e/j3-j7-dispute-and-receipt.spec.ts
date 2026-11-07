@@ -60,3 +60,19 @@ test("J7: the receipt verifies in the browser, and a one-byte change fails with 
   await page.locator('input[type="file"]').setInputFiles({ name: "receipt.json", mimeType: "application/json", buffer: Buffer.from(original) });
   await expect(page.getByText("Receipt verified")).toBeVisible();
 });
+
+test("the showcase receipt is permanent: its page and download verify, with no job in the database", async ({ page, request }) => {
+  await page.goto("/receipt/showcase");
+  await expect(page.getByText("The permanent showcase")).toBeVisible();
+  await page.getByRole("button", { name: /verify/i }).first().click();
+  await expect(page.getByText("Receipt verified")).toBeVisible();
+  const res = await request.get("/api/receipts/showcase?download");
+  expect(res.ok()).toBe(true);
+  expect(res.headers()["content-disposition"]).toContain("settleai-receipt-showcase.json");
+});
+
+test("a receipt that is no longer on the server explains the reset and points to the showcase", async ({ page }) => {
+  await page.goto("/receipt/job_that_no_longer_exists");
+  await expect(page.getByRole("heading", { name: "This receipt is no longer on the demo server" })).toBeVisible();
+  await expect(page.getByRole("link", { name: "see the permanent showcase receipt" })).toBeVisible();
+});

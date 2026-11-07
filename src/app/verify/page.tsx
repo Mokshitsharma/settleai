@@ -1,3 +1,5 @@
+import Link from "next/link";
+import { SHOWCASE_ID } from "@/core/receipts/showcase";
 import type { Metadata } from "next";
 import { VerifyUpload } from "@/components/receipt-verifier";
 
@@ -14,6 +16,17 @@ export default function VerifyPage() {
       <div className="mt-6">
         <VerifyUpload />
       </div>
+      <p className="mt-6 text-sm text-ink-soft">
+        No receipt to hand?{" "}
+        <a href={`/api/receipts/${SHOWCASE_ID}?download`} className="font-semibold text-signal underline">
+          Download the showcase receipt
+        </a>{" "}
+        or{" "}
+        <Link href="/receipt/showcase" className="font-semibold text-signal underline">
+          open its page
+        </Link>
+        . Change one byte in the file and see verification fail.
+      </p>
     </main>
   );
 }

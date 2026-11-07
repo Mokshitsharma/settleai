@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { currentUser } from "@/core/auth/session";
 import { hashCanonical } from "@/core/mandates/canonical";
@@ -31,6 +32,11 @@ export default async function Home() {
           <div className="mt-8">
             <p className="mb-3 text-sm font-medium text-ink-soft">Try the demo as</p>
             <RoleSwitcher size="large" />
+            <p className="mt-3 text-sm">
+              <Link href="/receipt/showcase" className="font-semibold text-signal underline">
+                See a settled job&apos;s signed receipt
+              </Link>
+            </p>
             <p className="mt-3 text-sm text-ink-soft">First load may take ~75s while the free server wakes up.</p>
           </div>
         </div>

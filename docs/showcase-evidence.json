@@ -1,0 +1,40 @@
+{
+  "madeAt": "2026-11-07T06:33:05.405Z",
+  "jobId": "job_01M6TB47DAMERFAP7RWPSSAMD6",
+  "jobStatus": "COMPLETED",
+  "env": "sandbox",
+  "models": [
+    "openai/gpt-oss-120b",
+    "qwen/qwen3.8-27b"
+  ],
+  "orderId": "0UK22737FP450481C",
+  "captureId": "4S025822MT775383E",
+  "payouts": [
+    {
+      "batch": "GRANS43HHT8WQ",
+      "item": "ALDNRWPMPBMSW",
+      "status": "SUCCEEDED",
+      "amountMinor": 4000
+    },
+    {
+      "batch": "F7N48A3YCQL3U",
+      "item": "7LEYLGSFR75JQ",
+      "status": "SUCCEEDED",
+      "amountMinor": 6000
+    }
+  ],
+  "refunds": [],
+  "fees": {
+    "serviceFeeMinor": 672,
+    "processingFeeMinor": 472,
+    "paypalChargedMinor": 471
+  },
+  "ledger": {
+    "fundedMinor": 10672,
+    "inEscrowMinor": 0,
+    "releasedMinor": 10000,
+    "refundedMinor": 0
+  },
+  "disputeWithArbiter": false,
+  "realPhotos": false
+}

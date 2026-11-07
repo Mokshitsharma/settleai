@@ -1,7 +1,7 @@
 # Demo video script (draft)
 
 Target 2:45, hard stop under 2:58. English only. No music. Burned-in captions. Tech names as plain text, no logos.
-Recorded against {{LIVE_URL}} with the LIVE badge visible. On screen: seeded demo data and sandbox accounts only.
+Recorded against https://settleai-07ue.onrender.com with the LIVE badge visible. On screen: seeded demo data and sandbox accounts only.
 Never on screen: a terminal with env vars, `.env.local`, or any real email.
 
 Model output, scores and PayPal ids are whatever the recorded run produces. Do not retype or mock them. The voiceover
@@ -19,10 +19,10 @@ line to match it.
 | 1:12–1:32 | Worker phone view; real photo and location; Agent Activity stream; Decision Card showing the real model name; challenge window; payout id {{PAYOUT_BATCH_ID}}; trust score up | "The worker submits a photo. Rules check location, time and duplicates first. Then a vision model judges each criterion. Policy decides, a short challenge window passes, and PayPal Payouts pays the worker." |
 | 1:32–1:47 | **Moment 2.** Same photo on another job; `DUP_IMAGE`; HOLD; AG Grid risk queue with the row open | "Here a worker reuses that photo on a different job. The perceptual hash catches it, the payout is held, and it lands in the risk queue for a person. No money moves." |
 | 1:47–2:07 | **Moment 3.** Payer disputes and adds a damage photo and a statement; Arbiter proposal; fault class; the mandate clause in view; both accept; refund id {{REFUND_ID}}; ledger balanced | "A payer disputes a delivery and adds evidence. The arbiter proposes a split and a liability finding that cites the exact mandate clause, the criteria and the evidence. Both accept. PayPal pays one share and refunds the other, and the ledger balances." |
-| 2:07–2:22 | **Moment 4.** Download receipt; /verify all green; change one byte; red, pointing to the broken link | "Every step is signed into a receipt. Anyone can verify it offline, without trusting us. Change one byte, and verification fails, and points to the broken link." |
+| 2:07–2:22 | **Moment 4.** Open https://settleai-07ue.onrender.com/receipt/showcase; download it; /verify all green; change one byte; red, pointing to the broken link | "Every step is signed into a receipt. Anyone can verify it offline, without trusting us. Change one byte, and verification fails, and points to the broken link." |
 | 2:22–2:37 | Results table, labelled "repeatable test fixtures": 0 bad proofs auto-paid across 28 scenarios, 49 of 49 tampers caught | "In our repeatable test scenarios, no bad proof was auto-paid, and every tampered receipt was caught. Next: production key custody, a regulated partner, and PayPal Invoicing." |
 | 2:37–2:45 | Honesty line as text: "PayPal sandbox, test money. Ledgered hold. AP2-inspired mandates, not official AP2 and not endorsed by PayPal." | "This runs on the PayPal sandbox with test money. The mandates are inspired by AP2. They are not official, and not PayPal-endorsed." |
-| 2:45–2:50 | End card: {{LIVE_URL}}, github.com/Mokshitsharma/settleai, "Built for the PayPal AI Hackathon 2026" | (none) |
+| 2:45–2:50 | End card: https://settleai-07ue.onrender.com, github.com/Mokshitsharma/settleai, "Built for the PayPal AI Hackathon 2026" | (none) |
 
 ## Recording notes
 

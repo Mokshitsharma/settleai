@@ -43,6 +43,8 @@ await copy("public");
 await copy("src/core/db/migrations");
 await copy("eval/report.json");
 await copy("assets/demo-photos");
+await copy("assets/showcase");
+await copy("docs/platform-public-key.json");
 // The pristine demo database and everything it refers to, built at deploy time and restored on every boot.
 const dataDir = process.env.PGLITE_DATA_DIR ?? ".data/pglite";
 if (!existsSync(`${dataDir}-template`)) throw new Error(`Run pnpm db:template first: ${dataDir}-template is missing`);

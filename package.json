@@ -32,6 +32,7 @@
     "live:flow": "tsx scripts/live-flow.ts",
     "paypal:webhook": "tsx scripts/paypal-webhook.ts",
     "platform:key": "tsx scripts/generate-platform-key.ts",
+    "showcase:make": "tsx scripts/make-showcase.ts",
     "eval": "tsx eval/run.ts"
   },
   "dependencies": {

@@ -13,7 +13,6 @@ import { milestones, payouts, releases } from "@/core/db/schema";
 import { seed } from "@/core/db/seed";
 import { newId } from "@/core/ids";
 import { serviceFee } from "@/core/money";
-import { disputeSettlementSplit } from "@/core/services/disputes";
 import { FixedClock } from "@/core/ports/clock";
 import { ACCOUNTS } from "@/core/services/ledger";
 import { sampleJobSpec } from "../fixtures/contracts";

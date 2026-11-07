@@ -12,7 +12,9 @@ Built for the **PayPal AI Hackathon 2026**. MIT licensed.
 
 ## Live demo
 
-First load may take ~75s while the free server wakes up. Each restart reseeds a clean demo.
+First load may take ~75s while the free server wakes up.
+
+**The demo resets after idle time**, so jobs you create don't stay online; a receipt you downloaded still verifies offline. For a link that never changes, see the [showcase receipt](https://settleai-07ue.onrender.com/receipt/showcase): the signed record of one real job on the PayPal sandbox, frozen and served from a file.
 
 ## Try it in two minutes (no keys needed)
 
