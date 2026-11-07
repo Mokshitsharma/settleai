@@ -32,11 +32,13 @@ export class ReconciliationService {
    * Webhooks can be late, and a sleeping free server misses them entirely. This asks PayPal directly about captures and
    * payouts still in flight and applies the answer through the same state-machine-safe paths. Returns what changed.
    */
-  async repairInFlight(): Promise<string[]> {
+  async repairInFlight(opts: { fundingGraceMs?: number; now?: Date } = {}): Promise<string[]> {
     const repaired: string[] = [];
     const captured = await this.db.select().from(fundingOrders).where(eq(fundingOrders.status, "CAPTURED"));
     for (const f of captured) {
       if (!f.paypalCaptureId) continue;
+      // Webhooks are the source of truth, so give them a head start before asking PayPal directly.
+      if (opts.fundingGraceMs && opts.now && opts.now.getTime() - f.updatedAt.getTime() < opts.fundingGraceMs) continue;
       try {
         const remote = await this.payments.getCapture(f.paypalCaptureId);
         if (remote.status !== "COMPLETED") continue;

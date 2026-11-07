@@ -189,7 +189,10 @@ export class ReleaseService {
     if (!ms || !job) throw new JobError("NOT_FOUND", "Milestone not found");
     if (job.payerId !== args.payerId) throw new JobError("FORBIDDEN", "Only the payer can cancel this milestone");
     if (ms.status !== "PAUSED_MANDATE") throw new JobError("INVALID_STATE", "Milestone is not paused");
-    const amount = ms.amountMinor - ms.releasedMinor + (await this.treasury.feeShare(job.id, ms.seq));
+    // The margin goes back with the work; PayPal's non-refundable costs stay earned, so cancelling never loses money.
+    const kept = await this.treasury.nonRefundableFeeShare(job.id, ms.seq);
+    const amount = ms.amountMinor - ms.releasedMinor + (await this.treasury.feeShare(job.id, ms.seq)) - kept;
+    await this.treasury.retainFee({ jobId: job.id, refType: "milestone_cancel", refId: ms.id, feeMinor: kept });
     await this.treasury.refund({ jobId: job.id, amountMinor: amount, reason: `Milestone ${ms.seq} cancelled after the agent's mandate was revoked`, actor: `user:${args.payerId}` });
     await this.db.transaction(async (tx) => {
       assertTransition("MILESTONE", ms.status, "CANCELLED");

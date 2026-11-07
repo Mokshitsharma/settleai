@@ -108,6 +108,18 @@ describe("reconciliation (F20)", () => {
     expect((await c.dbHandle.db.select().from(payouts).where(eq(payouts.id, p.id)))[0].status).toBe("SUCCEEDED");
   });
 
+  it("repairInFlight leaves a fresh capture to the webhook during the grace period, then steps in", async () => {
+    const job = await c.jobs.createFromSpec({ payerId: "usr_ravi", spec: sampleJobSpec, createdBy: "user:usr_ravi" });
+    const order = await c.funding.start({ jobId: job.id, payerId: "usr_ravi" });
+    mock.approveOrder(order.orderId);
+    await c.funding.capture({ jobId: job.id, payerId: "usr_ravi", orderId: order.orderId });
+    mock.drainOutbox();
+    expect(await c.reconciliation.repairInFlight({ fundingGraceMs: 20_000, now: new Date(T0.getTime() + 5_000) })).toEqual([]);
+    expect((await c.jobs.getRow(job.id))!.status).toBe("AWAITING_FUNDING");
+    expect(await c.reconciliation.repairInFlight({ fundingGraceMs: 20_000, now: new Date(T0.getTime() + 21_000) })).toHaveLength(1);
+    expect((await c.jobs.getRow(job.id))!.status).toBe("FUNDED");
+  });
+
   describe("how funding was confirmed", () => {
     async function capturedJob() {
       const job = await c.jobs.createFromSpec({ payerId: "usr_ravi", spec: sampleJobSpec, createdBy: "user:usr_ravi" });

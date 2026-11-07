@@ -5,6 +5,7 @@ import type { Db } from "@/core/db/client";
 import { fundingOrders, jobs, milestones } from "@/core/db/schema";
 import type { EventHub } from "@/core/events/hub";
 import { newId } from "@/core/ids";
+import { serviceFee, type FeeSchedule } from "@/core/money";
 import type { JobSpec } from "@/core/contracts";
 import type { ClockPort } from "@/core/ports/clock";
 import type { PaymentsPort } from "@/core/ports/payments";
@@ -32,6 +33,7 @@ export class FundingService {
     private readonly guard: MandateGuardService,
     private readonly policy: PolicyService,
     private readonly challengeWindowSeconds: number,
+    private readonly fees: FeeSchedule,
   ) {}
 
   /** Creates the PayPal order for milestones total + platform fee. Idempotent per attempt. */
@@ -78,6 +80,7 @@ export class FundingService {
           fundingId,
           amountMinor,
           feeMinor: job.feeMinor,
+          processingFeeMinor: serviceFee(job.totalMinor, ms.length, this.fees).processingMinor,
           policyVersion: policy.version,
           challengeWindowSeconds: this.challengeWindowSeconds,
           agentPresence: job.createdBy.startsWith("api_client:"),

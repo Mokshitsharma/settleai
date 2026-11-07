@@ -177,6 +177,36 @@ export class LedgerService {
   }
 
   /** Refund to payer: Dr ESCROW, Cr PAYPAL_BALANCE. */
+  /** Fee earned without a payout (the non-refundable PayPal costs on a fully refunded milestone): escrow to revenue. */
+  async recordFeeRetained(args: { jobId: string; refType: string; refId: string; feeMinor: Minor }, tx?: DbOrTx) {
+    if (args.feeMinor <= 0) return null;
+    return this.post(
+      {
+        idempotencyKey: `fee-retained:${args.refType}:${args.refId}`,
+        kind: "adjustment",
+        memo: "Non-refundable PayPal costs kept",
+        refType: args.refType,
+        refId: args.refId,
+        lines: [
+          { accountCode: escrowCode(args.jobId), debitMinor: args.feeMinor },
+          { accountCode: ACCOUNTS.FEE_REVENUE.code, creditMinor: args.feeMinor },
+        ],
+      },
+      tx,
+    );
+  }
+
+  /** PayPal fees posted for these references (funding orders, payouts), net of any fee PayPal gave back. */
+  async paypalFeesFor(refIds: string[]): Promise<Minor> {
+    if (!refIds.length) return 0;
+    const rows = await this.db
+      .select({ debit: ledgerEntries.debitMinor, credit: ledgerEntries.creditMinor })
+      .from(ledgerEntries)
+      .innerJoin(ledgerAccounts, eq(ledgerAccounts.id, ledgerEntries.accountId))
+      .where(and(eq(ledgerAccounts.code, ACCOUNTS.PAYPAL_FEES.code), inArray(ledgerEntries.refId, refIds)));
+    return rows.reduce((sum, r) => sum + r.debit - r.credit, 0);
+  }
+
   /** What PayPal kept: an expense paid out of the platform's PayPal balance. It never touches escrow. Idempotent per ref. */
   async recordPayPalFee(args: { refType: string; refId: string; feeMinor: Minor }, tx?: DbOrTx) {
     if (args.feeMinor <= 0) return null;

@@ -138,8 +138,8 @@ export async function createContainer(
   const reputation = new ReputationService();
   const guard = new MandateGuardService(db, keys, mandates, attestations, audit, clock);
   const binding = new MandateBindingService(db, keys, attestations, clock);
-  const jobs = new JobService(db, ledger, audit, events, clock, cfg.PLATFORM_FEE_BPS, binding, guard);
-  const funding = new FundingService(db, guardedPayments, jobs, audit, events, clock, binding, guard, policy, cfg.CHALLENGE_WINDOW_SECONDS);
+  const jobs = new JobService(db, ledger, audit, events, clock, cfg.fees, binding, guard);
+  const funding = new FundingService(db, guardedPayments, jobs, audit, events, clock, binding, guard, policy, cfg.CHALLENGE_WINDOW_SECONDS, cfg.fees);
   const treasury = new TreasuryService(
     db,
     guardedPayments,
@@ -171,7 +171,7 @@ export async function createContainer(
   const disputes = new DisputeService(db, llm, storage, treasury, guard, ledger, attestations, audit, reputation, policy, events, clock, {
     evidenceWindowSeconds: cfg.DISPUTE_EVIDENCE_WINDOW_SECONDS,
   });
-  const receipts = new ReceiptService(db, jobs, attestations, keys, clock);
+  const receipts = new ReceiptService(db, jobs, attestations, keys, clock, ledger);
   const reconciliation = new ReconciliationService(db, guardedPayments, ledger, treasury, webhooks);
 
   function verifyInBackground(milestoneId: string): void {
@@ -238,7 +238,7 @@ export function getContainer(): Promise<Container> {
     }, 2000);
     // LIVE only: webhook safety net. Mock events are delivered by the timer above.
     if (c.payments.mode === "LIVE") {
-      setInterval(() => void c.reconciliation.repairInFlight().catch((err) => console.error("repair timer", err)), 10_000);
+      setInterval(() => void c.reconciliation.repairInFlight({ fundingGraceMs: 20_000, now: c.clock.now() }).catch((err) => console.error("repair timer", err)), 10_000);
     }
     return c;
   }));

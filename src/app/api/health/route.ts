@@ -1,5 +1,6 @@
 import { readFile } from "node:fs/promises";
-import { sql } from "drizzle-orm";
+import { count, desc, sql } from "drizzle-orm";
+import { webhookEvents } from "@/core/db/schema";
 import { getContainer } from "@/core/container";
 
 export const dynamic = "force-dynamic";
@@ -10,6 +11,8 @@ export async function GET() {
     const c = await getContainer();
     await c.dbHandle.db.execute(sql`select 1`);
     const [ledgerProblems, auditChain] = await Promise.all([c.ledger.checkInvariants(), c.audit.verifyChain()]);
+    const [verifiedWebhooks] = await c.dbHandle.db.select({ n: count() }).from(webhookEvents);
+    const [lastWebhook] = await c.dbHandle.db.select({ eventType: webhookEvents.eventType, createdAt: webhookEvents.createdAt }).from(webhookEvents).orderBy(desc(webhookEvents.createdAt)).limit(1);
     return Response.json({
       status: "ok",
       mode: c.config.mode,
@@ -18,6 +21,8 @@ export async function GET() {
       db: { status: "ok", driver: c.dbHandle.driver },
       ledger: { invariantsOk: ledgerProblems.length === 0, problems: ledgerProblems },
       audit: auditChain,
+      // Only events whose signature verified are stored, so this is evidence of real, verified PayPal delivery.
+      webhooks: { verifiedEvents: verifiedWebhooks.n, lastEventType: lastWebhook?.eventType ?? null, lastEventAt: lastWebhook?.createdAt ?? null },
       memoryMb: {
         rss: Math.round(process.memoryUsage().rss / 1048576),
         peakRss: Math.round(process.resourceUsage().maxRSS / 1024),

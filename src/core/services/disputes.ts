@@ -54,10 +54,11 @@ export interface DisputeView {
  * equal the disputed amount, and the milestone's platform fee is split in the same proportion (the payer gets
  * back the fee that was never earned). Rounding never creates or loses a cent.
  */
-export function disputeSettlementSplit(args: { disputedMinor: number; releaseToWorkerMinor: number; feeShareMinor: number }) {
+export function disputeSettlementSplit(args: { disputedMinor: number; releaseToWorkerMinor: number; feeShareMinor: number; nonRefundableFeeMinor?: number }) {
   const { disputedMinor: disputed, releaseToWorkerMinor: release, feeShareMinor: fee } = args;
+  const kept = Math.min(args.nonRefundableFeeMinor ?? 0, fee); // PayPal keeps its fee on a refund, so this part always stays
   const refundToPayerMinor = disputed - release;
-  const releaseFeeMinor = disputed > 0 ? Math.round((fee * release) / disputed) : 0;
+  const releaseFeeMinor = kept + (disputed > 0 ? Math.round(((fee - kept) * release) / disputed) : 0);
   const feeRefundMinor = fee - releaseFeeMinor;
   return { refundToPayerMinor, releaseFeeMinor, feeRefundMinor, refundTotalMinor: refundToPayerMinor + feeRefundMinor };
 }
@@ -388,7 +389,8 @@ export class DisputeService {
     const [job] = await this.db.select().from(jobs).where(eq(jobs.id, ms.jobId));
     const disputed = d.disputedAmountMinor;
     const feeShare = await this.treasury.feeShare(job.id, ms.seq);
-    const { refundToPayerMinor, releaseFeeMinor: releaseFee } = disputeSettlementSplit({ disputedMinor: disputed, releaseToWorkerMinor, feeShareMinor: feeShare });
+    const nonRefundableFeeMinor = await this.treasury.nonRefundableFeeShare(job.id, ms.seq);
+    const { refundToPayerMinor, releaseFeeMinor: releaseFee } = disputeSettlementSplit({ disputedMinor: disputed, releaseToWorkerMinor, nonRefundableFeeMinor, feeShareMinor: feeShare });
     const g4 = await this.guard.g4Settle({
       disputeId,
       jobId: job.id,
@@ -408,6 +410,8 @@ export class DisputeService {
       const releaseId = newId("rel");
       await this.db.insert(releases).values({ id: releaseId, milestoneId: ms.id, amountMinor: releaseToWorkerMinor, feeMinor: releaseFee, decisionSource: "dispute", status: "CREATED" });
       await this.treasury.executeRelease(releaseId, `dispute:${disputeId}`);
+    } else {
+      await this.ledger.recordFeeRetained({ jobId: job.id, refType: "dispute", refId: disputeId, feeMinor: releaseFee });
     }
     // The payer gets the refunded share back plus the platform fee that was never earned on it.
     const refundTotal = refundToPayerMinor + (feeShare - releaseFee);

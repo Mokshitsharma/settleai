@@ -33,6 +33,8 @@ AI agents are starting to buy things for people. Signed mandates can prove a per
 | Webhooks, with signature verification | Confirms funding and payout state, deduplicated by event id and safe for out-of-order delivery |
 | Payments and Payouts lookups | A safety net that asks PayPal directly when a webhook is late or missed |
 
+**Fees:** the payer pays the work plus PayPal's processing costs at cost plus a 2% SettleAI margin, shown separately at checkout and on the receipt, so a job never runs at a loss; the processing part isn't refunded because PayPal keeps its fee on a refund.
+
 Sandbox evidence from a full run: order `92519580C8449544Y`, capture `5MN932607D407762A`, payout batch `PLC3LNKRSJPHS`, refund `0MB22901981041614`.
 
 **AI on the critical path**
@@ -78,7 +80,7 @@ PayPal Orders v2, Payouts v1, Payments v2, Webhooks · Groq (Qwen, gpt-oss) · M
 
 ## Testing instructions for judges
 
-**Live:** {{LIVE_URL}}. First load may take ~50s while the free server wakes up. Each restart reseeds a clean demo. The header badge shows `PayPal sandbox` and the AI model in use.
+**Live:** {{LIVE_URL}}. First load may take ~75s while the free server wakes up. Each restart reseeds a clean demo. The header badge shows `PayPal sandbox` and the AI model in use.
 
 No sign-up: click **Payer**, **Worker** or **Admin** on the landing page. To pay in the sandbox checkout, use the sandbox buyer login given in Devpost's private testing field.
 

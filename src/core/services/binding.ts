@@ -144,6 +144,7 @@ export class MandateBindingService {
       fundingId: string;
       amountMinor: number;
       feeMinor: number;
+      processingFeeMinor?: number;
       policyVersion: number;
       challengeWindowSeconds: number;
       agentPresence: boolean;
@@ -162,7 +163,7 @@ export class MandateBindingService {
       createdAt: now.toISOString(),
       parentJobMandateId: jm.id,
       parentIntentId: jobPayload.parentIntentId,
-      funding: { amountMinor: args.amountMinor, feeMinor: args.feeMinor, currency: "USD", paypalOrderRef: args.fundingId },
+      funding: { amountMinor: args.amountMinor, feeMinor: args.feeMinor, processingFeeMinor: args.processingFeeMinor, currency: "USD", paypalOrderRef: args.fundingId },
       settlementConditions: args.spec.milestones.map((m) => ({
         milestoneSeq: m.seq,
         amountMinor: m.amountMinor,

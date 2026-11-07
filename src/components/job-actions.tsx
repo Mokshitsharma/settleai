@@ -22,12 +22,15 @@ export function FundPanel({
   jobId,
   totalMinor,
   feeMinor,
+  processingMinor = 0,
   returnedOrderId,
   captured,
 }: {
   jobId: string;
   totalMinor: number;
   feeMinor: number;
+  /** PayPal's costs passed through at cost; the rest of the fee is SettleAI's margin. */
+  processingMinor?: number;
   /** Set when PayPal sent the buyer back after approving: capture right away. */
   returnedOrderId?: string;
   /** PayPal captured the money and SettleAI is waiting for PayPal's confirmation. */
@@ -91,8 +94,19 @@ export function FundPanel({
       <dl className="grid grid-cols-[1fr_auto] gap-y-1 text-sm">
         <dt className="text-ink-soft">Milestones</dt>
         <dd className="num text-right">{formatMinor(totalMinor)}</dd>
-        <dt className="text-ink-soft">Platform fee</dt>
-        <dd className="num text-right">{formatMinor(feeMinor)}</dd>
+        {processingMinor > 0 ? (
+          <>
+            <dt className="text-ink-soft">PayPal processing, at cost (not refundable)</dt>
+            <dd className="num text-right">{formatMinor(processingMinor)}</dd>
+            <dt className="text-ink-soft">SettleAI margin</dt>
+            <dd className="num text-right">{formatMinor(feeMinor - processingMinor)}</dd>
+          </>
+        ) : (
+          <>
+            <dt className="text-ink-soft">Platform fee</dt>
+            <dd className="num text-right">{formatMinor(feeMinor)}</dd>
+          </>
+        )}
         <dt className="font-semibold">You pay now</dt>
         <dd className="num text-right font-semibold">{formatMinor(totalMinor + feeMinor)}</dd>
       </dl>

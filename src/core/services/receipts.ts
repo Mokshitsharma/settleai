@@ -4,9 +4,10 @@
 import { and, desc, eq, inArray, ne } from "drizzle-orm";
 import type { Db } from "@/core/db/client";
 import { fundingOrders, mandates, payouts, refunds } from "@/core/db/schema";
-import type { JobSpec, MandateEnvelope } from "@/core/contracts";
+import type { JobSpec, MandateEnvelope, PaymentMandatePayload } from "@/core/contracts";
 import { maskId, RECEIPT_FORMAT, type ReceiptBundle } from "@/core/verifier/receipt";
 import type { ClockPort } from "@/core/ports/clock";
+import type { LedgerService } from "./ledger";
 import type { AttestationService } from "./attestations";
 import type { JobService } from "./jobs";
 import type { KeyService } from "./keys";
@@ -21,6 +22,7 @@ export class ReceiptService {
     private readonly attestations: AttestationService,
     private readonly keys: KeyService,
     private readonly clock: ClockPort,
+    private readonly ledger: LedgerService,
   ) {}
 
   async build(jobId: string): Promise<ReceiptBundle | null> {
@@ -60,6 +62,11 @@ export class ReceiptService {
         locationLabel: spec.location?.label ?? null,
       },
       mandates: { intent: intent ? env(intent) : null, job: env(jobMandate), payment: env(payMandate) },
+      fees: {
+        serviceFeeMinor: detail.job.feeMinor,
+        processingFeeMinor: (payMandate?.payloadJson as PaymentMandatePayload | undefined)?.funding.processingFeeMinor ?? 0,
+        paypalChargedMinor: await this.ledger.paypalFeesFor([...(funding ? [funding.id] : []), ...payoutRows.map((p) => p.id)]),
+      },
       attestations: chain,
       keys: allKeys.filter((k) => keyIds.has(k.keyId)),
       paypal: {

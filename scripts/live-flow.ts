@@ -125,6 +125,10 @@ async function main() {
   evidence.paypalPayoutFeeMinor = paypalPayout.paypalFeeMinor;
   evidence.ledgerPaypalBalanceMinor = actual;
   evidence.paypalReportedNetMinor = expected;
+  evidence.serviceFeeMinor = job.feeMinor;
+  evidence.feeRevenueMinor = await c.ledger.balance("FEE_REVENUE");
+  evidence.paypalFeesMinor = await c.ledger.balance("PAYPAL_FEES");
+  console.log(`   Service fee ${job.feeMinor}. So far: fee revenue ${evidence.feeRevenueMinor}, PayPal fees ${evidence.paypalFeesMinor}`);
   console.log(`   Ledger PayPal balance ${actual}, PayPal's own figures ${expected}: ${actual === expected ? "match" : "MISMATCH"}`);
   if (actual !== expected) problems.push(`ledger PayPal balance ${actual} differs from PayPal's figures ${expected}`);
   save();

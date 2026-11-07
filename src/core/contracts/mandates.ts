@@ -69,6 +69,8 @@ export const PaymentMandatePayload = z.object({
   funding: z.object({
     amountMinor: MinorAmount,
     feeMinor: MinorAmount,
+    /** The part of the fee that passes PayPal's costs through; not refundable, because PayPal keeps it on a refund. */
+    processingFeeMinor: MinorAmount.optional(),
     currency: Currency,
     paypalOrderRef: z.string(),
   }),

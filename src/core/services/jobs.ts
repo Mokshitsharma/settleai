@@ -5,7 +5,7 @@ import { fundingOrders, jobs, milestones, payouts, proofs, refunds, releases, ri
 import { JobSpec, type Role } from "@/core/contracts";
 import type { EventHub } from "@/core/events/hub";
 import { newId } from "@/core/ids";
-import { feeForAmount } from "@/core/money";
+import { serviceFee, type FeeSchedule } from "@/core/money";
 import type { ClockPort } from "@/core/ports/clock";
 import type { DecisionCard } from "@/core/policy/decision-card";
 import { assertTransition, type JobStatus } from "@/core/state/machines";
@@ -54,7 +54,7 @@ export class JobService {
     private readonly audit: AuditService,
     private readonly events: EventHub,
     private readonly clock: ClockPort,
-    private readonly feeBps: number,
+    private readonly fees: FeeSchedule,
     private readonly binding: MandateBindingService,
     private readonly guard: MandateGuardService,
   ) {}
@@ -87,7 +87,7 @@ export class JobService {
         category: spec.category,
         specJson: spec,
         totalMinor: spec.totalAmountMinor,
-        feeMinor: feeForAmount(spec.totalAmountMinor, this.feeBps),
+        feeMinor: serviceFee(spec.totalAmountMinor, spec.milestones.length, this.fees).feeMinor,
         status: "SCOPED",
         createdBy: args.createdBy,
         locationJson: spec.location ?? null,
@@ -160,7 +160,7 @@ export class JobService {
           category: spec.category,
           specJson: spec,
           totalMinor: spec.totalAmountMinor,
-          feeMinor: feeForAmount(spec.totalAmountMinor, this.feeBps),
+          feeMinor: serviceFee(spec.totalAmountMinor, spec.milestones.length, this.fees).feeMinor,
           locationJson: spec.location ?? null,
           updatedAt: this.clock.now(),
         })

@@ -44,7 +44,11 @@ async function photoFor(c: Container, milestoneId: string, spec: JobSpec, seq: n
 export async function seedHistory(cfg: AppConfig, dbHandle: DbHandle): Promise<number> {
   const { FixedClock } = await import("@/core/ports/clock");
   const clock = new FixedClock(new Date(Date.now() - 14 * DAY));
-  const paypal = new MockPayPalAdapter({ idTag: `H${Math.random().toString(36).slice(2, 5).toUpperCase()}-` });
+  const paypal = new MockPayPalAdapter({
+    idTag: `H${Math.random().toString(36).slice(2, 5).toUpperCase()}-`,
+    // History on a LIVE deployment shows the same fees and ledger entries that real jobs will.
+    fees: cfg.fees.processingBps ? { captureBps: cfg.fees.processingBps, captureFixedMinor: cfg.fees.processingFixedMinor, payoutMinor: cfg.fees.payoutItemFeeMinor } : undefined,
+  });
   const c = await createContainer({ ...cfg, CHALLENGE_WINDOW_SECONDS: 3600, DISPUTE_EVIDENCE_WINDOW_SECONDS: 3600 }, { dbHandle, clock, payments: paypal, llm: createStubLlm() });
   const db = dbHandle.db;
 

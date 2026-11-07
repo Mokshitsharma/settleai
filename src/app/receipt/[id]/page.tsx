@@ -43,6 +43,18 @@ export default async function ReceiptPage({ params }: PageProps<"/receipt/[id]">
       </Panel>
 
       <Panel className="mt-6 p-5">
+        <h2 className="text-lg font-semibold">Fees</h2>
+        <dl className="mt-3 grid grid-cols-[1fr_auto] gap-y-1 text-sm">
+          <dt className="text-ink-soft">Charged to the payer: PayPal processing, at cost</dt>
+          <dd className="num text-right">{formatMinor(bundle.fees.processingFeeMinor)}</dd>
+          <dt className="text-ink-soft">Charged to the payer: SettleAI margin</dt>
+          <dd className="num text-right">{formatMinor(bundle.fees.serviceFeeMinor - bundle.fees.processingFeeMinor)}</dd>
+          <dt className="text-ink-soft">Actually charged by PayPal so far</dt>
+          <dd className="num text-right">{formatMinor(bundle.fees.paypalChargedMinor)}</dd>
+        </dl>
+      </Panel>
+
+      <Panel className="mt-6 p-5">
         <h2 className="text-lg font-semibold">Check it yourself</h2>
         <p className="mt-1 text-sm text-ink-soft">
           The verifier runs in your browser: it checks every signature, hash link and mandate, and that money only moved when the signed conditions were met.

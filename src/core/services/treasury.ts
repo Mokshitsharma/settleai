@@ -1,9 +1,9 @@
 // TreasuryService: the ONLY code path that calls PayPal money-out endpoints (Payouts, Refunds).
 // Deterministic, never driven directly by an LLM. Claim-then-call pattern makes every payout idempotent.
-import { and, asc, count, eq } from "drizzle-orm";
+import { and, asc, count, desc, eq } from "drizzle-orm";
 import type { Db } from "@/core/db/client";
-import { fundingOrders, jobs, milestones, payouts, refunds, releases, users } from "@/core/db/schema";
-import type { GuardDecision } from "@/core/contracts";
+import { fundingOrders, jobs, mandates, milestones, payouts, refunds, releases, users } from "@/core/db/schema";
+import type { GuardDecision, PaymentMandatePayload } from "@/core/contracts";
 import type { EventHub } from "@/core/events/hub";
 import { newId } from "@/core/ids";
 import { formatMinor, splitProportional } from "@/core/money";
@@ -59,6 +59,20 @@ export class TreasuryService {
     if (job.feeMinor === 0 || ms.every((m) => m.amountMinor === 0)) return 0;
     const shares = splitProportional(job.feeMinor, ms.map((m) => Math.max(m.amountMinor, 0)));
     return shares[ms.findIndex((m) => m.seq === milestoneSeq)] ?? 0;
+  }
+
+  /** The part of a milestone's fee that is never refunded: its share of the PayPal costs in the signed Payment Mandate. */
+  async nonRefundableFeeShare(jobId: string, milestoneSeq: number): Promise<number> {
+    const [pm] = await this.db.select().from(mandates).where(and(eq(mandates.type, "payment"), eq(mandates.subjectId, jobId))).orderBy(desc(mandates.createdAt)).limit(1);
+    const processing = (pm?.payloadJson as PaymentMandatePayload | undefined)?.funding.processingFeeMinor ?? 0;
+    if (processing === 0) return 0;
+    const ms = await this.db.select().from(milestones).where(eq(milestones.jobId, jobId)).orderBy(asc(milestones.seq));
+    const shares = splitProportional(processing, ms.map((m) => Math.max(m.amountMinor, 0)));
+    return shares[ms.findIndex((m) => m.seq === milestoneSeq)] ?? 0;
+  }
+
+  retainFee(args: { jobId: string; refType: string; refId: string; feeMinor: number }) {
+    return this.ledger.recordFeeRetained(args);
   }
 
   /**

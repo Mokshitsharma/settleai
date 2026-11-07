@@ -31,6 +31,36 @@ export function feeForAmount(amount: Minor, feeBps: number): Minor {
   return Math.floor((amount * feeBps + 5000) / 10000);
 }
 
+export interface FeeSchedule {
+  marginBps: number;
+  /** What PayPal charges on a capture (percentage of the whole charge, plus a fixed amount) and per payout item. */
+  processingBps: number;
+  processingFixedMinor: Minor;
+  payoutItemFeeMinor: Minor;
+}
+
+export interface ServiceFee {
+  feeMinor: Minor;
+  processingMinor: Minor;
+  marginMinor: Minor;
+}
+
+/**
+ * What the payer pays above the work: PayPal's costs passed through, plus SettleAI's margin. PayPal's percentage applies
+ * to the whole charge, including this fee, so the charge is grossed up and rounded up: after PayPal's cut the platform
+ * still holds the work, the payout fees and the margin. With no PayPal costs (mock mode) the fee is just the margin.
+ */
+export function serviceFee(totalMinor: Minor, payoutItems: number, s: FeeSchedule): ServiceFee {
+  assertNonNegativeMinor(totalMinor);
+  const marginMinor = feeForAmount(totalMinor, s.marginBps);
+  const free = s.processingBps === 0 && s.processingFixedMinor === 0 && s.payoutItemFeeMinor === 0;
+  if (free || totalMinor === 0) return { feeMinor: marginMinor, processingMinor: 0, marginMinor };
+  const needed = totalMinor + marginMinor + payoutItems * s.payoutItemFeeMinor + s.processingFixedMinor;
+  const charge = Math.ceil((needed * 10000) / (10000 - s.processingBps));
+  const feeMinor = charge - totalMinor;
+  return { feeMinor, processingMinor: feeMinor - marginMinor, marginMinor };
+}
+
 /** Split `total` into parts proportional to `weights`; the remainder goes to the first parts so the sum is exact. */
 export function splitProportional(total: Minor, weights: number[]): Minor[] {
   assertNonNegativeMinor(total);

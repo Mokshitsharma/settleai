@@ -12,7 +12,7 @@ Built for the **PayPal AI Hackathon 2026**. MIT licensed.
 
 ## Live demo
 
-First load may take ~50s while the free server wakes up. Each restart reseeds a clean demo.
+First load may take ~75s while the free server wakes up. Each restart reseeds a clean demo.
 
 ## Try it in two minutes (no keys needed)
 

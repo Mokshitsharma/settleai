@@ -1,3 +1,4 @@
+import { ACCOUNTS } from "@/core/services/ledger";
 import type { Metadata } from "next";
 import { getContainer } from "@/core/container";
 import { formatMinor } from "@/core/money";
@@ -23,6 +24,8 @@ export default async function LedgerPage() {
   const [rows, problems, recon] = await Promise.all([c.analytics.ledgerGrid(), c.ledger.checkInvariants(), c.reconciliation.run()]);
   const debits = rows.reduce((a, r) => a + (r.debitMinor ?? 0), 0);
   const credits = rows.reduce((a, r) => a + (r.creditMinor ?? 0), 0);
+  const feeRevenue = await c.ledger.balance(ACCOUNTS.FEE_REVENUE.code);
+  const paypalFees = await c.ledger.balance(ACCOUNTS.PAYPAL_FEES.code);
   return (
     <main>
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -37,6 +40,9 @@ export default async function LedgerPage() {
       </div>
       <p className="num mt-3 text-sm text-ink-soft">
         Debits {formatMinor(debits)}, credits {formatMinor(credits)}
+      </p>
+      <p className="num mt-1 text-sm text-ink-soft">
+        Fees earned {formatMinor(feeRevenue)}, PayPal charged {formatMinor(paypalFees)}, SettleAI keeps {formatMinor(feeRevenue - paypalFees)}
       </p>
       {problems.length ? (
         <ul className="mt-2 list-disc pl-5 text-sm text-deny">

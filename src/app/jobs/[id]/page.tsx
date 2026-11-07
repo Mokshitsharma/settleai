@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import type { AcceptanceCriterion, JobSpec } from "@/core/contracts";
 import { listDemoPhotos } from "@/core/checks/demo-photos";
 import { getContainer } from "@/core/container";
+import { serviceFee } from "@/core/money";
 import { pageUser } from "@/lib/page-auth";
 import { ActivityPanel } from "@/components/activity-panel";
 import { DecisionCardView } from "@/components/decision-card";
@@ -187,6 +188,7 @@ export default async function JobPage({ params, searchParams }: PageProps<"/jobs
               jobId={job.id}
               totalMinor={job.totalMinor}
               feeMinor={job.feeMinor}
+              processingMinor={serviceFee(job.totalMinor, milestones.length, c.config.fees).processingMinor}
               returnedOrderId={query.paypal === "approved" && typeof query.token === "string" ? query.token : undefined}
               captured={d.funding.some((f) => f.status === "CAPTURED")}
             />

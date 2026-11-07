@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { FeeSchedule } from "@/core/money";
 
 // Every variable is optional: the app must start in MOCK mode with zero secrets set.
 const EnvSchema = z.object({
@@ -19,6 +20,9 @@ const EnvSchema = z.object({
   STORAGE_DRIVER: z.enum(["local", "s3"]).default("local"),
   STORAGE_LOCAL_DIR: z.string().default(".data/uploads"),
   PLATFORM_FEE_BPS: z.coerce.number().int().min(0).max(10000).default(200),
+  PAYPAL_FEE_BPS: z.coerce.number().int().min(0).max(5000).optional(),
+  PAYPAL_FEE_FIXED_MINOR: z.coerce.number().int().min(0).optional(),
+  PAYOUT_ITEM_FEE_MINOR: z.coerce.number().int().min(0).optional(),
   CHALLENGE_WINDOW_SECONDS: z.coerce.number().int().positive().default(86400),
   DISPUTE_EVIDENCE_WINDOW_SECONDS: z.coerce.number().int().positive().default(259200),
   PAYOUT_KILL_SWITCH: z.stringbool().default(false),
@@ -40,7 +44,11 @@ export interface AppConfig extends Env {
   paymentsLive: boolean;
   llmProvider: "xai" | "groq" | "anthropic" | "stub";
   llmModel: string;
+  fees: FeeSchedule;
 }
+
+// PayPal's charges seen on the live sandbox: $4.05 on a $102.00 capture, $0.25 per payout item. Mock mode has no PayPal costs.
+const LIVE_PAYPAL_COSTS = { processingBps: 349, processingFixedMinor: 49, payoutItemFeeMinor: 25 };
 
 const DEFAULT_MODELS = { xai: "grok-4.7", groq: "qwen/qwen3.8-27b", anthropic: "claude-sonnet-5-5", stub: "stub" } as const;
 
@@ -76,6 +84,12 @@ export function loadConfig(source: Record<string, string | undefined> = process.
     paymentsLive,
     llmProvider,
     llmModel: env.LLM_MODEL ?? DEFAULT_MODELS[llmProvider],
+    fees: {
+      marginBps: env.PLATFORM_FEE_BPS,
+      processingBps: env.PAYPAL_FEE_BPS ?? (paymentsLive ? LIVE_PAYPAL_COSTS.processingBps : 0),
+      processingFixedMinor: env.PAYPAL_FEE_FIXED_MINOR ?? (paymentsLive ? LIVE_PAYPAL_COSTS.processingFixedMinor : 0),
+      payoutItemFeeMinor: env.PAYOUT_ITEM_FEE_MINOR ?? (paymentsLive ? LIVE_PAYPAL_COSTS.payoutItemFeeMinor : 0),
+    },
   };
 }
 

@@ -255,6 +255,20 @@ Not yet covered: the Arbiter on the real model through this server (needs real p
 - **Signing key:** `key_mAY01ASyQW6Rs5thTXH27L_G`. Private key in `.secrets/` (git-ignored), public key published in the README.
 - **Economics note:** PayPal's fee on a $102 capture ($4.05) is about twice the $2.00 platform fee, and a refund does not return it. A real product would need to price this in.
 
+## Reconciliation limit
+
+Per-transaction figures match exactly: the ledger's PayPal balance equals PayPal's reported capture, fee, payout and refund amounts (live flow: $57.46 both). The account balance itself can't be read: `/v1/reporting/balances` returns 403 `NOT_AUTHORIZED` for this app.
+
+## 7 Nov 2026: fee model and post-deploy checks
+
+- **Fee model:** payer pays the work, PayPal's costs at cost, and a 2% margin. Fee for a $100.00 job with 2 payouts: $6.72 ($4.72 processing, $2.00 margin). The processing part is not refundable, because PayPal keeps its fee on a refund. Mock mode has no PayPal costs and keeps the plain 2%.
+- **Live proof:** order `39046161HY1431018` $106.72, capture `5LC81630BG623970F` fee $4.21 (3.49% + $0.49 predicts $4.21), payout batch `YLKA7AD5ZJJ78` fee $0.25, refund `5DR979248V917034Y` $12.24. Ledger PayPal balance $62.02 equals PayPal's figures. This run stops with milestone 2 still in escrow; finished, the job keeps about $2.01.
+- **Wake-up:** 74.4 s after 17 idle minutes (one sample; wording now ~75s).
+- **Deployed flow:** real AI, sandbox checkout, admin approval and payout through the live site. Peak RSS 390 MB of 512 MB. Unsigned webhook: 400. Receipt verified against the published key.
+- **Webhook delivery:** PayPal generated the events; server-side receipt not yet shown, so `/api/health` now reports verified events. Check after the next deploy.
+- **Flaky `audit.test.ts`:** one failure, cause not found. Not reproduced in 30 runs alone, 5 full-suite runs, or a full run each under memory pressure (1.1 GB free) and CPU starvation (8 spinning threads). Test results now persist in `.data/last-test-results.json`, so a repeat leaves its error. No assertion changed.
+- **11 Nov, before making the repo public:** re-run gitleaks over the full git history.
+
 # After submission
 
 Requirement: the demo stays live and free through 15 Dec 2026.

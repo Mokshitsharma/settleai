@@ -32,6 +32,8 @@ export interface ReceiptBundle {
   attestations: Attestation[];
   keys: KeyRecord[];
   paypal: { orderId: string | null; captureId: string | null; payoutItemIds: string[]; refundIds: string[] }; // masked
+  /** Not signed, like the ledger summary: the signed part is funding.processingFeeMinor in the Payment Mandate. */
+  fees: { serviceFeeMinor: number; processingFeeMinor: number; paypalChargedMinor: number };
   ledger: { fundedMinor: number; releasedMinor: number; refundedMinor: number; inEscrowMinor: number };
 }
 
