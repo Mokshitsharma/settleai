@@ -12,6 +12,8 @@ export default defineConfig({
     reporters: ["default", ["json", { outputFile: ".data/last-test-results.json" }]],
     // Same flag as production: without it each PGlite start spikes to about 600 MB in every worker.
     execArgv: ["--liftoff-only"],
+    // One worker keeps the peak well under this machine's free memory; two still paused the commit gate.
+    maxWorkers: 1,
     testTimeout: 60_000,
     hookTimeout: 90_000,
   },

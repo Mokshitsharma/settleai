@@ -201,11 +201,21 @@ export function DisputePanel({ d, viewer }: { d: DisputeProps; viewer: "payer" |
             <SplitBar release={d.proposal.proposal.releaseToWorkerMinor} refund={d.proposal.proposal.refundToPayerMinor} />
           </div>
           <p className="mt-3 text-sm leading-relaxed">{d.proposal.proposal.rationale}</p>
+          <section aria-label="Liability finding" className="mt-4 rounded-md border-l-4 border-signal bg-paper px-4 py-3">
+            <p className="text-xs font-semibold uppercase tracking-wide text-ink-soft">Liability finding</p>
+            <p className="mt-1 text-lg font-semibold">
+              {FAULT[d.proposal.liability.faultClass]} <span className="text-base font-normal text-ink-soft">(borne by {d.proposal.liability.bearer.replace("_", " ")})</span>
+            </p>
+            {d.proposal.liability.basis
+              .filter((b) => b.startsWith("mandate:"))
+              .map((b) => (
+                <p key={b} className="mt-2 text-sm leading-relaxed">
+                  <span className="font-semibold">Cites the mandate: </span>
+                  {d.reportClauses.find((c) => c.ref === b)?.text}
+                </p>
+              ))}
+          </section>
           <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
-            <dt className="text-ink-soft">Liability</dt>
-            <dd className="font-semibold">
-              {FAULT[d.proposal.liability.faultClass]} <span className="font-normal text-ink-soft">(borne by {d.proposal.liability.bearer.replace("_", " ")})</span>
-            </dd>
             <dt className="text-ink-soft">Based on</dt>
             <dd>
               {d.proposal.liability.basis.filter((b) => !b.startsWith("mandate:")).map((b) => (
@@ -216,16 +226,13 @@ export function DisputePanel({ d, viewer }: { d: DisputeProps; viewer: "payer" |
             </dd>
             {d.proposal.liability.basis.some((b) => b.startsWith("mandate:")) ? (
               <>
-                <dt className="text-ink-soft">Mandate clause</dt>
+                <dt className="text-ink-soft">Clause ref</dt>
                 <dd>
-                  <ul className="space-y-1">
-                    {d.proposal.liability.basis.filter((b) => b.startsWith("mandate:")).map((b) => (
-                      <li key={b}>
-                        {d.reportClauses.find((c) => c.ref === b)?.text}
-                        <code className="block break-all font-mono text-xs text-ink-soft">{b}</code>
-                      </li>
-                    ))}
-                  </ul>
+                  {d.proposal.liability.basis.filter((b) => b.startsWith("mandate:")).map((b) => (
+                    <code key={b} className="block break-all font-mono text-xs text-ink-soft">
+                      {b}
+                    </code>
+                  ))}
                 </dd>
               </>
             ) : null}

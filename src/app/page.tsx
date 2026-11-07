@@ -15,6 +15,13 @@ const STEPS = [
   { title: "PayPal pays, or nobody does", body: "Policy releases the payout, holds it for review, or blocks it. Every step is signed." },
 ];
 
+const MOMENTS = [
+  { title: "An agent is stopped before money moves", how: "Payer, Agent mandates, Out of scope, Send as agent: denied with reason codes, nothing created." },
+  { title: "A reused photo is caught", how: "Worker, on a funded job, Submit proof, Photo reused from another job: held for a person." },
+  { title: "A dispute names who is liable", how: "Payer, Dispute this milestone in the challenge window: a split and a finding that cites the mandate." },
+  { title: "A receipt anyone can check", how: "Open the showcase receipt or any job's receipt, Verify; change one byte and it fails." },
+];
+
 export default async function Home() {
   const user = await currentUser();
   if (user) redirect("/jobs");
@@ -57,7 +64,20 @@ export default async function Home() {
         </figure>
       </section>
 
-      <section className="mt-20 border-t border-vellum pt-10">
+      <section className="mt-16">
+        <h2 className="text-lg font-semibold">Four things to try</h2>
+        <ol className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+          {MOMENTS.map((m, i) => (
+            <li key={m.title} className="rounded-[10px] border border-vellum bg-surface p-5">
+              <span className="num text-sm font-semibold text-signal">{i + 1}</span>
+              <h3 className="mt-1 font-semibold">{m.title}</h3>
+              <p className="mt-2 text-sm leading-relaxed text-ink-soft">{m.how}</p>
+            </li>
+          ))}
+        </ol>
+      </section>
+
+      <section className="mt-16 border-t border-vellum pt-10">
         <h2 className="text-lg font-semibold">How a job settles</h2>
         <ol className="mt-6 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((s, i) => (

@@ -19,9 +19,14 @@ export function VerificationResult({ result }: { result: ReceiptVerification }) 
   return (
     <div aria-live="polite" className={`mt-4 rounded-[10px] border-2 p-4 ${result.ok ? "border-seal" : "border-deny"}`}>
       <p className={`text-lg font-semibold ${result.ok ? "text-seal" : "text-deny"}`}>{result.ok ? "Receipt verified" : "Receipt failed verification"}</p>
+      <p className="text-sm text-ink-soft">
+        {result.ok
+          ? `All ${result.checks.length} checks passed.`
+          : `${result.checks.filter((c) => !c.ok).length} of ${result.checks.length} checks failed.`}
+      </p>
       <ol className="mt-3 space-y-2 text-sm">
         {result.checks.map((c) => (
-          <li key={c.id} className="grid grid-cols-[1.25rem_1fr] gap-x-2">
+          <li key={c.id} className={`grid grid-cols-[1.25rem_1fr] gap-x-2 ${c.ok ? "" : "-mx-2 rounded-md bg-deny-wash px-2 py-1.5"}`}>
             <span aria-label={c.ok ? "passed" : "failed"} className="font-bold" style={{ color: c.ok ? "var(--seal)" : "var(--deny)" }}>
               {c.ok ? "✓" : "✕"}
             </span>

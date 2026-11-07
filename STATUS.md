@@ -289,6 +289,14 @@ Per-transaction figures match exactly: the ledger's PayPal balance equals PayPal
 - **Wake-up:** 74.4 s and 72.5 s after 17 idle minutes. Wording stays ~75s.
 - **gitleaks:** 21 `jwt` findings in `assets/showcase/receipt.json`, all public ES256 signatures, checked by decoding each. `.gitleaks.toml` allows only that rule on only that file. A control confirmed the same token is still caught in other files and API keys are still caught everywhere.
 
+## 7 Nov 2026: owner decisions, polish, impact pack
+
+- **CUT (roadmap):** Concierge agent (F17), and tests that name `MANDATE_NOT_YET_VALID`, `MANDATE_CHAIN_INVALID`, `MANDATE_COUNTERPARTY_REJECTED`, `STEP_UP_REQUIRED` and `RELEASE_CONDITION_UNMET` directly. The codes exist and are enforced; only the named tests are missing.
+- **Invoicing through the Agent Toolkit:** only if polish and the impact pack are done before 9 Nov night and the gate passes.
+- **Visual polish (no behaviour change):** liability finding as a callout with the cited clause; failing receipt checks highlighted, with a count; larger evidence thumbnails; "Four things to try" on the landing page.
+- **Impact pack:** `docs/impact/` with sourced statistics, a conversation guide and a template. Real conversations pending (owner); no quotes or numbers invented.
+- **Screenshots:** after the real photos.
+
 # After submission
 
 Requirement: the demo stays live and free through 15 Dec 2026.

@@ -75,7 +75,7 @@ export function DecisionCardView({ card, proofImages }: { card: Card; proofImage
         <div className="mt-3 flex gap-2 overflow-x-auto">
           {evidence.map((id) => (
             // eslint-disable-next-line @next/next/no-img-element -- private, auth-checked proof images
-            <img key={id} src={`/api/proofs/${id}/image`} alt={`Evidence ${id}`} className="h-24 w-32 shrink-0 rounded-md border border-vellum object-cover" />
+            <img key={id} src={`/api/proofs/${id}/image`} alt={`Evidence ${id}`} className="h-36 w-48 shrink-0 rounded-md border border-vellum object-cover" />
           ))}
         </div>
       ) : null}
