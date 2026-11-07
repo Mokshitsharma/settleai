@@ -31,7 +31,7 @@ async function main() {
   const evidence: Record<string, unknown> = { at: new Date().toISOString(), env: "sandbox" };
   const save = () => writeFileSync("docs/live-evidence.json", `${JSON.stringify(evidence, null, 2)}\n`);
 
-  const scoped = await scopeJob({ db, llm: c.llm }, { text: "Deliver 20 cartons of tea from Rajwada to Vijay Nagar by 6 pm. Budget $100.", payerId: "usr_ravi", now: c.clock.now(), entityId: "live_flow" });
+  const scoped = await scopeJob({ db, llm: c.llm }, { text: "Deliver 2 cartons of tea from Rajwada to Vijay Nagar by 6 pm. Budget $100.", payerId: "usr_ravi", now: c.clock.now(), entityId: "live_flow" });
   if (!scoped.ok) throw new Error(scoped.error);
   const spec = scoped.output as JobSpec;
   const job = await c.jobs.createFromSpec({ payerId: "usr_ravi", spec, createdBy: "user:usr_ravi" });

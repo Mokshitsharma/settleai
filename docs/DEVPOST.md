@@ -78,6 +78,8 @@ PayPal Invoicing through the Agent Toolkit, a Concierge agent, document delivera
 
 PayPal Orders v2, Payouts v1, Payments v2, Webhooks · Groq (Qwen, gpt-oss) · Model Context Protocol · Next.js · TypeScript · PGlite · Drizzle ORM · Zod · jose · canonicalize · @noble/hashes · sharp · exifr · AG Grid Community · Vitest · Playwright · Render
 
+**Demo images:** the delivery and damage pictures used for demo proofs are **illustrative demo images, AI-generated**, not photographs of real deliveries. They are labelled as demo samples on every proof; their metadata is stripped and the demo stamps its own time and location. A visible generator watermark was trimmed from two of them; the files keep their invisible provenance marks.
+
 ## Testing instructions for judges
 
 **Live:** https://settleai-07ue.onrender.com. First load may take ~75s while the free server wakes up. The demo resets after idle time, so jobs you create don't stay online; a receipt you downloaded still verifies offline.

@@ -18,7 +18,7 @@ import { verifyReceipt } from "@/core/verifier/receipt";
 import { buyerApproves } from "./_buyer";
 
 const RETURN_BASE = "https://settleai.invalid";
-const REQUEST = "Deliver cartons of tea from Rajwada to Vijay Nagar in Indore by 6 pm today. Budget $100.";
+const REQUEST = "Deliver 2 cartons of tea from Rajwada to Vijay Nagar in Indore by 6 pm today. Budget $100.";
 const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 async function until<T>(what: string, fn: () => Promise<T | null | undefined | false>, seconds = 240): Promise<T> {
@@ -36,11 +36,11 @@ async function submitProof(c: Container, spec: JobSpec, m: { id: string; title: 
     kind: /pick/i.test(m.title) ? "pickup" : "dropoff",
     seed: `showcase-${m.id}`,
     caption: `${m.title}: ${spec.title}`.slice(0, 60),
-    takenAt: new Date(c.clock.now().getTime() - 90_000),
+    takenAt: c.clock.now(), // the real moment of submission; nothing is backdated
     location,
   });
   await c.proofs.addPhoto({ milestoneId: m.id, workerId: "usr_asha", bytes, declaredMime: "image/jpeg", source: "demo_sample" });
-  await c.proofs.addText({ milestoneId: m.id, workerId: "usr_asha", text: `${m.title} done as agreed.` });
+  await c.proofs.addText({ milestoneId: m.id, workerId: "usr_asha", text: /drop/i.test(m.title) ? "Received by Ravi at the front door" : `${m.title} done as agreed.` });
   await c.proofs.addGeo({ milestoneId: m.id, workerId: "usr_asha", lat: location.lat, lng: location.lng, accuracyM: 10 });
   await c.proofs.submit({ milestoneId: m.id, workerId: "usr_asha" });
   return c.verification.run(m.id);
@@ -80,7 +80,9 @@ async function main() {
   const count = (await c.jobs.detail(job.id))!.milestones.length;
   for (let seq = 1; seq <= count; seq++) {
     const m = (await c.jobs.detail(job.id))!.milestones.find((x) => x.seq === seq)!;
-    await sleep(65_000); // stay inside Groq's free tokens-per-minute budget, so a rate limit does not decide the outcome
+    // A real worker takes minutes, and a proof sent within a minute of the milestone starting is flagged TOO_FAST.
+    // Wait real time (this also keeps inside Groq's per-minute budget); the video trims the wait.
+    await sleep(130_000);
     const card = await submitProof(c, spec, m);
     console.log(`Milestone ${seq}: ${card?.decision} by ${card?.model}; ${card?.explanation}`);
     const damage = await renderDemoPhoto("damage", "showcase");

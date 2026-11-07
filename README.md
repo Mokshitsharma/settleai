@@ -16,6 +16,8 @@ First load may take ~75s while the free server wakes up.
 
 **The demo resets after idle time**, so jobs you create don't stay online; a receipt you downloaded still verifies offline. For a link that never changes, see the [showcase receipt](https://settleai-07ue.onrender.com/receipt/showcase): the signed record of one real job on the PayPal sandbox, frozen and served from a file.
 
+**Demo images:** the delivery and damage pictures used for demo proofs are **illustrative demo images, AI-generated**, not photographs of real deliveries. They are labelled as demo samples on every proof; their metadata is stripped and the demo stamps its own time and location. A visible generator watermark was trimmed from two of them; the files keep their invisible provenance marks.
+
 ## Try it in two minutes (no keys needed)
 
 ```bash

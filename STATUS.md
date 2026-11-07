@@ -297,6 +297,12 @@ Per-transaction figures match exactly: the ledger's PayPal balance equals PayPal
 - **Impact pack:** `docs/impact/` with sourced statistics, a conversation guide and a template. Real conversations pending (owner); no quotes or numbers invented.
 - **Screenshots:** after the real photos.
 
+## 7 Nov 2026: demo images and real-AI happy path
+
+- **Images:** illustrative demo images, AI-generated. Pickups and dropoff-1 at 1536 x 1024; damage-1 and damage-2 at 1024 x 687, right edge trimmed to 900 px to remove a visible Gemini watermark (owner's decision; disclosed in README and DEVPOST). dropoff-2 left out: a perceptual near-duplicate of dropoff-1 (distance 1). One drop-off image is enough: 0 of 66 variant pairs fall within the duplicate threshold.
+- **Fixes (owner-approved):** scoping rule B (a photo criterion may not go to a person where the template uses AI vision); the Verification agent now sees the job title and summary, as delimited untrusted data; demo requests say "2 cartons", matching the images; real 2-minute waits before proofs, no backdated timestamps; drop-off proof text "Received by Ravi at the front door".
+- **Real-AI happy path passed:** milestone 1 AUTO_RELEASE 0.95; milestone 2 AUTO_RELEASE 0.95 with no risk signals; both released. Damage dispute: Arbiter (Qwen, with the damage image) WORKER_PARTIAL 50/50 at 0.85, citing the Payment Mandate clause, criteria and evidence.
+
 # After submission
 
 Requirement: the demo stays live and free through 15 Dec 2026.

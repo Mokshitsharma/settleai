@@ -2,7 +2,7 @@ import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vitest";
 import { StubLlmAdapter } from "@/core/adapters/llm/stub";
 import { runAgent } from "@/core/agents/runtime";
-import { guessCategory, scopeJob, statedAmounts } from "@/core/agents/scoping";
+import { guessCategory, jobSpecFor, scopeJob, statedAmounts } from "@/core/agents/scoping";
 import { createStubLlm } from "@/core/agents/stub-fixtures";
 import { JobSpec } from "@/core/contracts";
 import { agentRuns } from "@/core/db/schema";
@@ -109,5 +109,24 @@ describe("guessCategory", () => {
     ["Design a logo for the shop", "digital_deliverable"],
   ])("%s -> %s", (text, expected) => {
     expect(guessCategory(text)).toBe(expected);
+  });
+});
+
+describe("scoping rule: photos are checked by AI vision where the template does so", () => {
+  const withCheck = (check: "human" | "ai_visual") => ({
+    ...sampleJobSpec,
+    category: "delivery" as const,
+    milestones: sampleJobSpec.milestones.map((m) => ({ ...m, acceptanceCriteria: m.acceptanceCriteria.map((c) => (c.evidenceType === "photo" ? { ...c, check } : c)) })),
+  });
+  const text = `Deliver tea. Budget $${sampleJobSpec.totalAmountMinor / 100}.`;
+
+  it("rejects a photo criterion sent to a person, with a message the retry can use", () => {
+    const r = jobSpecFor(text).safeParse(withCheck("human"));
+    expect(r.success).toBe(false);
+    expect(JSON.stringify(r.error?.issues)).toContain('use check \\"ai_visual\\"');
+  });
+
+  it("accepts AI vision for photos, and leaves non-photo human checks alone", () => {
+    expect(jobSpecFor(text).safeParse(withCheck("ai_visual")).success).toBe(true);
   });
 });

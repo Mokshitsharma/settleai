@@ -108,6 +108,7 @@ export class VerificationService {
         images,
         texts,
         deterministic: det,
+        job: { title: job.title, summary: spec.summary },
         metadata: { milestoneTitle: ms.title, dueAt: ms.dueAt.toISOString(), location: spec.location?.label ?? null, takenAt: det.takenAt ?? null },
       },
     );

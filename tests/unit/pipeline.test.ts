@@ -1,3 +1,5 @@
+import { verifyMilestone } from "@/core/agents/verification";
+import type { LlmPort } from "@/core/ports/llm";
 // Phase 2 integration: proof -> deterministic checks -> AI verification -> risk -> challenge window ->
 // Mandate Guard G3 -> PayPal payout, plus the fraud, mandate-denial and revocation paths (Appendix B).
 import { eq } from "drizzle-orm";
@@ -231,5 +233,35 @@ describe("Revocation (S23, S30)", () => {
     after = (await c.jobs.detail(r.job.id))!;
     expect(after.milestones[0].status).toBe("RELEASED");
     expect(await c.ledger.checkInvariants()).toEqual([]);
+  });
+});
+
+describe("Verification sees what the payer asked for", () => {
+  it("passes the job title and summary to the model as delimited data", async () => {
+    const seen: string[] = [];
+    const llm: LlmPort = {
+      provider: "stub",
+      model: "capture",
+      structured: async (req) => {
+        seen.push(JSON.stringify(req.messages));
+        return { output: req.schema.parse({ criteria: [], confidence: 0.9, injectionSuspected: false, summaryForHumans: "ok" }), model: "capture", tokensIn: 0, tokensOut: 0, latencyMs: 0 };
+      },
+    };
+    const db = (await openTestDb()).db;
+    await verifyMilestone(
+      { db, llm },
+      {
+        milestoneId: "ms_1",
+        criteria: [{ id: "c1", text: "Photo of the goods showing the expected quantity", evidenceType: "photo", check: "ai_visual" }],
+        images: [],
+        texts: [],
+        deterministic: { flags: [], criteria: [], injectionSuspected: false, injectionSpans: [] } as never,
+        metadata: {},
+        job: { title: "Deliver 2 cartons of tea", summary: "Deliver 2 cartons of tea from Rajwada to Vijay Nagar." },
+      },
+    );
+    expect(seen[0]).toContain("<job_request>");
+    expect(seen[0]).toContain("Deliver 2 cartons of tea from Rajwada to Vijay Nagar.");
+    expect(seen[0]).toContain("</job_request>");
   });
 });

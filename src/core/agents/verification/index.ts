@@ -30,6 +30,8 @@ export interface VerificationInput {
   texts: { proofId: string; text: string }[];
   deterministic: DeterministicOutcome;
   metadata: Record<string, unknown>;
+  /** What the payer asked for (title and summary), so criteria like "the expected quantity" can be judged. Untrusted. */
+  job?: { title: string; summary: string };
 }
 
 /** Deterministic merge (spec §8.4 step 4). Never lets the model override rules or critical flags. */
@@ -93,6 +95,10 @@ export async function verifyMilestone(deps: AgentDeps, input: VerificationInput)
     };
     const content: LlmContent[] = [
       { type: "text", text: `<context>\n${JSON.stringify(context)}\n</context>` },
+      // The payer's job description is untrusted too, so it is delimited data like the proof text.
+      ...(input.job
+        ? [{ type: "text" as const, text: dataBlock("job_request", neutralize(`${input.job.title}\n${input.job.summary}`, input.deterministic.injectionSpans)) }]
+        : []),
       // Spans that matched the injection scan are neutralized before the model sees them (spec §8.8).
       {
         type: "text",

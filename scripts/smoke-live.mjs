@@ -41,7 +41,7 @@ try {
   console.log(`unsigned webhook: ${unsigned.status()} (want 400)`);
 
   await login("payer");
-  const scope = await (await api.post(`${base}/api/jobs/scope`, { data: { text: "Deliver 20 cartons of tea from Rajwada to Vijay Nagar by 6 pm. Budget $100." } })).text();
+  const scope = await (await api.post(`${base}/api/jobs/scope`, { data: { text: "Deliver 2 cartons of tea from Rajwada to Vijay Nagar by 6 pm. Budget $100." } })).text();
   const m = /event: result\ndata: (.*)/.exec(scope);
   if (!m) throw new Error(`Scoping fell back: ${scope.slice(-300)}`);
   const { spec, model } = JSON.parse(m[1]);

@@ -43,6 +43,18 @@ export function jobSpecFor(text: string) {
     if (amounts.length === 1 && spec.totalAmountMinor !== amounts[0]) {
       ctx.addIssue({ code: "custom", path: ["totalAmountMinor"], message: `The payer stated ${amounts[0]} minor units; the total must equal it exactly` });
     }
+    // Prompt rule 2 in code: "human" only when no objective check exists. Where the category template checks photos with
+    // AI vision, a photo criterion sent to a person is a scoping mistake, so it is retried with this message.
+    const visualPhotos = CATEGORY_TEMPLATES[spec.category]?.some((m) => m.criteria.some((c) => c.evidenceType === "photo" && c.check === "ai_visual"));
+    if (visualPhotos) {
+      spec.milestones.forEach((m, i) =>
+        m.acceptanceCriteria.forEach((c, j) => {
+          if (c.evidenceType === "photo" && c.check === "human") {
+            ctx.addIssue({ code: "custom", path: ["milestones", i, "acceptanceCriteria", j, "check"], message: 'Photo criteria in this category are checked by AI vision: use check "ai_visual", not "human"' });
+          }
+        }),
+      );
+    }
   });
 }
 
