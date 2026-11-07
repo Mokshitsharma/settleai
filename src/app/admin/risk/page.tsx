@@ -6,16 +6,16 @@ export const metadata: Metadata = { title: "Review queue" };
 export const dynamic = "force-dynamic";
 
 const COLUMNS: ColumnSpec[] = [
-  { field: "waiting", header: "", kind: "status", width: 140, tones: { "Waiting for you": "bad" } },
-  { field: "job", header: "Job", kind: "link", flex: 2 },
-  { field: "milestone", header: "Milestone", width: 130 },
-  { field: "decision", header: "Decision", kind: "status", width: 140, tones: { AUTO_RELEASE: "good", HUMAN_REVIEW: "warn", HOLD: "bad" } },
-  { field: "score", header: "Risk", kind: "number", width: 85 },
-  { field: "flags", header: "Flags", kind: "code", flex: 1 },
-  { field: "amountMinor", header: "Amount", kind: "money", width: 110 },
-  { field: "worker", header: "Worker", width: 110 },
-  { field: "status", header: "Milestone now", kind: "status", width: 150, tones: { RELEASED: "good", RESOLVED: "good", NEEDS_REVIEW: "warn", HELD: "bad", REJECTED: "bad" } },
-  { field: "at", header: "Decided", kind: "datetime", width: 170 },
+  { field: "waiting", header: "Queue", kind: "status", width: 125, tones: { "Waiting for you": "bad" } },
+  { field: "job", header: "Job", kind: "link", flex: 2, minWidth: 150 },
+  { field: "milestone", header: "Milestone", width: 100 },
+  { field: "decision", header: "Decision", kind: "status", width: 120, tones: { AUTO_RELEASE: "good", HUMAN_REVIEW: "warn", HOLD: "bad" } },
+  { field: "score", header: "Risk", kind: "number", width: 64 },
+  { field: "flags", header: "Flags", kind: "code", flex: 1, minWidth: 100 },
+  { field: "amountMinor", header: "Amount", kind: "money", width: 88 },
+  { field: "worker", header: "Worker", width: 84 },
+  { field: "status", header: "Status", kind: "status", width: 120, tones: { RELEASED: "good", RESOLVED: "good", NEEDS_REVIEW: "warn", HELD: "bad", REJECTED: "bad" } },
+  { field: "at", header: "Decided", kind: "datetime", width: 120 },
   { field: "policyVersion", header: "Policy", kind: "number", width: 85, hide: true },
 ];
 

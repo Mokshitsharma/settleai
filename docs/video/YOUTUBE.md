@@ -15,12 +15,12 @@ Live demo: https://settleai-07ue.onrender.com
 Showcase receipt (permanent): https://settleai-07ue.onrender.com/receipt/showcase
 Code: https://github.com/Mokshitsharma/settleai
 
-0:31 Moment 1: an out-of-mandate agent request is denied before money moves
+0:31 An out-of-mandate agent request is denied before money moves
 0:43 The agent hires within its mandate; funded on the PayPal sandbox
 0:56 Proof checked by rules and a vision model
-1:08 Moment 3: a dispute ends in a liability finding that cites the mandate
-1:22 Moment 2: a reused photo is caught and held
-1:31 Moment 4: a receipt verifies, and a one-byte change fails
+1:08 A dispute ends in a liability finding that cites the mandate
+1:22 A reused photo is caught and held
+1:31 A receipt verifies, and a one-byte change fails
 
 PayPal sandbox with test money. Funds are a ledgered hold captured to the platform and released by Payouts. Mandates are
 AP2-inspired: not official AP2, and not endorsed by PayPal or Google. Demo images are illustrative and AI-generated.

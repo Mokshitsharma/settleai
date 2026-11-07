@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { Fragment, useState } from "react";
 import type { DisputeProposal, FaultClass } from "@/core/contracts";
 import { formatMinor, parseMajor } from "@/core/money";
 import { api } from "@/lib/api";
@@ -31,6 +31,30 @@ const STATUS: Record<string, { label: string; tone: Tone }> = {
   ADMIN_RESOLVED: { label: "Decided by admin", tone: "good" },
   EXECUTED: { label: "Settled", tone: "good" },
 };
+
+/** Who carries the loss, in plain words. */
+const BEARER: Record<string, string> = {
+  worker: "borne by the worker",
+  payer: "borne by the payer",
+  shared: "shared by both sides",
+  platform: "borne by the platform",
+  agent_principal: "borne by the agent's principal",
+};
+
+const CONDITION_WORDS: Record<string, string> = {
+  "verification.pass": "the proof checks pass",
+  "risk.not_hold": "risk policy does not hold it",
+  "mandate.active": "the mandate is still active",
+};
+
+/** Plain-English version of a signed settlement clause; the raw clause stays under Details. */
+function plainClause(text: string): string {
+  const m = /^Payment Mandate, milestone (\d+): (\S+) settles only when (.+) hold, under acceptance criteria/.exec(text);
+  if (!m) return text;
+  const conds = m[3].split(", ").map((c) => CONDITION_WORDS[c] ?? c);
+  const list = conds.length > 1 ? `${conds.slice(0, -1).join(", ")} and ${conds[conds.length - 1]}` : conds[0];
+  return `Milestone ${m[1]} pays ${m[2]} only if ${list}, judged against the signed acceptance criteria.`;
+}
 
 const FAULT: Record<FaultClass, string> = {
   WORKER_NONPERFORMANCE: "Worker did not perform",
@@ -204,18 +228,33 @@ export function DisputePanel({ d, viewer }: { d: DisputeProps; viewer: "payer" |
           <section aria-label="Liability finding" className="mt-4 rounded-md border-l-4 border-signal bg-paper px-4 py-3">
             <p className="text-xs font-semibold uppercase tracking-wide text-ink-soft">Liability finding</p>
             <p className="mt-1 text-lg font-semibold">
-              {FAULT[d.proposal.liability.faultClass]} <span className="text-base font-normal text-ink-soft">(borne by {d.proposal.liability.bearer.replace("_", " ")})</span>
+              {FAULT[d.proposal.liability.faultClass]} <span className="text-base font-normal text-ink-soft">({BEARER[d.proposal.liability.bearer] ?? d.proposal.liability.bearer})</span>
             </p>
             {d.proposal.liability.basis
               .filter((b) => b.startsWith("mandate:"))
               .map((b) => (
                 <p key={b} className="mt-2 text-sm leading-relaxed">
                   <span className="font-semibold">Cites the mandate: </span>
-                  {d.reportClauses.find((c) => c.ref === b)?.text}
+                  {plainClause(d.reportClauses.find((c) => c.ref === b)?.text ?? "")}
                 </p>
               ))}
           </section>
-          <dl className="mt-3 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+          <p className="mt-3 text-sm">
+            <span className="text-ink-soft">Confidence </span>
+            <span className="num">{Math.round(d.proposal.confidence * 100)}%</span>
+            {d.reportSummary ? <span className="text-ink-soft"> · {d.reportSummary}</span> : null}
+          </p>
+          <details className="mt-2 text-sm">
+            <summary className="cursor-pointer text-ink-soft hover:text-ink">Details</summary>
+          <dl className="mt-2 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1 text-sm">
+            {d.proposal.liability.basis
+              .filter((b) => b.startsWith("mandate:"))
+              .map((b) => (
+                <Fragment key={`t-${b}`}>
+                  <dt className="text-ink-soft">Signed clause</dt>
+                  <dd className="text-xs">{d.reportClauses.find((c) => c.ref === b)?.text}</dd>
+                </Fragment>
+              ))}
             <dt className="text-ink-soft">Based on</dt>
             <dd>
               {d.proposal.liability.basis.filter((b) => !b.startsWith("mandate:")).map((b) => (
@@ -236,15 +275,8 @@ export function DisputePanel({ d, viewer }: { d: DisputeProps; viewer: "payer" |
                 </dd>
               </>
             ) : null}
-            {d.reportSummary ? (
-              <>
-                <dt className="text-ink-soft">Mandate check</dt>
-                <dd>{d.reportSummary}</dd>
-              </>
-            ) : null}
-            <dt className="text-ink-soft">Confidence</dt>
-            <dd className="num">{Math.round(d.proposal.confidence * 100)}%</dd>
           </dl>
+          </details>
           {d.proposal.findings.contestedFacts.length ? <p className="mt-2 text-xs text-ink-soft">Contested: {d.proposal.findings.contestedFacts.join("; ")}</p> : null}
           {d.proposal.reasonsIfHuman.length ? <p className="mt-2 text-xs text-deny">Needs a person: {d.proposal.reasonsIfHuman.join("; ")}</p> : null}
           <p className="mt-2 text-xs text-ink-faint">

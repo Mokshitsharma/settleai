@@ -16,6 +16,8 @@ export interface ColumnSpec {
   kind?: ColumnKind;
   width?: number;
   flex?: number;
+  /** Floor for flex columns so they never collapse when fixed columns take the space. */
+  minWidth?: number;
   /** status: value -> tone; link: the row field holding the href (default "link") */
   tones?: Record<string, "good" | "warn" | "bad" | "info" | "neutral">;
   hrefField?: string;
@@ -43,6 +45,7 @@ const theme = themeQuartz.withParams({
   rowHoverColor: "#f6f8fb",
   wrapperBorderRadius: 10,
   spacing: 7,
+  cellHorizontalPadding: 10,
 });
 
 const MODULES = [AllCommunityModule];
@@ -52,8 +55,16 @@ function fmtDate(v: unknown): string {
   return new Date(String(v)).toLocaleString("en-IN", { dateStyle: "medium", timeStyle: "short", timeZone: "Asia/Kolkata" });
 }
 
+/** Compact cell text ("7 Nov, 8:36 pm"); the full date with the year is in the tooltip. */
+function fmtDateShort(v: unknown): string {
+  if (!v) return "";
+  return new Date(String(v)).toLocaleString("en-IN", { day: "numeric", month: "short", hour: "numeric", minute: "2-digit", timeZone: "Asia/Kolkata" });
+}
+
 function toColDef(c: ColumnSpec): ColDef {
-  const base: ColDef = { field: c.field, headerName: c.header, width: c.width, flex: c.flex ?? (c.width ? undefined : 1), hide: c.hide, sortable: true, filter: true, resizable: true };
+  const flex = c.flex ?? (c.width ? undefined : 1);
+  const minWidth = c.minWidth ?? (flex ? 120 : undefined);
+  const base: ColDef = { field: c.field, headerName: c.header, headerTooltip: c.header, width: c.width, flex, minWidth, hide: c.hide, sortable: true, filter: true, resizable: true };
   switch (c.kind) {
     case "money":
       return { ...base, type: "rightAligned", filter: "agNumberColumnFilter", valueFormatter: (p) => (p.value === null || p.value === undefined ? "" : formatMinor(Number(p.value))), cellClass: "num" };
@@ -62,7 +73,7 @@ function toColDef(c: ColumnSpec): ColDef {
     case "percent":
       return { ...base, type: "rightAligned", filter: "agNumberColumnFilter", valueFormatter: (p) => (p.value === null || p.value === undefined ? "" : `${p.value}%`), cellClass: "num" };
     case "datetime":
-      return { ...base, filter: "agDateColumnFilter", valueFormatter: (p) => fmtDate(p.value), sort: undefined };
+      return { ...base, filter: "agDateColumnFilter", valueFormatter: (p) => fmtDateShort(p.value), tooltipValueGetter: (p) => fmtDate(p.value), sort: undefined };
     case "code":
       return { ...base, cellClass: "font-mono text-xs" };
     case "status":

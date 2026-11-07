@@ -41,7 +41,7 @@ test("payer scopes and funds a job; worker accepts it", async ({ page }) => {
   await page.getByRole("button", { name: "Pay $102.00" }).click();
 
   await expect(page.getByText("Funded, open to workers")).toBeVisible();
-  await expect(page.getByText("Held in escrow")).toBeVisible();
+  await expect(page.getByText("Held by PayPal for this job")).toBeVisible();
   await expect(page.getByText(/^PayPal capture .*confirmed by PayPal webhook/)).toBeVisible();
   await shot(page, "04-funded");
   const jobUrl = page.url();

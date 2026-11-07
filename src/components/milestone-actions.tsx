@@ -90,7 +90,7 @@ export function PausedChoice({ milestoneId }: { milestoneId: string }) {
   const { busy, error, run } = useAction();
   return (
     <div className="mt-3 rounded-md bg-deny-wash p-3 text-sm">
-      <p>The agent&apos;s mandate was revoked, so this payout stopped. The money is still in escrow. You decide:</p>
+      <p>The agent&apos;s mandate was revoked, so this payout stopped. The money is still held by PayPal for this job. You decide:</p>
       <div className="mt-2 flex flex-wrap gap-2">
         <Button disabled={busy} onClick={() => run(() => api(`/api/milestones/${milestoneId}/resume`, { method: "POST" }))}>
           I approve the work, pay it

@@ -112,6 +112,13 @@ Phase plan: docs/SPEC.md §19. Feature freeze 8 Nov 2026; submit by 11 Nov 2026.
 - **Render account access** for the deployment (T504).
 - Real delivery photos taken in Indore (pickup, drop-off, damaged goods) for the demo video.
 
+## Judge-review fixes (7 Nov 2026)
+- Source: docs/JUDGE_REVIEW.md items 1, 2, 4, 5, 7, 10 plus impact figures. No new features; the video is untouched (re-recorded Tuesday).
+- AG Grid: flex columns get a minimum width, tighter cell padding, compact dates with a full-date tooltip; the review queue fits without clipping. Screenshots 2 (cropped) and 5 retaken locally.
+- Dispute reachability: live demo challenge window raised to 10 minutes (render.yaml `CHALLENGE_WINDOW_SECONDS=600`; set it in the Render dashboard too). Chosen over a seeded dispute-ready job because it needs no fake verified proof.
+- Wording: "Held by PayPal for this job" replaces "Held in escrow" in the UI; liability card shows a plain-English clause with raw IDs under Details; model IDs moved to a header tooltip.
+- Docs: Devpost image contradiction fixed, sourced impact figures, "Why the agent never holds the PayPal write tools", AG Grid feature list; README hero image and one evidence table. Screenshot 4 retake waits for the post-deploy recorder run.
+
 ## Track sections
 - A. Payments and ledger: done in MOCK; next a LIVE sandbox run of the PayPal adapter and JS SDK v6 buttons (needs credentials).
 - B. Agents and verification: done on the stub; next live-model runs and `EVAL_LIVE=1 pnpm eval`.

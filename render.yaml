@@ -45,7 +45,7 @@ services:
       - key: GROQ_API_KEY
         sync: false
       - key: CHALLENGE_WINDOW_SECONDS
-        value: "15"
+        value: "600" # 10 minutes, so a judge can open a dispute through the UI
       - key: DISPUTE_EVIDENCE_WINDOW_SECONDS
         value: "45"
 

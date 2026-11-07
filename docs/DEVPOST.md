@@ -11,6 +11,14 @@ Code: https://github.com/Mokshitsharma/settleai (MIT)
 
 AI agents are starting to buy things for people. Signed mandates can prove a person authorized an agent to pay, but for real-world services that isn't enough. Did the courier deliver? What if the agent overspends, or a worker reuses an old photo? Today, nobody can say who is accountable. Small businesses and gig workers feel this most: they pay up front with no recourse, or they wait and argue over whether work was done.
 
+The numbers say this is already a problem before agents arrive, and agents will scale it:
+
+- **Nearly three in four freelancers** (73%) in New York had faced nonpayment or late payment ([*Freelancing in New York 2019*](https://www.nyc.gov/assets/mome/pdf/freelancing-ny-report-09062019.pdf), NYC Mayor's Office of Media and Entertainment, Freelancers Union and Upwork).
+- **62.6% of invoices** sent by UK small businesses in the past year were paid late (FreeAgent survey, reported by [Financial IT](https://financialit.net/news/cash-management/sme-cash-flow-crisis-nearly-two-thirds-invoices-paid-late-across-uk)).
+- **Up to $1 trillion** of US retail revenue could be orchestrated by AI agents by 2030, and $3–5 trillion globally (McKinsey, [*The agentic commerce opportunity*](https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-agentic-commerce-opportunity-how-ai-agents-are-ushering-in-a-new-era-for-consumers-and-merchants), October 2025). That forecast covers goods; services, where proof of work matters most, come next.
+
+**Our first users: small businesses that outsource deliveries and repairs**, such as a trader in Indore whose agent books couriers, and the couriers who want to be paid the moment the proof checks out.
+
 ## What it does
 
 1. **A person signs an Intent Mandate** in plain language: what the agent may hire, spending caps, area and expiry. It can be revoked instantly.
@@ -50,12 +58,18 @@ LLMs propose, policy decides, the ledger records, PayPal moves money. No model h
 
 Every output is schema-validated, retried once, then falls back to a person. Every run is traced with its model, tokens and latency. If the app is ever running on the offline stub, a banner says so.
 
+**Why the agent never holds the PayPal write tools**
+
+Most agent payment demos hand the model a "create order" or "send payout" tool. SettleAI deliberately doesn't. Through the MCP server, an agent gets only read and create tools: it can draft and track jobs within its signed mandate, but it can't fund, pay or refund. Only the deterministic Treasury calls PayPal write APIs, and only after the Mandate Guard allows it, with the final check made immediately before each payout call. A prompt injection or a confused model can at worst propose a job that the Guard then denies; it can't move money. That's also why we didn't wire the PayPal Agent Toolkit's payment tools into the agent. Next, we'll use the Agent Toolkit for Invoicing, where an agent drafting an invoice for a person to approve fits the same rule.
+
 **Trust layer:** RFC 8785 canonical JSON, SHA-256 and ES256 signatures from reviewed libraries; a hash-linked proof chain; an offline verifier in both a CLI and the browser. **Sponsor tool:** AG Grid powers the admin console's ledger, risk queue, disputes, mandate checks and AI runs.
+
+AG Grid Community features used: the Theming API (Quartz, styled with our design tokens), typed column filters (text, number and date), sorting and column resizing, a quick filter that searches every column, custom cell renderers for status pills and job links, CSV export, pagination and header and cell tooltips.
 
 ## Challenges we ran into
 
 - **Our stub was hiding real failures.** The offline AI stub kept tests repeatable, but the first run on a real model failed schema validation in Scoping, and rate limits turned clean proofs into human reviews. We now send the schema explicitly, route text and vision to separate models, and honor retry-after.
-- **A real model refused our fake photos.** The vision model looked at our generated sample images and called them graphics, not photographs. It was right, so the demo uses real photos.
+- **A real model saw through our first demo images.** The vision model looked at our early generated sample images and called them graphics, not photographs. It was right. We replaced them with more realistic AI-generated images, disclosed them as illustrative demo images on every proof, and kept the deterministic checks (GPS, time, duplicate photo) as ground truth that the model can't override.
 - **A subtle reliability bug.** Looking up seeded payouts counted as PayPal failures, which tripped the circuit breaker and disabled funding for 30 seconds. What looked like a flaky test was a real bug.
 - **PayPal regional limits.** Payouts return `PAYOUT_NOT_AVAILABLE` for an India-region sender, so the platform runs on a US sandbox business account.
 - **Revocation races.** A mandate can be revoked while a payout is pending, so it's re-checked inside the release transaction and again immediately before the PayPal call.
@@ -94,17 +108,17 @@ PayPal Orders v2, Payouts v1, Payments v2, Webhooks · Groq (Qwen, gpt-oss) · M
 
 **Live:** https://settleai-07ue.onrender.com. First load may take ~75s while the free server wakes up. The demo resets after idle time, so jobs you create don't stay online; a receipt you downloaded still verifies offline.
 
-**Permanent showcase:** https://settleai-07ue.onrender.com/receipt/showcase is the signed receipt of one real job on the PayPal sandbox: two milestones verified by the vision model, and a dispute settled by the Arbiter with a liability finding that cites the mandate. It never changes, and it verifies at /verify or offline against the public key in the README. The header badge shows `PayPal sandbox` and the AI model in use.
+**Permanent showcase:** https://settleai-07ue.onrender.com/receipt/showcase is the signed receipt of one real job on the PayPal sandbox: two milestones verified by the vision model, and a dispute settled by the Arbiter with a liability finding that cites the mandate. It never changes, and it verifies at /verify or offline against the public key in the README. The header badge shows `PayPal sandbox`; hover "Real AI models" to see which models are in use.
 
 No sign-up: click **Payer**, **Worker** or **Admin** on the landing page. To pay in the sandbox checkout, use the sandbox buyer login given in Devpost's private testing field.
 
 | Try | Click | You should see |
 |---|---|---|
 | Hire and fund | Payer, **New job**, describe a delivery, **Create job**, **Fund with PayPal** | Milestones with criteria, PayPal sandbox checkout, then Held in escrow |
-| Get paid | Worker, open the job, **Accept**, **Submit proof**, **Photo at the right place** | Live checks and a Decision Card with the model's name, then a challenge window and payout |
+| Get paid | Worker, open the job, **Accept**, **Submit proof**, **Photo at the right place** | Live checks and a Decision Card with the model's name, then a 10-minute challenge window and payout |
 | Fraud caught | Worker, on another job, **Photo reused from another job** | Held, with no money moved |
 | Agent denied | Payer, **Agent mandates**, **Out of scope**, **Send as agent** | Reason codes, and nothing created |
-| Dispute | Payer, **Dispute this milestone** during the challenge window | A split and a liability finding citing the mandate clause |
+| Dispute | After **Get paid**, switch to Payer, open the same job, **Dispute this milestone** within 10 minutes | A split and a liability finding citing the mandate clause |
 | Revoke | Payer, **Revoke** a mandate during a challenge window | The payout pauses before any PayPal call |
 | Verify | Open the [showcase receipt](https://settleai-07ue.onrender.com/receipt/showcase), or a job's **Open the public receipt**, or go to **/verify** | All green; change one byte and it fails, pointing at the broken link |
 | Operate | **Admin** | AG Grid console: KPIs, review queue, disputes, ledger, guard checks, AI runs |

@@ -209,7 +209,7 @@ export class DisputeService {
         ? "Direct job created and funded by the payer in person; no agent mandate applies."
         : violations.length
           ? `Out-of-mandate actions found: ${violations.join(", ")}.`
-          : `Every agent action on this job passed the Mandate Guard (${checks.length} checks).`,
+          : `Every agent action on this job passed the Mandate Guard (${checks.length} ${checks.length === 1 ? "check" : "checks"}).`,
       clauses,
     };
     await this.db.insert(complianceReports).values({ id, disputeId, jobId, resultJson: report });

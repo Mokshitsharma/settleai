@@ -20,7 +20,7 @@ export function MoneyStrip({
     { key: "Paid to worker", minor: releasedMinor, color: "var(--seal)" },
     { key: "Refunded to payer", minor: refundedMinor, color: "var(--hold)" },
     { key: "Platform fee", minor: fees, color: "var(--ink-faint)" },
-    { key: "Held in escrow", minor: inEscrowMinor, color: "var(--signal)" },
+    { key: "Held by PayPal for this job", minor: inEscrowMinor, color: "var(--signal)" },
   ];
   return (
     <div>

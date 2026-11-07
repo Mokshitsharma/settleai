@@ -10,7 +10,7 @@ const SAMPLE_MANDATE =
 
 const STEPS = [
   { title: "You sign what the agent may buy", body: "Categories, caps, area and expiry, in one plain sentence signed by your key." },
-  { title: "PayPal holds the money", body: "The job is funded through PayPal Checkout and held in escrow before anyone starts." },
+  { title: "PayPal holds the money", body: "The job is funded through PayPal Checkout and held by PayPal for this job before anyone starts." },
   { title: "Proof is checked, not trusted", body: "Location, time and duplicate-photo checks run first; then an AI verifies each criterion." },
   { title: "PayPal pays, or nobody does", body: "Policy releases the payout, holds it for review, or blocks it. Every step is signed." },
 ];
@@ -18,7 +18,7 @@ const STEPS = [
 const MOMENTS = [
   { title: "An agent is stopped before money moves", how: "Payer, Agent mandates, Out of scope, Send as agent: denied with reason codes, nothing created." },
   { title: "A reused photo is caught", how: "Worker, on a funded job, Submit proof, Photo reused from another job: held for a person." },
-  { title: "A dispute names who is liable", how: "Payer, Dispute this milestone in the challenge window: a split and a finding that cites the mandate." },
+  { title: "A dispute names who is liable", how: "Worker, on a funded job, Submit proof, Photo at the right place. Then Payer, open that job, Dispute this milestone within 10 minutes: a split and a finding that cites the mandate." },
   { title: "A receipt anyone can check", how: "Open the showcase receipt or any job's receipt, Verify; change one byte and it fails." },
 ];
 

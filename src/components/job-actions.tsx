@@ -110,7 +110,7 @@ export function FundPanel({
         <dt className="font-semibold">You pay now</dt>
         <dd className="num text-right font-semibold">{formatMinor(totalMinor + feeMinor)}</dd>
       </dl>
-      <p className="mt-3 text-sm text-ink-soft">PayPal holds this in escrow. The worker is paid per milestone only after proof is verified.</p>
+      <p className="mt-3 text-sm text-ink-soft">PayPal holds this for the job. The worker is paid per milestone only after proof is verified.</p>
 
       {!order ? (
         <Button onClick={start} disabled={busy} className="mt-4 w-full">

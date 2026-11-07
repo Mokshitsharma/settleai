@@ -26,12 +26,18 @@ export function ModeBadge() {
         <span className={`h-1.5 w-1.5 rounded-full ${live ? "bg-seal" : "bg-hold"}`} />
         {live ? `PayPal ${cfg.PAYPAL_ENV}` : "Mock PayPal"}
       </span>
-      <span
-        title="Model used by the AI agents"
-        className={cfg.llmProvider === "stub" ? "rounded-full bg-hold-wash px-2.5 py-1 font-semibold text-hold" : "hidden text-ink-faint sm:inline"}
-      >
-        {cfg.llmProvider === "stub" ? "Offline AI stub" : `AI: ${cfg.llmModel}${cfg.llmProvider === "groq" ? ` + ${cfg.LLM_TEXT_MODEL ?? GROQ_DEFAULT_TEXT_MODEL}` : ""}`}
-      </span>
+      {cfg.llmProvider === "stub" ? (
+        <span title="AI answers are canned fixtures" className="rounded-full bg-hold-wash px-2.5 py-1 font-semibold text-hold">
+          Offline AI stub
+        </span>
+      ) : (
+        <span
+          title={`Models used by the AI agents: ${cfg.llmModel}${cfg.llmProvider === "groq" ? ` + ${cfg.LLM_TEXT_MODEL ?? GROQ_DEFAULT_TEXT_MODEL}` : ""}`}
+          className="hidden cursor-help text-ink-faint underline decoration-dotted underline-offset-2 sm:inline"
+        >
+          Real AI models
+        </span>
+      )}
     </span>
   );
 }

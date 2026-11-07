@@ -55,7 +55,7 @@ export default async function AdminOverview() {
       </section>
 
       <Panel className="mt-6 p-5">
-        <h2 className="font-semibold">Money placed in escrow per day</h2>
+        <h2 className="font-semibold">Money held by PayPal per day</h2>
         <div className="mt-3">
           <FundingChart data={daily} />
         </div>

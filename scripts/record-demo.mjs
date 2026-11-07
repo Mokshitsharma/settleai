@@ -23,6 +23,18 @@ const mark = (name) => {
   console.log(`[${((Date.now() - started) / 1000).toFixed(1)}s] ${name}`);
 };
 const shot = (name) => page.screenshot({ path: `docs/devpost/${name}.png` });
+// Devpost still cropped to the region from the top of one element to the bottom of another (page coordinates).
+const shotBetween = async (name, top, bottom, pad = 24) => {
+  const a = await top.first().boundingBox();
+  const b = await bottom.first().boundingBox();
+  const scrollY = await page.evaluate(() => window.scrollY);
+  if (!a || !b) return shot(name);
+  const x = Math.max(0, Math.min(a.x, b.x) - pad);
+  const y = Math.max(0, a.y + scrollY - pad);
+  const width = Math.max(a.x + a.width, b.x + b.width) - x + pad;
+  const height = b.y + b.height + scrollY - y + pad;
+  return page.screenshot({ path: `docs/devpost/${name}.png`, fullPage: true, clip: { x, y, width, height } });
+};
 const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
 const as = async (role) => {
   await page.request.post(`${base}/api/auth/demo-login`, { data: { role: role.toLowerCase() } });
@@ -53,7 +65,7 @@ try {
   await page.getByText("Denied before any money moved").scrollIntoViewIfNeeded();
   mark("denied");
   await sleep(3500);
-  await shot("2-denied-before-money-moves");
+  await shotBetween("2-denied-before-money-moves", page.getByRole("heading", { name: "Send a request as the agent" }), page.getByRole("status").filter({ hasText: "Denied before any money moved" }));
 
   // Scene: agent hires within its mandate (real scoping), payer funds on the PayPal sandbox
   await page.getByRole("button", { name: "In scope" }).click();
@@ -131,7 +143,7 @@ try {
   await page.getByText("Liability finding").scrollIntoViewIfNeeded();
   mark("liability-finding");
   await sleep(5000);
-  await shot("4-liability-finding-cites-mandate");
+  await shotBetween("4-liability-finding-cites-mandate", page.getByText("Arbiter proposal", { exact: true }), page.getByText(/Settled through PayPal|Payer: /).last());
   await page.getByRole("button", { name: "Accept", exact: true }).click();
   await sleep(1500);
   await as("Worker");
