@@ -1,10 +1,10 @@
 {
   "format": "settleai.receipt",
   "version": 1,
-  "publicId": "job_01M6TB47DAMERFAP7RWPSSAMD6",
-  "issuedAt": "2026-11-07T06:33:05.344Z",
+  "publicId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
+  "issuedAt": "2026-11-07T14:36:01.400Z",
   "job": {
-    "title": "Deliver cartons of tea from Rajwada to Vijay Nagar",
+    "title": "Deliver 2 cartons of tea from Rajwada to Vijay Nagar",
     "category": "delivery",
     "status": "COMPLETED",
     "currency": "USD",
@@ -17,51 +17,51 @@
     "intent": null,
     "job": {
       "payload": {
-        "id": "jmd_01M6TB47EAN92Y4MDA6QT8EV1X",
+        "id": "jmd_01M6V6JSF6RDVVJYCVP688YGWJ",
         "type": "job",
-        "nonce": "n_b15f693c9f57dc2079b869372c625325",
+        "nonce": "n_ded3287adaaab5c8d52efe2c4a4ca2ff",
         "payerId": "usr_ravi",
         "version": 1,
         "currency": "USD",
-        "createdAt": "2026-11-07T06:28:54.000Z",
-        "expiresAt": "2026-11-14T06:28:54.000Z",
+        "createdAt": "2026-11-07T14:28:43.000Z",
+        "expiresAt": "2026-11-14T14:28:43.000Z",
         "totalMinor": 10000,
-        "jobSpecHash": "5bbf50fb2fb07cea92b402ad05c4d12b5e8b92566dc507ec10aaa3a621aec80f",
-        "criteriaHash": "35e7cfa8671e5ecab99c9b215f359d5fb638a6624c790cc78ce7847b76412016",
-        "milestonesHash": "dee9cbf2fd20e1cee22f05847584287ee09dd0a4c1cbe99423991403492f3b57",
+        "jobSpecHash": "1f9beec32487a7326f94092ae0f4415b6e3da5b8b8372a8b15c7b5ec44a18d62",
+        "criteriaHash": "d462f797234d050a390f299e92f2e55a0d11d462a7c9cce168b812a7cc3f511f",
+        "milestonesHash": "ffe78a9305b32ae6c27e00021c9c6ee961e5ce21b307f29dae65b9ad4c99a4e6",
         "parentIntentId": "direct:usr_ravi"
       },
-      "payloadHash": "a660fe8b16b7b6d52731095fb0119bec23aec8ad74a679218965663c0c3be1bd",
+      "payloadHash": "eff1379c2ee28158e5b7239fa4aa972df594210a618bfe852637b878c544d993",
       "signatures": [
         {
-          "jws": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9vTW1YcTBLUWxxZGFBdGRDWWkzeWxGdlIiLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJjcmVhdGVkQXQiOiIyMDI2LTExLTA3VDA2OjI4OjU0LjAwMFoiLCJjcml0ZXJpYUhhc2giOiIzNWU3Y2ZhODY3MWU1ZWNhYjk5YzliMjE1ZjM1OWQ1ZmI2MzhhNjYyNGM3OTBjYzc4Y2U3ODQ3Yjc2NDEyMDE2IiwiY3VycmVuY3kiOiJVU0QiLCJleHBpcmVzQXQiOiIyMDI2LTExLTE0VDA2OjI4OjU0LjAwMFoiLCJpZCI6ImptZF8wMU02VEI0N0VBTjkyWTRNREE2UVQ4RVYxWCIsImpvYlNwZWNIYXNoIjoiNWJiZjUwZmIyZmIwN2NlYTkyYjQwMmFkMDVjNGQxMmI1ZThiOTI1NjZkYzUwN2VjMTBhYWEzYTYyMWFlYzgwZiIsIm1pbGVzdG9uZXNIYXNoIjoiZGVlOWNiZjJmZDIwZTFjZWUyMmYwNTg0NzU4NDI4N2VlMDlkZDBhNGMxY2JlOTk0MjM5OTE0MDM0OTJmM2I1NyIsIm5vbmNlIjoibl9iMTVmNjkzYzlmNTdkYzIwNzliODY5MzcyYzYyNTMyNSIsInBhcmVudEludGVudElkIjoiZGlyZWN0OnVzcl9yYXZpIiwicGF5ZXJJZCI6InVzcl9yYXZpIiwidG90YWxNaW5vciI6MTAwMDAsInR5cGUiOiJqb2IiLCJ2ZXJzaW9uIjoxfQ.FmQKYpOv7GGU3Dd1ouV_XXfVCqgQGSDVl_p9NIzR8QMw-_1gNkelblUuO5Sf5K2QWz1K3LYOWL-MIWvqisun7w",
+          "jws": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9RYlN0Z21pQmNOUDVMT0dfa0hBT0FaaHkiLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJjcmVhdGVkQXQiOiIyMDI2LTExLTA3VDE0OjI4OjQzLjAwMFoiLCJjcml0ZXJpYUhhc2giOiJkNDYyZjc5NzIzNGQwNTBhMzkwZjI5OWU5MmYyZTU1YTBkMTFkNDYyYTdjOWNjZTE2OGI4MTJhN2NjM2Y1MTFmIiwiY3VycmVuY3kiOiJVU0QiLCJleHBpcmVzQXQiOiIyMDI2LTExLTE0VDE0OjI4OjQzLjAwMFoiLCJpZCI6ImptZF8wMU02VjZKU0Y2UkRWVkpZQ1ZQNjg4WUdXSiIsImpvYlNwZWNIYXNoIjoiMWY5YmVlYzMyNDg3YTczMjZmOTQwOTJhZTBmNDQxNWI2ZTNkYTViOGI4MzcyYThiMTVjN2I1ZWM0NGExOGQ2MiIsIm1pbGVzdG9uZXNIYXNoIjoiZmZlNzhhOTMwNWIzMmFlNmMyN2UwMDAyMWM5YzZlZTk2MWU1Y2UyMWIzMDdmMjlkYWU2NWI5YWQ0Yzk5YTRlNiIsIm5vbmNlIjoibl9kZWQzMjg3YWRhYWFiNWM4ZDUyZWZlMmM0YTRjYTJmZiIsInBhcmVudEludGVudElkIjoiZGlyZWN0OnVzcl9yYXZpIiwicGF5ZXJJZCI6InVzcl9yYXZpIiwidG90YWxNaW5vciI6MTAwMDAsInR5cGUiOiJqb2IiLCJ2ZXJzaW9uIjoxfQ.LZTofgWt00PNQ7Izw3pcCY7jj-l4XCcE-Xd2QZ6dIWePUwuy4cEJnSerSm4aCY4WqPk879QtwiI599ulLL2k6g",
           "role": "principal",
-          "keyId": "key_oMmXq0KQlqdaAtdCYi3ylFvR"
+          "keyId": "key_QbStgmiBcNP5LOG_kHAOAZhy"
         },
         {
-          "jws": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9jTDJHWFVWZDE3allaUHhwUG5NS3JXMFkiLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJjcmVhdGVkQXQiOiIyMDI2LTExLTA3VDA2OjI4OjU0LjAwMFoiLCJjcml0ZXJpYUhhc2giOiIzNWU3Y2ZhODY3MWU1ZWNhYjk5YzliMjE1ZjM1OWQ1ZmI2MzhhNjYyNGM3OTBjYzc4Y2U3ODQ3Yjc2NDEyMDE2IiwiY3VycmVuY3kiOiJVU0QiLCJleHBpcmVzQXQiOiIyMDI2LTExLTE0VDA2OjI4OjU0LjAwMFoiLCJpZCI6ImptZF8wMU02VEI0N0VBTjkyWTRNREE2UVQ4RVYxWCIsImpvYlNwZWNIYXNoIjoiNWJiZjUwZmIyZmIwN2NlYTkyYjQwMmFkMDVjNGQxMmI1ZThiOTI1NjZkYzUwN2VjMTBhYWEzYTYyMWFlYzgwZiIsIm1pbGVzdG9uZXNIYXNoIjoiZGVlOWNiZjJmZDIwZTFjZWUyMmYwNTg0NzU4NDI4N2VlMDlkZDBhNGMxY2JlOTk0MjM5OTE0MDM0OTJmM2I1NyIsIm5vbmNlIjoibl9iMTVmNjkzYzlmNTdkYzIwNzliODY5MzcyYzYyNTMyNSIsInBhcmVudEludGVudElkIjoiZGlyZWN0OnVzcl9yYXZpIiwicGF5ZXJJZCI6InVzcl9yYXZpIiwidG90YWxNaW5vciI6MTAwMDAsInR5cGUiOiJqb2IiLCJ2ZXJzaW9uIjoxfQ.CSWKV35u18rDPmmJHsO9YXa1C2uNtMPB4VBSuoLxjro0v_iWTqkX0iF6HgjU2a_vB-0Z8mSNCQgv1eebCmby8Q",
+          "jws": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9WVDNHc3ZINXZnTjNpNm12bE80SUVBOE8iLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJjcmVhdGVkQXQiOiIyMDI2LTExLTA3VDE0OjI4OjQzLjAwMFoiLCJjcml0ZXJpYUhhc2giOiJkNDYyZjc5NzIzNGQwNTBhMzkwZjI5OWU5MmYyZTU1YTBkMTFkNDYyYTdjOWNjZTE2OGI4MTJhN2NjM2Y1MTFmIiwiY3VycmVuY3kiOiJVU0QiLCJleHBpcmVzQXQiOiIyMDI2LTExLTE0VDE0OjI4OjQzLjAwMFoiLCJpZCI6ImptZF8wMU02VjZKU0Y2UkRWVkpZQ1ZQNjg4WUdXSiIsImpvYlNwZWNIYXNoIjoiMWY5YmVlYzMyNDg3YTczMjZmOTQwOTJhZTBmNDQxNWI2ZTNkYTViOGI4MzcyYThiMTVjN2I1ZWM0NGExOGQ2MiIsIm1pbGVzdG9uZXNIYXNoIjoiZmZlNzhhOTMwNWIzMmFlNmMyN2UwMDAyMWM5YzZlZTk2MWU1Y2UyMWIzMDdmMjlkYWU2NWI5YWQ0Yzk5YTRlNiIsIm5vbmNlIjoibl9kZWQzMjg3YWRhYWFiNWM4ZDUyZWZlMmM0YTRjYTJmZiIsInBhcmVudEludGVudElkIjoiZGlyZWN0OnVzcl9yYXZpIiwicGF5ZXJJZCI6InVzcl9yYXZpIiwidG90YWxNaW5vciI6MTAwMDAsInR5cGUiOiJqb2IiLCJ2ZXJzaW9uIjoxfQ.cKhn7l2KgnxGh2XD8XgtdC7BkDX3uWD9bYJg9nNkvDx2LgNfsZCFm_RYGmbq8HFus528cvHEr4ZXoBALbBraMw",
           "role": "worker",
-          "keyId": "key_cL2GXUVd17jYZPxpPnMKrW0Y"
+          "keyId": "key_VT3GsvH5vgN3i6mvlO4IEA8O"
         }
       ]
     },
     "payment": {
       "payload": {
-        "id": "pmd_01M6TB47FQABPYM3SYMAY4QXJ8",
+        "id": "pmd_01M6V6JSH5REAX38QQ7DVA19SZ",
         "type": "payment",
-        "nonce": "n_1d0340ba22a6efa17c675721c7576bd8",
+        "nonce": "n_62b6d8ffe2bc85e0e204f67cf4467c25",
         "funding": {
           "currency": "USD",
           "feeMinor": 672,
           "amountMinor": 10672,
-          "paypalOrderRef": "fund_01M6TB47FH5AN03ZWJY2ZNHY97",
+          "paypalOrderRef": "fund_01M6V6JSGY68H7DX45JVWFNZ94",
           "processingFeeMinor": 472
         },
         "version": 1,
-        "createdAt": "2026-11-07T06:28:54.000Z",
+        "createdAt": "2026-11-07T14:28:43.000Z",
         "agentPresence": false,
         "parentIntentId": "direct:usr_ravi",
-        "parentJobMandateId": "jmd_01M6TB47EAN92Y4MDA6QT8EV1X",
+        "parentJobMandateId": "jmd_01M6V6JSF6RDVVJYCVP688YGWJ",
         "settlementConditions": [
           {
             "requires": [
@@ -70,7 +70,7 @@
               "mandate.active"
             ],
             "amountMinor": 4000,
-            "criteriaHash": "667a4096398706021a4978b01a802285e1c2eeab4d0924cb666903628a4a5573",
+            "criteriaHash": "10211fa39d0f998daff15cd2c26d661fc90eb3983eb64c466535b0565c52fcaa",
             "milestoneSeq": 1,
             "releasePolicyVersion": 1,
             "challengeWindowSeconds": 45
@@ -82,19 +82,19 @@
               "mandate.active"
             ],
             "amountMinor": 6000,
-            "criteriaHash": "f2d9722192bd587480dc5beac6a3b706c420c20d8d7340339cd271f8ec9fd335",
+            "criteriaHash": "235a7334307a780ae85d636f796ed0568dbe2cf15efcb942b30621be950fa2a2",
             "milestoneSeq": 2,
             "releasePolicyVersion": 1,
             "challengeWindowSeconds": 45
           }
         ]
       },
-      "payloadHash": "b96540db2ff18553d1ac2f44730b54c188fd1d036c03a490b334e6bb28624dbe",
+      "payloadHash": "60b3c0d5e57bacf5bcd3d691d5a45650c8f1789526b86ec4f9237a5f58dc063e",
       "signatures": [
         {
-          "jws": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9vTW1YcTBLUWxxZGFBdGRDWWkzeWxGdlIiLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhZ2VudFByZXNlbmNlIjpmYWxzZSwiY3JlYXRlZEF0IjoiMjAyNi0xMS0wN1QwNjoyODo1NC4wMDBaIiwiZnVuZGluZyI6eyJhbW91bnRNaW5vciI6MTA2NzIsImN1cnJlbmN5IjoiVVNEIiwiZmVlTWlub3IiOjY3MiwicGF5cGFsT3JkZXJSZWYiOiJmdW5kXzAxTTZUQjQ3Rkg1QU4wM1pXSlkyWk5IWTk3IiwicHJvY2Vzc2luZ0ZlZU1pbm9yIjo0NzJ9LCJpZCI6InBtZF8wMU02VEI0N0ZRQUJQWU0zU1lNQVk0UVhKOCIsIm5vbmNlIjoibl8xZDAzNDBiYTIyYTZlZmExN2M2NzU3MjFjNzU3NmJkOCIsInBhcmVudEludGVudElkIjoiZGlyZWN0OnVzcl9yYXZpIiwicGFyZW50Sm9iTWFuZGF0ZUlkIjoiam1kXzAxTTZUQjQ3RUFOOTJZNE1EQTZRVDhFVjFYIiwic2V0dGxlbWVudENvbmRpdGlvbnMiOlt7ImFtb3VudE1pbm9yIjo0MDAwLCJjaGFsbGVuZ2VXaW5kb3dTZWNvbmRzIjo0NSwiY3JpdGVyaWFIYXNoIjoiNjY3YTQwOTYzOTg3MDYwMjFhNDk3OGIwMWE4MDIyODVlMWMyZWVhYjRkMDkyNGNiNjY2OTAzNjI4YTRhNTU3MyIsIm1pbGVzdG9uZVNlcSI6MSwicmVsZWFzZVBvbGljeVZlcnNpb24iOjEsInJlcXVpcmVzIjpbInZlcmlmaWNhdGlvbi5wYXNzIiwicmlzay5ub3RfaG9sZCIsIm1hbmRhdGUuYWN0aXZlIl19LHsiYW1vdW50TWlub3IiOjYwMDAsImNoYWxsZW5nZVdpbmRvd1NlY29uZHMiOjQ1LCJjcml0ZXJpYUhhc2giOiJmMmQ5NzIyMTkyYmQ1ODc0ODBkYzViZWFjNmEzYjcwNmM0MjBjMjBkOGQ3MzQwMzM5Y2QyNzFmOGVjOWZkMzM1IiwibWlsZXN0b25lU2VxIjoyLCJyZWxlYXNlUG9saWN5VmVyc2lvbiI6MSwicmVxdWlyZXMiOlsidmVyaWZpY2F0aW9uLnBhc3MiLCJyaXNrLm5vdF9ob2xkIiwibWFuZGF0ZS5hY3RpdmUiXX1dLCJ0eXBlIjoicGF5bWVudCIsInZlcnNpb24iOjF9.mYjWvGpqXswaT8_nfky84LUHrHh-eN9emjvQtK_AalMdQDWtauDWF3DObQ2_k4squ6Doh4_GMc35gpJbvdNiww",
+          "jws": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9RYlN0Z21pQmNOUDVMT0dfa0hBT0FaaHkiLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhZ2VudFByZXNlbmNlIjpmYWxzZSwiY3JlYXRlZEF0IjoiMjAyNi0xMS0wN1QxNDoyODo0My4wMDBaIiwiZnVuZGluZyI6eyJhbW91bnRNaW5vciI6MTA2NzIsImN1cnJlbmN5IjoiVVNEIiwiZmVlTWlub3IiOjY3MiwicGF5cGFsT3JkZXJSZWYiOiJmdW5kXzAxTTZWNkpTR1k2OEg3RFg0NUpWV0ZOWjk0IiwicHJvY2Vzc2luZ0ZlZU1pbm9yIjo0NzJ9LCJpZCI6InBtZF8wMU02VjZKU0g1UkVBWDM4UVE3RFZBMTlTWiIsIm5vbmNlIjoibl82MmI2ZDhmZmUyYmM4NWUwZTIwNGY2N2NmNDQ2N2MyNSIsInBhcmVudEludGVudElkIjoiZGlyZWN0OnVzcl9yYXZpIiwicGFyZW50Sm9iTWFuZGF0ZUlkIjoiam1kXzAxTTZWNkpTRjZSRFZWSllDVlA2ODhZR1dKIiwic2V0dGxlbWVudENvbmRpdGlvbnMiOlt7ImFtb3VudE1pbm9yIjo0MDAwLCJjaGFsbGVuZ2VXaW5kb3dTZWNvbmRzIjo0NSwiY3JpdGVyaWFIYXNoIjoiMTAyMTFmYTM5ZDBmOTk4ZGFmZjE1Y2QyYzI2ZDY2MWZjOTBlYjM5ODNlYjY0YzQ2NjUzNWIwNTY1YzUyZmNhYSIsIm1pbGVzdG9uZVNlcSI6MSwicmVsZWFzZVBvbGljeVZlcnNpb24iOjEsInJlcXVpcmVzIjpbInZlcmlmaWNhdGlvbi5wYXNzIiwicmlzay5ub3RfaG9sZCIsIm1hbmRhdGUuYWN0aXZlIl19LHsiYW1vdW50TWlub3IiOjYwMDAsImNoYWxsZW5nZVdpbmRvd1NlY29uZHMiOjQ1LCJjcml0ZXJpYUhhc2giOiIyMzVhNzMzNDMwN2E3ODBhZTg1ZDYzNmY3OTZlZDA1NjhkYmUyY2YxNWVmY2I5NDJiMzA2MjFiZTk1MGZhMmEyIiwibWlsZXN0b25lU2VxIjoyLCJyZWxlYXNlUG9saWN5VmVyc2lvbiI6MSwicmVxdWlyZXMiOlsidmVyaWZpY2F0aW9uLnBhc3MiLCJyaXNrLm5vdF9ob2xkIiwibWFuZGF0ZS5hY3RpdmUiXX1dLCJ0eXBlIjoicGF5bWVudCIsInZlcnNpb24iOjF9.knMwBSpV_iwdEU3tstwzR8QlgtZt0TmMVgUj5miF_V4iJcN05ZOrPbvCYQ6RFpBRhli9ddfxRaDJSCMwB0m45w",
           "role": "principal",
-          "keyId": "key_oMmXq0KQlqdaAtdCYi3ylFvR"
+          "keyId": "key_QbStgmiBcNP5LOG_kHAOAZhy"
         }
       ]
     }
@@ -106,22 +106,22 @@
   },
   "attestations": [
     {
-      "id": "att_01M6TB47F3GR26ZBN1KRBR3GKT",
-      "jobId": "job_01M6TB47DAMERFAP7RWPSSAMD6",
+      "id": "att_01M6V6JSGCAYQT9MV9Z6ZFAK5T",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
       "seq": 0,
       "type": "mandate",
-      "subjectId": "jmd_01M6TB47EAN92Y4MDA6QT8EV1X",
-      "payloadHash": "584c22d82b657db692fc8a8acf797e1813dfffb2e432763b5603e448315c4b23",
+      "subjectId": "jmd_01M6V6JSF6RDVVJYCVP688YGWJ",
+      "payloadHash": "ce1d0dbe3351a091b87f4cc5bc4172a35963cd6c68e4eb9d96da279f545e2ee3",
       "payload": {
         "signers": [
           {
             "role": "principal",
-            "keyId": "key_oMmXq0KQlqdaAtdCYi3ylFvR"
+            "keyId": "key_QbStgmiBcNP5LOG_kHAOAZhy"
           }
         ],
         "totalMinor": 10000,
         "mandateType": "job",
-        "payloadHash": "a660fe8b16b7b6d52731095fb0119bec23aec8ad74a679218965663c0c3be1bd",
+        "payloadHash": "eff1379c2ee28158e5b7239fa4aa972df594210a618bfe852637b878c544d993",
         "parentIntentId": "direct:usr_ravi"
       },
       "signer": {
@@ -129,44 +129,44 @@
         "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
       },
       "prevHash": "GENESIS",
-      "hash": "a252b649498c6165661012d3a547fba82be85104da2f1890eccba44c7ace1bea",
-      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiJhMjUyYjY0OTQ5OGM2MTY1NjYxMDEyZDNhNTQ3ZmJhODJiZTg1MTA0ZGEyZjE4OTBlY2NiYTQ0YzdhY2UxYmVhIn0.PXCr6mRzm0H-tZpXV4UOrjq6wO29HAAbbzkBrdbChHS-tpaXVtGjDfFctJsMTqtJfdZ6DVcWWzJ8Ua6sK74Dow",
-      "createdAt": "2026-11-07T06:28:54.371Z"
+      "hash": "e941e79361357107675398ab228ccc8de64f4a2b78be76b5ece58051345623eb",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiJlOTQxZTc5MzYxMzU3MTA3Njc1Mzk4YWIyMjhjY2M4ZGU2NGY0YTJiNzhiZTc2YjVlY2U1ODA1MTM0NTYyM2ViIn0.LIdaPojvYHM8TijFBFECl7GXCrRF6wjCRAvOTsDPROwf0dMnkXgE6UjjicpkE8Tq_bMpor2uKE6f_dTZDG3JtA",
+      "createdAt": "2026-11-07T14:28:43.148Z"
     },
     {
-      "id": "att_01M6TB47FZWCBNBWPJ8J4NABE2",
-      "jobId": "job_01M6TB47DAMERFAP7RWPSSAMD6",
+      "id": "att_01M6V6JSHG8MMV1DP553HXEJ1C",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
       "seq": 1,
       "type": "mandate",
-      "subjectId": "pmd_01M6TB47FQABPYM3SYMAY4QXJ8",
-      "payloadHash": "7b6106c077307cdc6f3d2be65eea7c680890a655ca8ef0ca34ea2748ff5d0cb4",
+      "subjectId": "pmd_01M6V6JSH5REAX38QQ7DVA19SZ",
+      "payloadHash": "e2b61e204c8ca4821b642df13d99bd994c6210d4166b0e8f99a953f68ac8b847",
       "payload": {
         "amountMinor": 10672,
         "mandateType": "payment",
-        "payloadHash": "b96540db2ff18553d1ac2f44730b54c188fd1d036c03a490b334e6bb28624dbe",
+        "payloadHash": "60b3c0d5e57bacf5bcd3d691d5a45650c8f1789526b86ec4f9237a5f58dc063e",
         "agentPresence": false,
-        "parentJobMandateId": "jmd_01M6TB47EAN92Y4MDA6QT8EV1X"
+        "parentJobMandateId": "jmd_01M6V6JSF6RDVVJYCVP688YGWJ"
       },
       "signer": {
         "role": "platform",
         "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
       },
-      "prevHash": "a252b649498c6165661012d3a547fba82be85104da2f1890eccba44c7ace1bea",
-      "hash": "1fbde37dd3ccab49d21eb35683ceb4a0d4d7724956c74e660c5a5a9c53580397",
-      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiIxZmJkZTM3ZGQzY2NhYjQ5ZDIxZWIzNTY4M2NlYjRhMGQ0ZDc3MjQ5NTZjNzRlNjYwYzVhNWE5YzUzNTgwMzk3In0.ia0kFpnZXVpnqtedYmQHoUlZlLZp1Yycr4tDRVpPftIsbmDZU2Bs87PyNFZ8nK-QcuLyvfC0MOFZrVW8FKc5UA",
-      "createdAt": "2026-11-07T06:28:54.400Z"
+      "prevHash": "e941e79361357107675398ab228ccc8de64f4a2b78be76b5ece58051345623eb",
+      "hash": "293da008801bc9551cab6036b804ff7559b60736c10a5463f32e807049f8a769",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiIyOTNkYTAwODgwMWJjOTU1MWNhYjYwMzZiODA0ZmY3NTU5YjYwNzM2YzEwYTU0NjNmMzJlODA3MDQ5ZjhhNzY5In0.Ra1fYGADKa5fGLhVSKuVdoyIQ3LTIV090yQ49bbZ_qWXrRpXE9tAPEE_a6x90G8WbdJMBN6hQHENHRATsBoDgA",
+      "createdAt": "2026-11-07T14:28:43.184Z"
     },
     {
-      "id": "att_01M6TB4VCESK5SV0FQF3WWCRPK",
-      "jobId": "job_01M6TB47DAMERFAP7RWPSSAMD6",
+      "id": "att_01M6V6K9VA4V0AP9T2DPSG3WT4",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
       "seq": 2,
       "type": "evidence",
-      "subjectId": "fund_01M6TB47FH5AN03ZWJY2ZNHY97",
-      "payloadHash": "1226b632db35ec30118c8ec220bc13f66f129a9cf4825ee691314f02aa4bab88",
+      "subjectId": "fund_01M6V6JSGY68H7DX45JVWFNZ94",
+      "payloadHash": "daefc10d44dc5b6e691f40e588959cc6bd7c3cd7d7c10157577a692f160a404b",
       "payload": {
         "kind": "funding_captured",
-        "orderId": "0UK22737FP450481C",
-        "captureId": "4S025822MT775383E",
+        "orderId": "5WE91820H9178463U",
+        "captureId": "6YK7334496346772H",
         "amountMinor": 10672,
         "confirmedVia": "poll"
       },
@@ -174,21 +174,21 @@
         "role": "platform",
         "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
       },
-      "prevHash": "1fbde37dd3ccab49d21eb35683ceb4a0d4d7724956c74e660c5a5a9c53580397",
-      "hash": "95fa7150a2d0e0b1bc7ab18ba350ef7da5e2fcb59a6be37cc3747b8d33b44c89",
-      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiI5NWZhNzE1MGEyZDBlMGIxYmM3YWIxOGJhMzUwZWY3ZGE1ZTJmY2I1OWE2YmUzN2NjMzc0N2I4ZDMzYjQ0Yzg5In0.4k7XPPxedycIE-4cHacwGKGiKWJrzH4OdbQ3hXiDkLzfMlZgJHU-HjsvvQYrIB2zN78PwgDYLdMpLm3XnaZ0uQ",
-      "createdAt": "2026-11-07T06:29:14.766Z"
+      "prevHash": "293da008801bc9551cab6036b804ff7559b60736c10a5463f32e807049f8a769",
+      "hash": "017b4ca4b1ee61d16ee78ca52489a3fd3efa3bf3c540c8170a4229b3edd1ab82",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiIwMTdiNGNhNGIxZWU2MWQxNmVlNzhjYTUyNDg5YTNmZDNlZmEzYmYzYzU0MGM4MTcwYTQyMjliM2VkZDFhYjgyIn0.LLglcjzA5ZZKTTZXJhcbV7Oua61Oi7M_1rvjnQCca07MV7QMPr7mDeUfbh--5Hs4tA5tJEjNexDUpmhVay5EIA",
+      "createdAt": "2026-11-07T14:28:59.883Z"
     },
     {
-      "id": "att_01M6TB4VE6SXEQE7DQQY6MRF10",
-      "jobId": "job_01M6TB47DAMERFAP7RWPSSAMD6",
+      "id": "att_01M6V6K9X9S4RP2SQZ1SQ3N0VR",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
       "seq": 3,
       "type": "mandate",
-      "subjectId": "jmd_01M6TB47EAN92Y4MDA6QT8EV1X",
-      "payloadHash": "a576386881e29e3dce79b80b8cd2d6ae35113bb8843ccc1f333fbfabbd89238c",
+      "subjectId": "jmd_01M6V6JSF6RDVVJYCVP688YGWJ",
+      "payloadHash": "466399656fc7e9b8936b34f3a4be8a90c0d7dbbb44085e4b15fafc44fbb404ec",
       "payload": {
         "event": "worker_countersigned",
-        "keyId": "key_cL2GXUVd17jYZPxpPnMKrW0Y",
+        "keyId": "key_VT3GsvH5vgN3i6mvlO4IEA8O",
         "workerId": "usr_asha",
         "mandateType": "job"
       },
@@ -196,42 +196,42 @@
         "role": "platform",
         "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
       },
-      "prevHash": "95fa7150a2d0e0b1bc7ab18ba350ef7da5e2fcb59a6be37cc3747b8d33b44c89",
-      "hash": "10aee525c3d05d92de18df4bccca8dac95161bef7bc265d7bf70de90259aa738",
-      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiIxMGFlZTUyNWMzZDA1ZDkyZGUxOGRmNGJjY2NhOGRhYzk1MTYxYmVmN2JjMjY1ZDdiZjcwZGU5MDI1OWFhNzM4In0.fl8m1lfCqdQRZA--3pySjhWKtRyZZhvgtvQ9n684yU1sfWLsT_ZD0jIXYV8OOkkxvneZRLjsynsnvRlZeXbVTw",
-      "createdAt": "2026-11-07T06:29:14.823Z"
+      "prevHash": "017b4ca4b1ee61d16ee78ca52489a3fd3efa3bf3c540c8170a4229b3edd1ab82",
+      "hash": "3d79afaa570d1da53f203065b262cd0adf661afc7ae6db0ba1a740e9b51950de",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiIzZDc5YWZhYTU3MGQxZGE1M2YyMDMwNjViMjYyY2QwYWRmNjYxYWZjN2FlNmRiMGJhMWE3NDBlOWI1MTk1MGRlIn0.miitnxttz2Fi4fAoZlDd-nRv2vNgT0cFJ8gXSTAipD1nNfoyRPBHb2R8oXPsZ6wnPusprvnQRWNrnZ7D-dgw5A",
+      "createdAt": "2026-11-07T14:28:59.945Z"
     },
     {
-      "id": "att_01M6TB6V3KZGDSDRKX5FQ83AX6",
-      "jobId": "job_01M6TB47DAMERFAP7RWPSSAMD6",
+      "id": "att_01M6V6Q95G52TQNHZVAKTS2FZW",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
       "seq": 4,
       "type": "evidence",
-      "subjectId": "prf_01M6TB6V3AHM9WHWD76Z1FYY07",
-      "payloadHash": "bb0158f251c6563e917b6aa1af6f8d83f005b0388f75b24d7d7bd6b7022ff817",
+      "subjectId": "prf_01M6V6Q950YQQT64FP7FFP4Y3P",
+      "payloadHash": "e807ce65075206a58b572a1acbe8c3b473ea67b587d9ebe21a055c6cc8ca02de",
       "payload": {
         "kind": "photo",
-        "phash": "e0e2e2e3dcc4fc18",
+        "phash": "dcc3437130382103",
         "hasGps": true,
-        "sha256": "a10855beb34eeb6111724d379ebd58bdd3dc78e843f40722212a1f96acff3f19",
+        "sha256": "ae49ddde2858110f3e80b0bee74d9d55911f3334a8cdca5de0226e34465cee83",
         "source": "demo_sample",
-        "takenAt": "2026-11-07T06:28:49.000Z",
+        "takenAt": "2026-11-07T14:31:09.000Z",
         "milestoneSeq": 1
       },
       "signer": {
         "role": "platform",
         "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
       },
-      "prevHash": "10aee525c3d05d92de18df4bccca8dac95161bef7bc265d7bf70de90259aa738",
-      "hash": "5f8c96043972083dc653b1bd8af2e92c162419bb57a70188f2e57dbd7a3e0cf2",
-      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiI1ZjhjOTYwNDM5NzIwODNkYzY1M2IxYmQ4YWYyZTkyYzE2MjQxOWJiNTdhNzAxODhmMmU1N2RiZDdhM2UwY2YyIn0.fXaddLZbsRlnNjkL4zMX4B5ASJ9s8ZvdFnMg8aIjFylhpactCQg1cSW6lTJB8yJEkAjh-84nCM35ND274YQzAA",
-      "createdAt": "2026-11-07T06:30:20.019Z"
+      "prevHash": "3d79afaa570d1da53f203065b262cd0adf661afc7ae6db0ba1a740e9b51950de",
+      "hash": "c2b95dc3478dddab637e5d3ef2adecff3f7611e8fce9318b2098b7eac03ff62c",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiJjMmI5NWRjMzQ3OGRkZGFiNjM3ZTVkM2VmMmFkZWNmZjNmNzYxMWU4ZmNlOTMxOGIyMDk4YjdlYWMwM2ZmNjJjIn0.YZJL9zugUDxte_MGY1HosJJJJM48xadWBZoDx3dyJ9gPX-dYu8k0ItWyDiAc4m8nV1XwiVOPtCDsSmtLWEoNsQ",
+      "createdAt": "2026-11-07T14:31:10.257Z"
     },
     {
-      "id": "att_01M6TB6V3Y9D3KCGKDAM1RN1CR",
-      "jobId": "job_01M6TB47DAMERFAP7RWPSSAMD6",
+      "id": "att_01M6V6Q96AE3SNQ49MY2FEBYP3",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
       "seq": 5,
       "type": "evidence",
-      "subjectId": "prf_01M6TB6V3TP24M8J0Z6CV18YN7",
+      "subjectId": "prf_01M6V6Q961WWKXYWHN8YAA3RKQ",
       "payloadHash": "b58d2a3ffaa12e0053b616faf5252d802e989c8744784f606d103836cf8087c3",
       "payload": {
         "kind": "text",
@@ -242,17 +242,17 @@
         "role": "platform",
         "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
       },
-      "prevHash": "5f8c96043972083dc653b1bd8af2e92c162419bb57a70188f2e57dbd7a3e0cf2",
-      "hash": "444720f057e352678db2c05d58a840dc1adbe413ccf5bd5c33cc991dc3f4eba0",
-      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiI0NDQ3MjBmMDU3ZTM1MjY3OGRiMmMwNWQ1OGE4NDBkYzFhZGJlNDEzY2NmNWJkNWMzM2NjOTkxZGMzZjRlYmEwIn0.Iwy7AFu_-qn8zF7Po3Tt7R4TqQKLIi6PDmkVCIZhNGi7iN6HEAd1UEyDu_Ge8hA0nb9wmZ_naX1OUTLeuqOSAw",
-      "createdAt": "2026-11-07T06:30:20.030Z"
+      "prevHash": "c2b95dc3478dddab637e5d3ef2adecff3f7611e8fce9318b2098b7eac03ff62c",
+      "hash": "da100c699ff3b05ab9a901574b04beabe02bb67a1e950e39548eccaa58c297e3",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiJkYTEwMGM2OTlmZjNiMDVhYjlhOTAxNTc0YjA0YmVhYmUwMmJiNjdhMWU5NTBlMzk1NDhlY2NhYTU4YzI5N2UzIn0.DBHSnlXCwp3XvLZM_eAnysXb41p4OUkfGfHzBvsbiHnG-_5TqXfAO0CkbHBuJVMqo3pD_4Z-ggZ1XQuxno_CPw",
+      "createdAt": "2026-11-07T14:31:10.282Z"
     },
     {
-      "id": "att_01M6TB6V4A1ESMDDEFEXXFKAZ4",
-      "jobId": "job_01M6TB47DAMERFAP7RWPSSAMD6",
+      "id": "att_01M6V6Q971W1MRA92Y5D4PWQ3E",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
       "seq": 6,
       "type": "evidence",
-      "subjectId": "prf_01M6TB6V46T90N24EZB6PZZ2NH",
+      "subjectId": "prf_01M6V6Q96R5RK2XGQR3G2Y2W3D",
       "payloadHash": "7567087a77b0fc859fd717ef32f4fb21544b88c9e8c599818ad2fa6e49fbb402",
       "payload": {
         "kind": "geo",
@@ -263,18 +263,18 @@
         "role": "platform",
         "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
       },
-      "prevHash": "444720f057e352678db2c05d58a840dc1adbe413ccf5bd5c33cc991dc3f4eba0",
-      "hash": "132331c39507f11af4d145f313f8dafee9e9c070aeffa6ce0430d989469cc2fd",
-      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiIxMzIzMzFjMzk1MDdmMTFhZjRkMTQ1ZjMxM2Y4ZGFmZWU5ZTljMDcwYWVmZmE2Y2UwNDMwZDk4OTQ2OWNjMmZkIn0.SSeNgsGQSLPc5ANNRHyNFHh0ig_DfKEhsH4ON8qmQp9HUSuo6rXnSA6fI5UNsNVKdOUyyr5kXyg3m1cLFxL2ZQ",
-      "createdAt": "2026-11-07T06:30:20.042Z"
+      "prevHash": "da100c699ff3b05ab9a901574b04beabe02bb67a1e950e39548eccaa58c297e3",
+      "hash": "39bcca985b9a3b3ede93a318b22fa5b0f99363a3179d2bea716c3313a6babd5c",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiIzOWJjY2E5ODViOWEzYjNlZGU5M2EzMThiMjJmYTViMGY5OTM2M2EzMTc5ZDJiZWE3MTZjMzMxM2E2YmFiZDVjIn0.Z48Tci0tzWIN70K1vrIYs2--BEt4lARq94OX_sOJ8p0LEWsuno7uvLIo2kgPc5wqKzl3Wwl8AJ0-GxnQScbESg",
+      "createdAt": "2026-11-07T14:31:10.305Z"
     },
     {
-      "id": "att_01M6TB6WQ3EN3YWFZPQZPEVCJK",
-      "jobId": "job_01M6TB47DAMERFAP7RWPSSAMD6",
+      "id": "att_01M6V6QAHW4BBX0VCAF30BPD1Z",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
       "seq": 7,
       "type": "verification",
-      "subjectId": "ver_01M6TB6WPX0CW7R8CW19R2VJ8V",
-      "payloadHash": "380061332e6125d0f9c31c02a8f35eabe04ee6b42eb70b668343135878bb1134",
+      "subjectId": "ver_01M6V6QAH9PBCGPPN92ADGTPSJ",
+      "payloadHash": "a211c6ec0dcb88af588e7ae70a7491009558c34b568ae77ce4ad0bd82639deb1",
       "payload": {
         "flags": [],
         "model": "qwen/qwen3.8-27b",
@@ -290,9 +290,9 @@
           }
         ],
         "proofIds": [
-          "prf_01M6TB6V3AHM9WHWD76Z1FYY07",
-          "prf_01M6TB6V3TP24M8J0Z6CV18YN7",
-          "prf_01M6TB6V46T90N24EZB6PZZ2NH"
+          "prf_01M6V6Q950YQQT64FP7FFP4Y3P",
+          "prf_01M6V6Q961WWKXYWHN8YAA3RKQ",
+          "prf_01M6V6Q96R5RK2XGQR3G2Y2W3D"
         ],
         "confidence": 0.95,
         "milestoneSeq": 1
@@ -301,17 +301,17 @@
         "role": "platform",
         "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
       },
-      "prevHash": "132331c39507f11af4d145f313f8dafee9e9c070aeffa6ce0430d989469cc2fd",
-      "hash": "1a9231d7484b49b869869a2cd60938ada3311a955ed8eeb30cd4c48f438e8736",
-      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiIxYTkyMzFkNzQ4NGI0OWI4Njk4NjlhMmNkNjA5MzhhZGEzMzExYTk1NWVkOGVlYjMwY2Q0YzQ4ZjQzOGU4NzM2In0.Mr4L10x-5dU4ll1nqYx98d8EOtcANVvzqz4_MF_EmTq0RcxCST1vVlHDSAAIOa-4jzUHLOhkXfH4LlrH6LSbbw",
-      "createdAt": "2026-11-07T06:30:21.667Z"
+      "prevHash": "39bcca985b9a3b3ede93a318b22fa5b0f99363a3179d2bea716c3313a6babd5c",
+      "hash": "3d86279d95f61fc17968a089a9fcfeeb8133f1945984821012346cc252246af6",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiIzZDg2Mjc5ZDk1ZjYxZmMxNzk2OGEwODlhOWZjZmVlYjgxMzNmMTk0NTk4NDgyMTAxMjM0NmNjMjUyMjQ2YWY2In0.9pLJJFBnbf8FTKCL_ZtBZyhQaMXsaRRRcx_SUQZ2xHaFOgU1yby6AttkcljqyDH2ol70D89ST_Rddy1op7m3qQ",
+      "createdAt": "2026-11-07T14:31:11.677Z"
     },
     {
-      "id": "att_01M6TB6WR1REKD5VM7FWDVG1VD",
-      "jobId": "job_01M6TB47DAMERFAP7RWPSSAMD6",
+      "id": "att_01M6V6QAKXS0S44CRV8A8C5WY1",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
       "seq": 8,
       "type": "decision",
-      "subjectId": "risk_01M6TB6WQPGPDY38NG1Z4399E9",
+      "subjectId": "risk_01M6V6QAKG0M653RCTGQ16K6NF",
       "payloadHash": "43a7dcb6e193f7c93c6dd349ef0958a20cfeba6e414dc4372706ca53757f7c78",
       "payload": {
         "score": 10,
@@ -327,110 +327,274 @@
         "role": "platform",
         "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
       },
-      "prevHash": "1a9231d7484b49b869869a2cd60938ada3311a955ed8eeb30cd4c48f438e8736",
-      "hash": "3a7a87ac399f9d32b75fe99ca95eb1a0882e76b8752e380bdec5d29f7454389e",
-      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiIzYTdhODdhYzM5OWY5ZDMyYjc1ZmU5OWNhOTVlYjFhMDg4MmU3NmI4NzUyZTM4MGJkZWM1ZDI5Zjc0NTQzODllIn0.E4B7Wr8Cenv2OB68KcWPgfFIDFSmU1VY7ALGOMlflYGBH-PqTaqukv7hnOUl_REQejlGmtx1rpWfZMOPKSutfQ",
-      "createdAt": "2026-11-07T06:30:21.697Z"
+      "prevHash": "3d86279d95f61fc17968a089a9fcfeeb8133f1945984821012346cc252246af6",
+      "hash": "9da67add5aed7cfa1950c1f1e8d8e9bbd0d59411e9eb848fafba907aaf0d8ea2",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiI5ZGE2N2FkZDVhZWQ3Y2ZhMTk1MGMxZjFlOGQ4ZTliYmQwZDU5NDExZTllYjg0OGZhZmJhOTA3YWFmMGQ4ZWEyIn0.HghUtuhIEcBT04WwJ99_patQD8k3JXIErzHskI5MxPmg7o3Rwfbt566HQlp92eFGipeVGavP-m70-GzM1_Bfxg",
+      "createdAt": "2026-11-07T14:31:11.741Z"
     },
     {
-      "id": "att_01M6TB6WRCT5FHZWV8EB40E06K",
-      "jobId": "job_01M6TB47DAMERFAP7RWPSSAMD6",
+      "id": "att_01M6V6QAMHV4H4ZHRW8VE7R7GB",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
       "seq": 9,
       "type": "release",
-      "subjectId": "rel_01M6TB6WR4TG26FTR6FAK125E2",
-      "payloadHash": "d573a327f9f0d6da6fab034b2c5cfa98f36a238623ab7b020d2a5a7745b8b326",
+      "subjectId": "rel_01M6V6QAM25BQRJR56REA88R8R",
+      "payloadHash": "f25dfac1f7dc6428a1c10a89fe96c1d34f38227a09e2d5d1b1254df5a4d180f9",
       "payload": {
         "feeMinor": 269,
         "amountMinor": 4000,
         "milestoneSeq": 1,
         "decisionSource": "auto",
-        "challengeEndsAt": "2026-11-07T06:31:14.066Z"
+        "challengeEndsAt": "2026-11-07T14:32:04.342Z"
       },
       "signer": {
         "role": "platform",
         "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
       },
-      "prevHash": "3a7a87ac399f9d32b75fe99ca95eb1a0882e76b8752e380bdec5d29f7454389e",
-      "hash": "f1a3a310ceee4f2accad0d77935628b26a237c255b9d1ce8d8d3fb22ed7beb9a",
-      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiJmMWEzYTMxMGNlZWU0ZjJhY2NhZDBkNzc5MzU2MjhiMjZhMjM3YzI1NWI5ZDFjZThkOGQzZmIyMmVkN2JlYjlhIn0.YR4NeUv_maze4T16MitmoRFUKOSBP1pKGPhE7Lxqid_VatsfRoU85x9P8BH1BhMF-NSKHw3q26I4STlpMaEgYQ",
-      "createdAt": "2026-11-07T06:30:21.708Z"
+      "prevHash": "9da67add5aed7cfa1950c1f1e8d8e9bbd0d59411e9eb848fafba907aaf0d8ea2",
+      "hash": "e182be57558ca9aefdfb4e9a129eff4a593056333b0c65a9fdb9735600c72f26",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiJlMTgyYmU1NzU1OGNhOWFlZmRmYjRlOWExMjllZmY0YTU5MzA1NjMzM2IwYzY1YTlmZGI5NzM1NjAwYzcyZjI2In0.lmN7EQcKT8AC8xJlxvPc-ywbEqjV_-xeW68WHDxvcp645kIsdpNb0qKy5t3ir7hN1Q7DKIOXSKeJoD6LNsD_ug",
+      "createdAt": "2026-11-07T14:31:11.761Z"
     },
     {
-      "id": "att_01M6TB97HA7JP5VEAT3W3BAMXB",
-      "jobId": "job_01M6TB47DAMERFAP7RWPSSAMD6",
+      "id": "att_01M6V6QAPK0WEA18XJCA9R3RXV",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
       "seq": 10,
+      "type": "dispute",
+      "subjectId": "dsp_01M6V6QANVADEXCBGF67D0JH34",
+      "payloadHash": "d705495ae0c7e66fc131abd18c6da6e85ba8eb2006326cdbf4b3aca887d7bd07",
+      "payload": {
+        "event": "opened",
+        "openedBy": "payer",
+        "milestoneSeq": 1,
+        "disputedAmountMinor": 4000
+      },
+      "signer": {
+        "role": "platform",
+        "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
+      },
+      "prevHash": "e182be57558ca9aefdfb4e9a129eff4a593056333b0c65a9fdb9735600c72f26",
+      "hash": "5d676605f435d67a005d2412b1a1610b92bde296539c78ca3c2189957b024c51",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiI1ZDY3NjYwNWY0MzVkNjdhMDA1ZDI0MTJiMWExNjEwYjkyYmRlMjk2NTM5Yzc4Y2EzYzIxODk5NTdiMDI0YzUxIn0.B30Y_1lrkEumkrsdeYOSc8cIhvIJ-h5gQlwYxGfpP5YcN7J5GCiQU0uLiaaUZ3bz_L_FwhlwUJ4aQM9K-WZGVg",
+      "createdAt": "2026-11-07T14:31:11.828Z"
+    },
+    {
+      "id": "att_01M6V6QAWGMYK75QV8C2QYMDM3",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
+      "seq": 11,
+      "type": "dispute",
+      "subjectId": "dev_01M6V6QAQH7WX2600XXT486NH4",
+      "payloadHash": "2a800b2d0c72cfe60b69b951ddce2369254ce286fbe102916bf5454aa65d8441",
+      "payload": {
+        "kind": "text",
+        "event": "evidence",
+        "party": "payer"
+      },
+      "signer": {
+        "role": "platform",
+        "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
+      },
+      "prevHash": "5d676605f435d67a005d2412b1a1610b92bde296539c78ca3c2189957b024c51",
+      "hash": "f4bd59e2d6255e33d24770a39a17916a3a35302e9471df02c3240425a6145f56",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiJmNGJkNTllMmQ2MjU1ZTMzZDI0NzcwYTM5YTE3OTE2YTNhMzUzMDJlOTQ3MWRmMDJjMzI0MDQyNWE2MTQ1ZjU2In0.qYH3wr-Lq2pgkOq8u_gDaC7ZrkYPpDE8E3pgdc1sRZbr_lfeahV3E49FsU5qayB-jSXSYfRbkHcB5lIfi2oNtw",
+      "createdAt": "2026-11-07T14:31:12.017Z"
+    },
+    {
+      "id": "att_01M6V6QAWRGSH2NT55FZSADPTN",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
+      "seq": 12,
+      "type": "dispute",
+      "subjectId": "dev_01M6V6QAQH1AWH2K5Q6Q70SAFB",
+      "payloadHash": "0f414867478e3eabb9d0de2b6e71cc5d74e7437761f09eabac9b1e4e345279ab",
+      "payload": {
+        "kind": "photo",
+        "event": "evidence",
+        "party": "payer"
+      },
+      "signer": {
+        "role": "platform",
+        "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
+      },
+      "prevHash": "f4bd59e2d6255e33d24770a39a17916a3a35302e9471df02c3240425a6145f56",
+      "hash": "7de4767fc6c31d8594898b466acc85fbd0ddecf25666bc9639e660b65eb434de",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiI3ZGU0NzY3ZmM2YzMxZDg1OTQ4OThiNDY2YWNjODVmYmQwZGRlY2YyNTY2NmJjOTYzOWU2NjBiNjVlYjQzNGRlIn0.7rM3Tl62y5vrrcYlPnlfZtYpzW_B9auRPtLhp_qdb1vmzsaypNC49D-_F9Rc8vjUDY06a2TFllpHDT_hA_2-Gg",
+      "createdAt": "2026-11-07T14:31:12.024Z"
+    },
+    {
+      "id": "att_01M6V6SD7QAVBES5VDCXYBYJ65",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
+      "seq": 13,
+      "type": "dispute",
+      "subjectId": "dpr_01M6V6SD70GEE3WDVYHSRK1RFV",
+      "payloadHash": "3a6b99843f5bbb932aed3061bcd14098793334a79d508fdad9a30fde93c8a828",
+      "payload": {
+        "basis": [
+          "mandate:payment:pmd_01M6V6JSH5REAX38QQ7DVA19SZ#settlementConditions[milestoneSeq=1]",
+          "criterion:c1",
+          "criterion:c2",
+          "evidence:dev_01M6V6QAQH7WX2600XXT486NH4",
+          "evidence:dev_01M6V6QAQH1AWH2K5Q6Q70SAFB"
+        ],
+        "event": "proposal",
+        "model": "qwen/qwen3.8-27b",
+        "bearer": "payer",
+        "faultClass": "PAYER_UNSUPPORTED_CLAIM",
+        "requiresHuman": false,
+        "complianceReportId": "cr_01M6V6SAE6284A6WHG0EB5EVNE",
+        "refundToPayerMinor": 0,
+        "releaseToWorkerMinor": 4000
+      },
+      "signer": {
+        "role": "platform",
+        "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
+      },
+      "prevHash": "7de4767fc6c31d8594898b466acc85fbd0ddecf25666bc9639e660b65eb434de",
+      "hash": "fade380f0129b6281a714e88de6ddf8b9a0ebf9271c5df3108509077c0355f3c",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiJmYWRlMzgwZjAxMjliNjI4MWE3MTRlODhkZTZkZGY4YjlhMGViZjkyNzFjNWRmMzEwODUwOTA3N2MwMzU1ZjNjIn0.lUQ10jCDdp3gS6JwV4wd3lt5u7hUs-wvYjgkpQ-Cp-G4CFO9V3oTSBEIlqflVigRTa9brg6oHFgdNtTW49XtKA",
+      "createdAt": "2026-11-07T14:32:19.960Z"
+    },
+    {
+      "id": "att_01M6V6SD9YKXWK907XKXHW066V",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
+      "seq": 14,
+      "type": "dispute",
+      "subjectId": "dpr_01M6V6SD70GEE3WDVYHSRK1RFV",
+      "payloadHash": "f97e847dd26d2381abed2dc8976ffe323dcbd3a4c28684702700b5900683843b",
+      "payload": {
+        "event": "response",
+        "party": "payer",
+        "response": "accept"
+      },
+      "signer": {
+        "role": "platform",
+        "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
+      },
+      "prevHash": "fade380f0129b6281a714e88de6ddf8b9a0ebf9271c5df3108509077c0355f3c",
+      "hash": "ee69b5bb04791147da7de6dab0eed9a4406fa2050fc33efcd8ccdedcbf39f7e1",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiJlZTY5YjViYjA0NzkxMTQ3ZGE3ZGU2ZGFiMGVlZDlhNDQwNmZhMjA1MGZjMzNlZmNkOGNjZGVkY2JmMzlmN2UxIn0.x9XBtBK3a3yNVAVbIaCu5cJx7byh7sRUuLrK5jHQIiSixnqfycpzHq4Dfsv-weL5mCirfSMJD-GdrmhuDmbqNw",
+      "createdAt": "2026-11-07T14:32:20.030Z"
+    },
+    {
+      "id": "att_01M6V6SDAM61225SBSSFT22XXM",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
+      "seq": 15,
+      "type": "dispute",
+      "subjectId": "dpr_01M6V6SD70GEE3WDVYHSRK1RFV",
+      "payloadHash": "fa8b39ca7e1c250fd760ad02e720532d2e6b43ef8a9d49b1c136c28b92d25143",
+      "payload": {
+        "event": "response",
+        "party": "worker",
+        "response": "accept"
+      },
+      "signer": {
+        "role": "platform",
+        "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
+      },
+      "prevHash": "ee69b5bb04791147da7de6dab0eed9a4406fa2050fc33efcd8ccdedcbf39f7e1",
+      "hash": "1286cc880934c3b57bf4c1c2758ae538e837c571232192d8a55c08a9cfaf4423",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiIxMjg2Y2M4ODA5MzRjM2I1N2JmNGMxYzI3NThhZTUzOGU4MzdjNTcxMjMyMTkyZDhhNTVjMDhhOWNmYWY0NDIzIn0.SRTIH72zIrpRfySqOj3riLbPZUcEEFek-QWGdFrFRYp3VcVBv1WyiYxrfuBv3CBQx4jQuJvONjcJQNfAe3HrEQ",
+      "createdAt": "2026-11-07T14:32:20.052Z"
+    },
+    {
+      "id": "att_01M6V6SES7F60T422Y2HT6FMZC",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
+      "seq": 16,
       "type": "settlement",
-      "subjectId": "rel_01M6TB6WR4TG26FTR6FAK125E2",
-      "payloadHash": "d0719d0cdb8f9137276add3ee5d120ec0b4b8ea1ef9a9e783d9b4c14c4d369f1",
+      "subjectId": "dsp_01M6V6QANVADEXCBGF67D0JH34",
+      "payloadHash": "65e97b7a9d0b3028120ef86617efbe166e762b98c69234b0935d82b988592a9b",
+      "payload": {
+        "event": "dispute_settled",
+        "faultClass": "PAYER_UNSUPPORTED_CLAIM",
+        "resolvedBy": "both_parties",
+        "milestoneSeq": 1,
+        "feeRefundedMinor": 0,
+        "refundToPayerMinor": 0,
+        "releaseToWorkerMinor": 4000
+      },
+      "signer": {
+        "role": "platform",
+        "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
+      },
+      "prevHash": "1286cc880934c3b57bf4c1c2758ae538e837c571232192d8a55c08a9cfaf4423",
+      "hash": "e2b8aaa04bc800677b205d31bb106470e83b53b6c8b25e5b70807026e49fa600",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiJlMmI4YWFhMDRiYzgwMDY3N2IyMDVkMzFiYjEwNjQ3MGU4M2I1M2I2YzhiMjVlNWI3MDgwNzAyNmU0OWZhNjAwIn0.ZSRMyHuo1jJyXASvmwDtjUp4-v5jp3dP_XCFMFj_1lrG69S0HPsM-88rQSoE-3UfTfvWgmtDirfFkMLgH_9tcg",
+      "createdAt": "2026-11-07T14:32:21.543Z"
+    },
+    {
+      "id": "att_01M6V6T23RDAWM95DAH0V91EX5",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
+      "seq": 17,
+      "type": "settlement",
+      "subjectId": "rel_01M6V6SDBRSYBSGWZ3Y25QYCHG",
+      "payloadHash": "8f3033fe4e79bf9e83d0d37581e705a75ba4290a0a572228addce67a81ff8098",
       "payload": {
         "feeMinor": 269,
         "amountMinor": 4000,
         "milestoneSeq": 1,
-        "payoutItemId": "ALDNRWPMPBMSW",
+        "payoutItemId": "6MEPSHGS7T6RN",
         "payoutStatus": "SUCCEEDED",
-        "decisionSource": "auto"
+        "decisionSource": "dispute"
       },
       "signer": {
         "role": "platform",
         "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
       },
-      "prevHash": "f1a3a310ceee4f2accad0d77935628b26a237c255b9d1ce8d8d3fb22ed7beb9a",
-      "hash": "43a2c17bfa33c4445e74e28642a9db2959b6582d78b41003a0d8a42340e31999",
-      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiI0M2EyYzE3YmZhMzNjNDQ0NWU3NGUyODY0MmE5ZGIyOTU5YjY1ODJkNzhiNDEwMDNhMGQ4YTQyMzQwZTMxOTk5In0.wwV9xyGYpZjRBdD3dBcJh0TVywSWN3N6hEI1njYi4cB9LxbRdAtvsMRs_iwbTvApqKH7lVIyK9tMFM4uC8Dycw",
-      "createdAt": "2026-11-07T06:31:38.282Z"
+      "prevHash": "e2b8aaa04bc800677b205d31bb106470e83b53b6c8b25e5b70807026e49fa600",
+      "hash": "bc30a4cb7e6ff89e8ac14d63f8f78721d5e34b3e112bcb97ad15b5feaa9eb4ae",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiJiYzMwYTRjYjdlNmZmODllOGFjMTRkNjNmOGY3ODcyMWQ1ZTM0YjNlMTEyYmNiOTdhZDE1YjVmZWFhOWViNGFlIn0.4v_qIO5UiX9JUDXBgM8mb6EZ_vWkURWj-EZwJ20C6fV6FOA0AvRz4DuqvIrI280P7ab8DMak8YFSeRcIKa6Qdg",
+      "createdAt": "2026-11-07T14:32:41.337Z"
     },
     {
-      "id": "att_01M6TBB75BRPVFR5J1BE7E7PV4",
-      "jobId": "job_01M6TB47DAMERFAP7RWPSSAMD6",
-      "seq": 11,
+      "id": "att_01M6V6Y1A9Q9525Y2A5W6BSMZZ",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
+      "seq": 18,
       "type": "evidence",
-      "subjectId": "prf_01M6TBB756SDB9F8047BH13SSE",
-      "payloadHash": "933ad9df2cf566e583e09836e8d1c92d87331ee874a30b187d3b31aba899d6f2",
+      "subjectId": "prf_01M6V6Y19VEKNVZNQ9EQHRQ6KA",
+      "payloadHash": "a8a4b4fbae0b7eb7a96f586144668af91bc8c0ec7bbf0fe1a60b316659d6b56a",
       "payload": {
         "kind": "photo",
-        "phash": "80cccc8cec696e1f",
+        "phash": "bcbc8523333333b0",
         "hasGps": true,
-        "sha256": "54d76b7d8bc7ae5b9de53097cdf3ae38f058a355f2823836c19c952db33aa31f",
+        "sha256": "ae44d06b813a0671f557582af7e6cee8361de00c6e0a23c88c04f7ecb833d743",
         "source": "demo_sample",
-        "takenAt": "2026-11-07T06:31:13.000Z",
+        "takenAt": "2026-11-07T14:34:51.000Z",
         "milestoneSeq": 2
       },
       "signer": {
         "role": "platform",
         "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
       },
-      "prevHash": "43a2c17bfa33c4445e74e28642a9db2959b6582d78b41003a0d8a42340e31999",
-      "hash": "85793578b58db5e7d5d7648eeac01f74ce0b420310d59826665a90c0c992a5af",
-      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiI4NTc5MzU3OGI1OGRiNWU3ZDVkNzY0OGVlYWMwMWY3NGNlMGI0MjAzMTBkNTk4MjY2NjVhOTBjMGM5OTJhNWFmIn0.4ezCDZttUgh1PQx6KpNT3oZmpol05B4aL-6rp1Xcp5Uu0VBC4aIRAFf2vdjhNCeg5XeEizfgYSwu0tfX-m-Taw",
-      "createdAt": "2026-11-07T06:32:43.435Z"
+      "prevHash": "bc30a4cb7e6ff89e8ac14d63f8f78721d5e34b3e112bcb97ad15b5feaa9eb4ae",
+      "hash": "38e80ad67b41c10c023f41d646a6baeb5741130e919d5170cc9d5886a9cd170e",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiIzOGU4MGFkNjdiNDFjMTBjMDIzZjQxZDY0NmE2YmFlYjU3NDExMzBlOTE5ZDUxNzBjYzlkNTg4NmE5Y2QxNzBlIn0.EICdR7wyqnl0K9PJ4CGbdOz1_yQ-BEBZLAi5T8SwPxhqBdgdgBVYV_0Ok_Wu-k4nasr17N-XfCC9NUzX_BUmHg",
+      "createdAt": "2026-11-07T14:34:51.593Z"
     },
     {
-      "id": "att_01M6TBB75K19CN07EVXF5MN35S",
-      "jobId": "job_01M6TB47DAMERFAP7RWPSSAMD6",
-      "seq": 12,
+      "id": "att_01M6V6Y1B1QJ9SSVV80ZNTAVFN",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
+      "seq": 19,
       "type": "evidence",
-      "subjectId": "prf_01M6TBB75GMNZD6B83STCWBQ9M",
-      "payloadHash": "a58abe9b19486b8c1967501eb6cd9bc1ee4a2241dabf56160db03b810184ceee",
+      "subjectId": "prf_01M6V6Y1ARQC6QFYGNW55DA054",
+      "payloadHash": "b80557d82840d50d14294ba18b6849bc7d0f3c3c52a191e41a0bfe370d26f290",
       "payload": {
         "kind": "text",
-        "length": 24,
+        "length": 34,
         "milestoneSeq": 2
       },
       "signer": {
         "role": "platform",
         "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
       },
-      "prevHash": "85793578b58db5e7d5d7648eeac01f74ce0b420310d59826665a90c0c992a5af",
-      "hash": "c0f1e211bdf839e530c9de6a1efa51b79dff520fba3aafeadcfdf78735e58a9b",
-      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiJjMGYxZTIxMWJkZjgzOWU1MzBjOWRlNmExZWZhNTFiNzlkZmY1MjBmYmEzYWFmZWFkY2ZkZjc4NzM1ZTU4YTliIn0.Fni2ELyimIycOy8Sc9Xg9-VR7WuNJqOpzN9WjUaT2394EyjFDuZ0dpnKgG8I-Ry9O4GdPJSy9gT9VZYJRg_qXg",
-      "createdAt": "2026-11-07T06:32:43.444Z"
+      "prevHash": "38e80ad67b41c10c023f41d646a6baeb5741130e919d5170cc9d5886a9cd170e",
+      "hash": "39c7627a1a38301229b44420436905f696dc7021e5f0b8758d42c0e87f085963",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiIzOWM3NjI3YTFhMzgzMDEyMjliNDQ0MjA0MzY5MDVmNjk2ZGM3MDIxZTVmMGI4NzU4ZDQyYzBlODdmMDg1OTYzIn0.hKle8IKK4or9cYhTnC74kNl935T9dDfvJvItPIW_AlwX9oN16IceSs1cAMSdcHVT_3wtCihpyjJBQQ0pDbljdw",
+      "createdAt": "2026-11-07T14:34:51.618Z"
     },
     {
-      "id": "att_01M6TBB75W0FA6PZ6DBFE2TS0V",
-      "jobId": "job_01M6TB47DAMERFAP7RWPSSAMD6",
-      "seq": 13,
+      "id": "att_01M6V6Y1BKBDJT2WGECYJ37CKH",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
+      "seq": 20,
       "type": "evidence",
-      "subjectId": "prf_01M6TBB75SFHEZCXQMRBN60TX7",
+      "subjectId": "prf_01M6V6Y1BD8PG2755P936C76R2",
       "payloadHash": "8b5c748153c4c2ed9a5dbf4934dfcf0843f30fc0f0eaf7869fa638abfbcf4a21",
       "payload": {
         "kind": "geo",
@@ -441,22 +605,22 @@
         "role": "platform",
         "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
       },
-      "prevHash": "c0f1e211bdf839e530c9de6a1efa51b79dff520fba3aafeadcfdf78735e58a9b",
-      "hash": "4d66fda6ef186f13bd88af7010fba192512c8e4123dcf067a4c89a96dd443ba6",
-      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiI0ZDY2ZmRhNmVmMTg2ZjEzYmQ4OGFmNzAxMGZiYTE5MjUxMmM4ZTQxMjNkY2YwNjdhNGM4OWE5NmRkNDQzYmE2In0.Gw4WkJEt_VFqwteCZ5iDdT3kcFDTCROrZHwKUu7IUOvYNtcNtrHkmXlTHofBgBLXNYh_1SE73UHpXGWUubLgfQ",
-      "createdAt": "2026-11-07T06:32:43.452Z"
+      "prevHash": "39c7627a1a38301229b44420436905f696dc7021e5f0b8758d42c0e87f085963",
+      "hash": "37b443b12ebde5eef12a3453075f4f2c664d1edc04cdb9f5a0ec36cbd2214a52",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiIzN2I0NDNiMTJlYmRlNWVlZjEyYTM0NTMwNzVmNGYyYzY2NGQxZWRjMDRjZGI5ZjVhMGVjMzZjYmQyMjE0YTUyIn0.48vFnWxD_sD8gq8893yexXLtVLbgTU1wMlUJfW0scUKpMsC0ihJG_LXhZKaXBA_3U8IGRG9oLcqKyPV7S-5S7Q",
+      "createdAt": "2026-11-07T14:34:51.635Z"
     },
     {
-      "id": "att_01M6TBB89KQCCSER4SQXRTBZAP",
-      "jobId": "job_01M6TB47DAMERFAP7RWPSSAMD6",
-      "seq": 14,
+      "id": "att_01M6V6Y2R971DQ97GRGNP8ZXYS",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
+      "seq": 21,
       "type": "verification",
-      "subjectId": "ver_01M6TBB89G6H646BEEA20N60QT",
-      "payloadHash": "a09257742db0c3e1dfdaf67569bf8e346ffef41273e57e9046489bb487f50038",
+      "subjectId": "ver_01M6V6Y2QZVW0B9M9848BRYA5N",
+      "payloadHash": "337bbde650cb19638606d22b0c5ce7cb7ff4cfe47b569bab36074b676dcda67e",
       "payload": {
         "flags": [],
         "model": "qwen/qwen3.8-27b",
-        "overall": "partial",
+        "overall": "pass",
         "criteria": [
           {
             "id": "c1",
@@ -472,42 +636,38 @@
           },
           {
             "id": "c4",
-            "verdict": "fail"
+            "verdict": "pass"
           }
         ],
         "proofIds": [
-          "prf_01M6TBB756SDB9F8047BH13SSE",
-          "prf_01M6TBB75GMNZD6B83STCWBQ9M",
-          "prf_01M6TBB75SFHEZCXQMRBN60TX7"
+          "prf_01M6V6Y19VEKNVZNQ9EQHRQ6KA",
+          "prf_01M6V6Y1ARQC6QFYGNW55DA054",
+          "prf_01M6V6Y1BD8PG2755P936C76R2"
         ],
-        "confidence": 0.9,
+        "confidence": 0.95,
         "milestoneSeq": 2
       },
       "signer": {
         "role": "platform",
         "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
       },
-      "prevHash": "4d66fda6ef186f13bd88af7010fba192512c8e4123dcf067a4c89a96dd443ba6",
-      "hash": "0ca21399cda5e2244b88638f88b8e7f648cdb81bf92a905a3bb6e4dc80648475",
-      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiIwY2EyMTM5OWNkYTVlMjI0NGI4ODYzOGY4OGI4ZTdmNjQ4Y2RiODFiZjkyYTkwNWEzYmI2ZTRkYzgwNjQ4NDc1In0.6y6jZkBN-Mh6NqX35hTX6P0N2WLTYZw_xDgiafUdTF0_GNo9Y6Vpd-ZdQ66WNfzGzEILKDMl95_ck8QpKCLh-Q",
-      "createdAt": "2026-11-07T06:32:44.596Z"
+      "prevHash": "37b443b12ebde5eef12a3453075f4f2c664d1edc04cdb9f5a0ec36cbd2214a52",
+      "hash": "ad69acbb53cc678fb524a6ebee48fd3f0b0ca8b0e43187b18037b3f5de8c558c",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiJhZDY5YWNiYjUzY2M2NzhmYjUyNGE2ZWJlZTQ4ZmQzZjBiMGNhOGIwZTQzMTg3YjE4MDM3YjNmNWRlOGM1NThjIn0.RRGufAIHsdSMwgwr78IvhhApWCfxuGc-LGaBuw4t7o6pI5d-c1opwIATpPnEa7dFXtFyd-2WDwJwe0fXz3wE4w",
+      "createdAt": "2026-11-07T14:34:53.065Z"
     },
     {
-      "id": "att_01M6TBB8A5FCM5AHGHZN7ZTQYH",
-      "jobId": "job_01M6TB47DAMERFAP7RWPSSAMD6",
-      "seq": 15,
+      "id": "att_01M6V6Y2SZT7K38EYTFW3C9S6H",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
+      "seq": 22,
       "type": "decision",
-      "subjectId": "risk_01M6TBB89Z8S4H3SJHCGXZ1CPP",
-      "payloadHash": "958999fd4a2aafff8c6e914824c885bc553c22ee657d0942b049af7a39461a81",
+      "subjectId": "risk_01M6V6Y2SK2VWR50KJ1WPB29PF",
+      "payloadHash": "86e5f587da82e03cd101f54d1a891c6bcb19af63bddcf3e47334673082733300",
       "payload": {
-        "score": 15,
-        "reasons": [
-          "Verification is partial, not pass"
-        ],
-        "signals": [
-          "CRITERION_FAIL"
-        ],
-        "decision": "HUMAN_REVIEW",
+        "score": 0,
+        "reasons": [],
+        "signals": [],
+        "decision": "AUTO_RELEASE",
         "milestoneSeq": 2,
         "policyVersion": 1
       },
@@ -515,58 +675,57 @@
         "role": "platform",
         "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
       },
-      "prevHash": "0ca21399cda5e2244b88638f88b8e7f648cdb81bf92a905a3bb6e4dc80648475",
-      "hash": "32289710123234357ea6b1fa091aee92ffcdf4cacba4fe8c51700678536069d3",
-      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiIzMjI4OTcxMDEyMzIzNDM1N2VhNmIxZmEwOTFhZWU5MmZmY2RmNGNhY2JhNGZlOGM1MTcwMDY3ODUzNjA2OWQzIn0.v6h4EwgwveGPdxiyUERBGxX8Rd5pQCHRa_0ygqFgxxQ1SL88FPZw1THd72hXy6oeGLVq12XICysH8Eq1SjoUfg",
-      "createdAt": "2026-11-07T06:32:44.613Z"
+      "prevHash": "ad69acbb53cc678fb524a6ebee48fd3f0b0ca8b0e43187b18037b3f5de8c558c",
+      "hash": "f9a922ebc5b3496613018702e04da64c74d0358bed79590a5b17884f3bd90d4e",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiJmOWE5MjJlYmM1YjM0OTY2MTMwMTg3MDJlMDRkYTY0Yzc0ZDAzNThiZWQ3OTU5MGE1YjE3ODg0ZjNiZDkwZDRlIn0.zysYMDByXgQVuWaCZwQ7sywkEzOd4VO_dPmzZXBaJhPT7cUbgz6Fg00hiojUF5bI2MDXBaVrGbHu_zBAQBY3DA",
+      "createdAt": "2026-11-07T14:34:53.120Z"
     },
     {
-      "id": "att_01M6TBB8AMRT47B2THPF3VT45Q",
-      "jobId": "job_01M6TB47DAMERFAP7RWPSSAMD6",
-      "seq": 16,
-      "type": "decision",
-      "subjectId": "ms_01M6TB47E179WY984426BJGQSV",
-      "payloadHash": "5832346692e9056953b587f95a2d50b16f5d9e2e91cb99621c80ebcec3ac89f0",
-      "payload": {
-        "note": "Reviewed by a person: the demo proof was checked and approved.",
-        "adminId": "usr_meera",
-        "decision": "APPROVED_BY_ADMIN",
-        "previous": "NEEDS_REVIEW",
-        "releaseId": "rel_01M6TBB8AF7HN7E0A0S106X31S",
-        "milestoneSeq": 2
-      },
-      "signer": {
-        "role": "platform",
-        "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
-      },
-      "prevHash": "32289710123234357ea6b1fa091aee92ffcdf4cacba4fe8c51700678536069d3",
-      "hash": "cdcb39f3c53a9addad677c3f2f3b61eeb06efc7a38470c7657dc49f11837ff1c",
-      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiJjZGNiMzlmM2M1M2E5YWRkYWQ2NzdjM2YyZjNiNjFlZWIwNmVmYzdhMzg0NzBjNzY1N2RjNDlmMTE4MzdmZjFjIn0.qQOZGRtExJLx3_5gdr4zWy_---SzFZ1wJp_QqaA9TMhlbjoBsvjs--GBFKqJWcoWg8Kq5gUXDAF3kaaJ4whoYw",
-      "createdAt": "2026-11-07T06:32:44.628Z"
-    },
-    {
-      "id": "att_01M6TBBWGV87ASEK9N4YHHVD94",
-      "jobId": "job_01M6TB47DAMERFAP7RWPSSAMD6",
-      "seq": 17,
-      "type": "settlement",
-      "subjectId": "rel_01M6TBB8AF7HN7E0A0S106X31S",
-      "payloadHash": "4f9bfa3a0ee88672eb4cc7307476da527dee35679194c6dedf12ef31ecbba27d",
+      "id": "att_01M6V6Y2TFWNE5D1V5WYSWHJB5",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
+      "seq": 23,
+      "type": "release",
+      "subjectId": "rel_01M6V6Y2T4KB5WWCEMY9TX906Q",
+      "payloadHash": "612ec71ce5843d26b3b376489ede73f184faa648a9075f0ed66a5bb7b7666197",
       "payload": {
         "feeMinor": 403,
         "amountMinor": 6000,
         "milestoneSeq": 2,
-        "payoutItemId": "7LEYLGSFR75JQ",
-        "payoutStatus": "SUCCEEDED",
-        "decisionSource": "admin"
+        "decisionSource": "auto",
+        "challengeEndsAt": "2026-11-07T14:35:36.658Z"
       },
       "signer": {
         "role": "platform",
         "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
       },
-      "prevHash": "cdcb39f3c53a9addad677c3f2f3b61eeb06efc7a38470c7657dc49f11837ff1c",
-      "hash": "86eac00438d3a89701ea84c6613034cb3f21dca4a2d7a5db1f4adb0c83efc7a2",
-      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiI4NmVhYzAwNDM4ZDNhODk3MDFlYTg0YzY2MTMwMzRjYjNmMjFkY2E0YTJkN2E1ZGIxZjRhZGIwYzgzZWZjN2EyIn0.53nm_Idg_ChE0KRj-_ixTypTYTwBsRhvKEkX92mt1MfU33B7J5-_BXQ0S0BviLX0xSVmvS707VCuwIviDDHM1Q",
-      "createdAt": "2026-11-07T06:33:05.307Z"
+      "prevHash": "f9a922ebc5b3496613018702e04da64c74d0358bed79590a5b17884f3bd90d4e",
+      "hash": "6eecbcb3c37661ebba22f953d1f72f3d78939aafd93c39624d0b96872d01b449",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiI2ZWVjYmNiM2MzNzY2MWViYmEyMmY5NTNkMWY3MmYzZDc4OTM5YWFmZDkzYzM5NjI0ZDBiOTY4NzJkMDFiNDQ5In0.oZNQKb0PwvlXtgoQxlOxLSOQ4Qm6c0JR2QQYIHa4JqNOpSnl3NG55KdMqrbF9QSPaUCaURP2Nkyse_ji6ZS6-g",
+      "createdAt": "2026-11-07T14:34:53.136Z"
+    },
+    {
+      "id": "att_01M6V705D76WK2ECDXKG0569RP",
+      "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
+      "seq": 24,
+      "type": "settlement",
+      "subjectId": "rel_01M6V6Y2T4KB5WWCEMY9TX906Q",
+      "payloadHash": "6f7f76799e2d963257f17ee73f7a530a4bff9c20dbfc65e256d6e998fc54b421",
+      "payload": {
+        "feeMinor": 403,
+        "amountMinor": 6000,
+        "milestoneSeq": 2,
+        "payoutItemId": "2EMWCEMKK9EFQ",
+        "payoutStatus": "SUCCEEDED",
+        "decisionSource": "auto"
+      },
+      "signer": {
+        "role": "platform",
+        "keyId": "key_mAY01ASyQW6Rs5thTXH27L_G"
+      },
+      "prevHash": "6eecbcb3c37661ebba22f953d1f72f3d78939aafd93c39624d0b96872d01b449",
+      "hash": "c05cee4d42a429518cc300d50ead82d91aa09bd59aca017732f0ea61e146d1e5",
+      "signature": "eyJhbGciOiJFUzI1NiIsImtpZCI6ImtleV9tQVkwMUFTeVFXNlJzNXRoVFhIMjdMX0ciLCJ0eXAiOiJzZXR0bGVhaStqd3MifQ.eyJhdHRlc3RhdGlvbkhhc2giOiJjMDVjZWU0ZDQyYTQyOTUxOGNjMzAwZDUwZWFkODJkOTFhYTA5YmQ1OWFjYTAxNzczMmYwZWE2MWUxNDZkMWU1In0.LY77a4WqbHwm8mnp7p0MztKfTV1ppRl_UdwVSgGQw8sU4QCq-HQXjcmi7LE8wXwVaRoOxBcZ_HpNVn15c2qhfA",
+      "createdAt": "2026-11-07T14:36:01.319Z"
     }
   ],
   "keys": [
@@ -581,44 +740,44 @@
       "ownerType": "platform",
       "ownerId": "platform",
       "status": "active",
-      "createdAt": "2026-11-07T06:28:51.527Z",
+      "createdAt": "2026-11-07T14:28:38.687Z",
       "retiredAt": null
     },
     {
-      "keyId": "key_oMmXq0KQlqdaAtdCYi3ylFvR",
+      "keyId": "key_QbStgmiBcNP5LOG_kHAOAZhy",
       "publicJwk": {
-        "x": "YaAmFOShJrTxejNhfE15cwCAr4mgU6OQ9PXuAl8Mse4",
-        "y": "IssUzhjVZbwhKwoxKFvUsYydUuiQ5jD6ZgAsjoj2NVU",
+        "x": "ShK99TrIsqR-Gqikd6vhxhP6GNFs9nC341xYfiH6PEo",
+        "y": "pz9c0PzIfQBSCYy69IYLY-kRs6HPCJzN93VhxMywXZw",
         "crv": "P-256",
         "kty": "EC"
       },
       "ownerType": "user",
       "ownerId": "usr_ravi",
       "status": "active",
-      "createdAt": "2026-11-07T06:28:54.326Z",
+      "createdAt": "2026-11-07T14:28:43.045Z",
       "retiredAt": null
     },
     {
-      "keyId": "key_cL2GXUVd17jYZPxpPnMKrW0Y",
+      "keyId": "key_VT3GsvH5vgN3i6mvlO4IEA8O",
       "publicJwk": {
-        "x": "9XZryN9FwB2w09ecBzNTX2pYvq1qQYHsokDF6AoaXmA",
-        "y": "Xy0jreItGABV056xv6r6m2DdrnSyBuLFJZX2TYYfRdw",
+        "x": "RxtsbAsC9o0Fj72d_uUHZT4QsutElXmra-XGcbv2tz8",
+        "y": "Bop4gqeNTBkeoiWN1sGqLp10dVeOiS1ffrnveLnRDwI",
         "crv": "P-256",
         "kty": "EC"
       },
       "ownerType": "user",
       "ownerId": "usr_asha",
       "status": "active",
-      "createdAt": "2026-11-07T06:29:14.801Z",
+      "createdAt": "2026-11-07T14:28:59.928Z",
       "retiredAt": null
     }
   ],
   "paypal": {
-    "orderId": "0UK2…481C",
-    "captureId": "4S02…383E",
+    "orderId": "5WE9…463U",
+    "captureId": "6YK7…772H",
     "payoutItemIds": [
-      "ALDN…BMSW",
-      "7LEY…75JQ"
+      "6MEP…T6RN",
+      "2EMW…9EFQ"
     ],
     "refundIds": []
   },

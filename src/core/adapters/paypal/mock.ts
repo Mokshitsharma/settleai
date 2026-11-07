@@ -19,6 +19,8 @@ export interface MockPayPalOptions {
   idTag?: string;
   /** PayPal's fees to simulate; off by default. */
   fees?: { captureMinor?: number; captureBps?: number; captureFixedMinor?: number; payoutMinor?: number };
+  /** Like real PayPal: a payout starts PENDING and its success arrives later, as a webhook. */
+  asyncPayouts?: boolean;
 }
 
 export const MOCK_WEBHOOK_HEADER = "x-settleai-mock-webhook";
@@ -122,7 +124,7 @@ export class MockPayPalAdapter implements PaymentsPort {
         transaction_status: fail ? "FAILED" : "SUCCESS",
         ...(this.options.fees?.payoutMinor !== undefined && !fail ? { payout_item_fee: { value: toPayPalValue(this.options.fees.payoutMinor) } } : {}),
       });
-      return result;
+      return this.options.asyncPayouts && result.status === "SUCCEEDED" ? { batchId, status: "PENDING" as const, raw: { mock: true } } : result;
     });
   }
 

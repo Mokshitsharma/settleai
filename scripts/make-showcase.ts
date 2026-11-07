@@ -119,7 +119,13 @@ async function main() {
     return b && !JSON.stringify(b).includes('"payoutStatus":"PENDING"') ? b : null;
   });
   const result = await verifyReceipt(bundle, { trustedPlatformKeyIds: published.keyIds });
-  if (!result.ok) throw new Error(`Refusing to freeze a receipt that does not verify: ${JSON.stringify(result).slice(0, 400)}`);
+  if (!result.ok) {
+    mkdirSync(".data", { recursive: true });
+    writeFileSync(".data/showcase-failed.json", `${JSON.stringify(bundle, null, 2)}
+`);
+    const failed = result.checks.filter((x) => !x.ok).map((x) => `${x.id}: ${x.detail}${x.pointer ? ` (at ${x.pointer})` : ""}`);
+    throw new Error(`Refusing to freeze a receipt that does not verify. Failed checks: ${failed.join(" | ")}. Saved to .data/showcase-failed.json`);
+  }
 
   const pay = await db.select().from(payouts);
   const ref = await db.select().from(refunds).where(eq(refunds.jobId, job.id));

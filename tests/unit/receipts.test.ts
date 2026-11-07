@@ -166,3 +166,39 @@ describe("S25 tamper detection", () => {
     expect((await verifyReceipt({ hello: "world" })).checks[0]).toMatchObject({ id: "format", ok: false });
   });
 });
+
+describe("receipts with real PayPal timing", () => {
+  it("a dispute paid out after it settled (as on live PayPal) still verifies, and is not counted twice", async () => {
+    const dbHandle = await openTestDb();
+    await seed(dbHandle.db);
+    const clock = new FixedClock(T0);
+    const pp = new MockPayPalAdapter({ asyncPayouts: true });
+    const c = await createContainer(loadConfig({}), { dbHandle, clock, payments: pp });
+    const job = await c.jobs.createFromSpec({ payerId: "usr_ravi", spec: sampleJobSpec, createdBy: "user:usr_ravi" });
+    const order = await c.funding.start({ jobId: job.id, payerId: "usr_ravi" });
+    pp.approveOrder(order.orderId);
+    await c.funding.capture({ jobId: job.id, payerId: "usr_ravi", orderId: order.orderId });
+    await c.deliverMockWebhooks();
+    await c.jobs.accept({ jobId: job.id, workerId: "usr_asha" });
+    clock.advance(10 * 60_000);
+    const m = (await c.jobs.detail(job.id))!.milestones[0];
+    const location = (m.criteriaJson as { evidenceType: string; params?: { location?: { lat: number; lng: number } } }[]).find((x) => x.evidenceType === "geo")?.params?.location ?? sampleJobSpec.location!;
+    await c.proofs.addPhoto({ milestoneId: m.id, workerId: "usr_asha", bytes: await makeSamplePhoto({ seed: "async-payout", caption: "x", takenAt: new Date(clock.now().getTime() - 60_000), location }), declaredMime: "image/jpeg" });
+    await c.proofs.submit({ milestoneId: m.id, workerId: "usr_asha" });
+    await c.verification.run(m.id);
+    const dispute = await c.disputes.open({ milestoneId: m.id, userId: "usr_ravi", reason: "Not happy" });
+    await c.disputes.proposeNow({ disputeId: dispute.id, userId: "usr_ravi" });
+    await c.disputes.respond({ disputeId: dispute.id, userId: "usr_ravi", accept: false });
+    await c.disputes.adminResolve({ disputeId: dispute.id, adminId: "usr_meera", releaseToWorkerMinor: m.amountMinor, faultClass: "PAYER_UNSUPPORTED_CLAIM", note: "Delivered" });
+    await c.deliverMockWebhooks(); // PayPal confirms the payout only now, after the dispute settled
+
+    const chain = await c.attestations.chain(job.id);
+    const settledAt = chain.findIndex((a) => a.payload.event === "dispute_settled");
+    const paidAt = chain.findIndex((a) => a.type === "settlement" && a.payload.decisionSource === "dispute");
+    expect(settledAt).toBeGreaterThanOrEqual(0);
+    expect(paidAt).toBeGreaterThan(settledAt);
+    const result = await verifyReceipt(await c.receipts.build(job.id));
+    expect(result.checks.filter((x) => !x.ok)).toEqual([]);
+    await dbHandle.close();
+  });
+});

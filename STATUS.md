@@ -303,6 +303,13 @@ Per-transaction figures match exactly: the ledger's PayPal balance equals PayPal
 - **Fixes (owner-approved):** scoping rule B (a photo criterion may not go to a person where the template uses AI vision); the Verification agent now sees the job title and summary, as delimited untrusted data; demo requests say "2 cartons", matching the images; real 2-minute waits before proofs, no backdated timestamps; drop-off proof text "Received by Ravi at the front door".
 - **Real-AI happy path passed:** milestone 1 AUTO_RELEASE 0.95; milestone 2 AUTO_RELEASE 0.95 with no risk signals; both released. Damage dispute: Arbiter (Qwen, with the damage image) WORKER_PARTIAL 50/50 at 0.85, citing the Payment Mandate clause, criteria and evidence.
 
+## 7 Nov 2026: verifier bug found by the live showcase run
+
+- **Bug:** on live PayPal a dispute's payout is confirmed about 20 s after the dispute settles. The offline verifier's de-duplication assumed the opposite order, so it counted the payout twice ("milestone 1 paid more than its signed amount"). Every live receipt with a dispute payout failed verification, though the money was correct. Mock mode never showed it, because mock payouts were instant.
+- **Fix:** de-duplicate by milestone in any order. Regression test with mock payouts confirmed later, like PayPal's; it fails on the old rule and passes on the new. `showcase:make` now saves a failing receipt and names the failed check.
+- **Showcase (same URL):** job `job_01M6V6JSCA171SRCTFNHF0FEX8`, COMPLETED, sandbox. Order `5WE91820H9178463U`, capture `6YK7334496346772H`, payout items `6MEPSHGS7T6RN` (milestone 1, after dispute) and `2EMWCEMKK9EFQ` (milestone 2), both SUCCEEDED. Both milestones auto-released on the real model (0.95). The dispute, with a damage image, was settled by the real Arbiter: PAYER_UNSUPPORTED_CLAIM, full release, citing the Payment Mandate clause, criteria and evidence. The receipt is the unmodified one the earlier check refused; it verifies against the published key after the fix.
+- **Arbiter verdicts vary:** across three runs with similar evidence it returned WORKER_PARTIAL 50/50 twice and PAYER_UNSUPPORTED_CLAIM once.
+
 # After submission
 
 Requirement: the demo stays live and free through 15 Dec 2026.

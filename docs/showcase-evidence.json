@@ -1,29 +1,54 @@
 {
-  "madeAt": "2026-11-07T06:33:05.405Z",
-  "jobId": "job_01M6TB47DAMERFAP7RWPSSAMD6",
+  "madeAt": "2026-11-07T14:36:01.319Z",
+  "jobId": "job_01M6V6JSCA171SRCTFNHF0FEX8",
   "jobStatus": "COMPLETED",
   "env": "sandbox",
-  "models": [
-    "openai/gpt-oss-120b",
-    "qwen/qwen3.8-27b"
-  ],
-  "orderId": "0UK22737FP450481C",
-  "captureId": "4S025822MT775383E",
+  "orderId": "5WE91820H9178463U",
+  "captureId": "6YK7334496346772H",
   "payouts": [
     {
-      "batch": "GRANS43HHT8WQ",
-      "item": "ALDNRWPMPBMSW",
+      "milestoneSeq": 1,
+      "item": "6MEPSHGS7T6RN",
       "status": "SUCCEEDED",
-      "amountMinor": 4000
+      "amountMinor": 4000,
+      "decisionSource": "dispute"
     },
     {
-      "batch": "F7N48A3YCQL3U",
-      "item": "7LEYLGSFR75JQ",
+      "milestoneSeq": 2,
+      "item": "2EMWCEMKK9EFQ",
       "status": "SUCCEEDED",
-      "amountMinor": 6000
+      "amountMinor": 6000,
+      "decisionSource": "auto"
     }
   ],
-  "refunds": [],
+  "disputeSettled": [
+    {
+      "event": "dispute_settled",
+      "faultClass": "PAYER_UNSUPPORTED_CLAIM",
+      "resolvedBy": "both_parties",
+      "milestoneSeq": 1,
+      "feeRefundedMinor": 0,
+      "refundToPayerMinor": 0,
+      "releaseToWorkerMinor": 4000
+    }
+  ],
+  "arbiterProposal": {
+    "basis": [
+      "mandate:payment:pmd_01M6V6JSH5REAX38QQ7DVA19SZ#settlementConditions[milestoneSeq=1]",
+      "criterion:c1",
+      "criterion:c2",
+      "evidence:dev_01M6V6QAQH7WX2600XXT486NH4",
+      "evidence:dev_01M6V6QAQH1AWH2K5Q6Q70SAFB"
+    ],
+    "event": "proposal",
+    "model": "qwen/qwen3.8-27b",
+    "bearer": "payer",
+    "faultClass": "PAYER_UNSUPPORTED_CLAIM",
+    "requiresHuman": false,
+    "complianceReportId": "cr_01M6V6SAE6284A6WHG0EB5EVNE",
+    "refundToPayerMinor": 0,
+    "releaseToWorkerMinor": 4000
+  },
   "fees": {
     "serviceFeeMinor": 672,
     "processingFeeMinor": 472,
@@ -35,6 +60,7 @@
     "releasedMinor": 10000,
     "refundedMinor": 0
   },
-  "disputeWithArbiter": false,
-  "realPhotos": false
+  "disputeWithArbiter": true,
+  "images": "illustrative demo images, AI-generated",
+  "note": "Frozen from the run where the verifier double-counted an asynchronously confirmed dispute payout; the receipt is unmodified and verifies after the verifier fix."
 }

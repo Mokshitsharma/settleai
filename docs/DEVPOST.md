@@ -84,7 +84,7 @@ PayPal Orders v2, Payouts v1, Payments v2, Webhooks · Groq (Qwen, gpt-oss) · M
 
 **Live:** https://settleai-07ue.onrender.com. First load may take ~75s while the free server wakes up. The demo resets after idle time, so jobs you create don't stay online; a receipt you downloaded still verifies offline.
 
-**Permanent showcase:** https://settleai-07ue.onrender.com/receipt/showcase is the signed receipt of one real job on the PayPal sandbox. It never changes, and it verifies at /verify or offline against the public key in the README. The header badge shows `PayPal sandbox` and the AI model in use.
+**Permanent showcase:** https://settleai-07ue.onrender.com/receipt/showcase is the signed receipt of one real job on the PayPal sandbox: two milestones verified by the vision model, and a dispute settled by the Arbiter with a liability finding that cites the mandate. It never changes, and it verifies at /verify or offline against the public key in the README. The header badge shows `PayPal sandbox` and the AI model in use.
 
 No sign-up: click **Payer**, **Worker** or **Admin** on the landing page. To pay in the sandbox checkout, use the sandbox buyer login given in Devpost's private testing field.
 

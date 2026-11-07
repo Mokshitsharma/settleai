@@ -173,7 +173,9 @@ export async function verifyReceipt(input: unknown, opts: VerifyOptions = {}): P
       const p = a.payload as Record<string, number | string>;
       const seq = Number(p.milestoneSeq);
       const released = Number(p.event === "dispute_settled" ? p.releaseToWorkerMinor : p.amountMinor);
-      if (p.event !== "dispute_settled" || !b.attestations.some((x) => x.type === "settlement" && x.seq < a.seq && x.payload.decisionSource === "dispute" && Number(x.payload.milestoneSeq) === seq)) {
+      // A dispute's payout is recorded twice: in "dispute_settled", and in the payout's own settlement once PayPal confirms
+      // it, which on real PayPal comes later. Count the payout's record when there is one, whatever the order.
+      if (p.event !== "dispute_settled" || !b.attestations.some((x) => x.type === "settlement" && x.payload.decisionSource === "dispute" && Number(x.payload.milestoneSeq) === seq)) {
         paidOut += released;
         perMilestone.set(seq, (perMilestone.get(seq) ?? 0) + released);
       }
