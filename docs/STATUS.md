@@ -119,6 +119,14 @@ Phase plan: docs/SPEC.md §19. Feature freeze 8 Nov 2026; submit by 11 Nov 2026.
 - Wording: "Held by PayPal for this job" replaces "Held in escrow" in the UI; liability card shows a plain-English clause with raw IDs under Details; model IDs moved to a header tooltip.
 - Docs: Devpost image contradiction fixed, sourced impact figures, "Why the agent never holds the PayPal write tools", AG Grid feature list; README hero image and one evidence table. Screenshot 4 retake waits for the post-deploy recorder run.
 
+## Final judge pass (9 Nov 2026)
+- Phase 0: JUDGE_REVIEW items 1, 2, 7, 9, 10 were done in d830f62 but **not deployed** (Render deploys `main`; the live site still served the old grid, "held in escrow" and raw model ids). Items 3 (warm), 4 (dispute reach), 5, 6 (video, voice) and 8 (residual wording) remained.
+- Decision (item 7): keep the 10-minute live challenge window, not a seeded dispute-ready job. Seeded history is funded with mock PayPal ids, so a dispute's refund on the live sandbox would fail; a reachable real path beats a fake one. Instructions now say: fund in the sandbox, accept, wait one minute (proof under a minute is flagged TOO_FAST, threshold unchanged), dispute within 10 minutes. The proof form says so too.
+- Decision (Guard): `guard.ts` denial messages still say "Funds stay in escrow" because the Guard is out of scope for this pass; every other UI string says the money is held by PayPal for the job. The admin KPI is "Funded through PayPal, all time" (e2e locator text updated to match, same assertion).
+- Impact pack: interview section and guide removed (no interviews were run); NYC figure stated as "nearly three in four" because the source gives both 73% and 74%.
+- Video: new 11-beat script (cold open on the denial, four moments with zoom holds, sandbox evidence beat, end on product); Kokoro-82M (Apache-2.0) voice replaces Piper LJ Speech; `voiceover.txt` exported.
+- Keep-warm: needs an external ping every 10 minutes (cron-job.org) through 15 Dec; the owner sets it up (no browser access from this session).
+
 ## Track sections
 - A. Payments and ledger: done in MOCK; next a LIVE sandbox run of the PayPal adapter and JS SDK v6 buttons (needs credentials).
 - B. Agents and verification: done on the stub; next live-model runs and `EVAL_LIVE=1 pnpm eval`.

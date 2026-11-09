@@ -1,6 +1,6 @@
-// Real photographs for the judge demo. Originals go in demo-photos/ (git-ignored); `pnpm photos:prepare` strips all
+// Illustrative demo images (AI-generated, disclosed) for the judge demo. Originals go in demo-photos/ (git-ignored); `pnpm photos:prepare` strips all
 // their metadata into assets/demo-photos/, which is what ships. Name files pickup-*, dropoff-* or damage-*.
-// Each demo proof is a different crop and flip of a real photo, stamped by the caller with demo EXIF and labelled
+// Each demo proof is a different crop and flip of one of these images, stamped by the caller with demo EXIF and labelled
 // a demo sample on the proof, because judges cannot stand at the job site with a phone.
 import { existsSync, readdirSync } from "node:fs";
 import path from "node:path";
@@ -36,7 +36,7 @@ function hashSeed(seed: string): () => number {
   };
 }
 
-/** A seeded crop and flip of a real photo of this kind, or null when none is installed. No metadata. */
+/** A seeded crop and flip of a demo image of this kind, or null when none is installed. No metadata. */
 export async function renderDemoPhoto(kind: DemoPhotoKind, seed: string): Promise<Buffer | null> {
   const files = listDemoPhotos(kind);
   if (!files.length) return null;

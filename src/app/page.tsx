@@ -18,7 +18,7 @@ const STEPS = [
 const MOMENTS = [
   { title: "An agent is stopped before money moves", how: "Payer, Agent mandates, Out of scope, Send as agent: denied with reason codes, nothing created." },
   { title: "A reused photo is caught", how: "Worker, on a funded job, Submit proof, Photo reused from another job: held for a person." },
-  { title: "A dispute names who is liable", how: "Worker, on a funded job, Submit proof, Photo at the right place. Then Payer, open that job, Dispute this milestone within 10 minutes: a split and a finding that cites the mandate." },
+  { title: "A dispute names who is liable", how: "Payer funds a job with PayPal (sandbox login in the testing notes). Worker accepts, waits a minute, Submit proof, Photo at the right place. Payer opens the job, Dispute this milestone (10-minute window): a split and a finding that cites the mandate." },
   { title: "A receipt anyone can check", how: "Open the showcase receipt or any job's receipt, Verify; change one byte and it fails." },
 ];
 
@@ -44,7 +44,7 @@ export default async function Home() {
                 See a settled job&apos;s signed receipt
               </Link>
             </p>
-            <p className="mt-3 text-sm text-ink-soft">First load may take ~75s while the free server wakes up.</p>
+            <p className="mt-3 text-sm text-ink-soft">Free hosting: if this page was slow to open, the server was waking up. It stays fast after that.</p>
           </div>
         </div>
 

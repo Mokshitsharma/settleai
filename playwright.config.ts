@@ -25,7 +25,7 @@ export default defineConfig({
     // Production build: dev-server compiles on first hit made time-sensitive journeys flaky (challenge window).
     command: `pnpm build && pnpm db:template && pnpm build:standalone && cd .next/standalone && node --max-old-space-size=320 --liftoff-only db-boot.cjs boot && node --max-old-space-size=320 --liftoff-only server.js`,
     url: `http://localhost:${PORT}/api/health`,
-    timeout: 300_000,
+    timeout: 600_000, // build + template + standalone can exceed 5 minutes on a slow machine
     reuseExistingServer: false,
     env: {
       APP_MODE: "MOCK",

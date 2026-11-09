@@ -155,7 +155,7 @@ export class ReleaseService {
           tx,
         );
       });
-      this.events.publish(`job:${ms.jobId}`, "release.paused", `Mandate revoked: payout for milestone ${ms.seq} is paused. ${formatMinor(ms.amountMinor)} stays in escrow until the payer decides.`);
+      this.events.publish(`job:${ms.jobId}`, "release.paused", `Mandate revoked: payout for milestone ${ms.seq} is paused. ${formatMinor(ms.amountMinor)} stays held for this job until the payer decides.`);
     }
     return affected.length;
   }

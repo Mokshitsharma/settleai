@@ -7,7 +7,7 @@ test("admin console: overview with history, AG Grid tables, evaluation and a new
   await as(page, "Admin");
   await page.goto("/admin");
   await expect(page.getByRole("heading", { name: "Overview" })).toBeVisible();
-  await expect(page.getByText("Held in PayPal escrow, all time")).toBeVisible();
+  await expect(page.getByText("Funded through PayPal, all time")).toBeVisible();
   await expect(page.getByRole("img", { name: /Daily funding/ })).toBeVisible();
   await expect(page.locator(".ag-row").first()).toBeVisible(); // seeded history fills the grid
   await shot(page, "30-admin-overview");

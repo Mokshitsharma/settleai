@@ -46,7 +46,7 @@ export default async function AdminOverview() {
       </p>
 
       <section aria-label="Key numbers" className="mt-6 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-6">
-        <Tile label="Held in PayPal escrow, all time" value={formatMinor(k.fundedMinor)} note={`${k.jobs} jobs, ${k.agentJobs} hired by AI agents`} />
+        <Tile label="Funded through PayPal, all time" value={formatMinor(k.fundedMinor)} note={`${k.jobs} jobs, ${k.agentJobs} hired by AI agents`} />
         <Tile label="Paid to workers" value={formatMinor(k.paidOutMinor)} />
         <Tile label="Paid without a person" value={pct(k.autoReleaseRate)} note="Automatic releases among normal payouts" />
         <Tile label="Median time to payout" value={k.medianMinutesToPayout === null ? "No data" : `${Math.round(k.medianMinutesToPayout)} min`} note="Decision to PayPal payout, incl. challenge window" />

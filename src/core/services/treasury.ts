@@ -263,7 +263,7 @@ export class TreasuryService {
           { actor, action: "release.payout_failed", entityType: "release", entityId: rel.id, payload: { status: args.status, reason: args.failureReason ?? null } },
           tx,
         );
-        return { applied: true as const, jobId: ms.jobId, message: `PayPal payout ${args.status}; funds stay in escrow`, type: "payout.failed" };
+        return { applied: true as const, jobId: ms.jobId, message: `PayPal payout ${args.status}; funds stay held for this job`, type: "payout.failed" };
       }
       return { applied: true as const, jobId: ms.jobId, message: `Payout status ${args.status}`, type: "payout.status" };
     });

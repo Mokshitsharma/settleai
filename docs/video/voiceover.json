@@ -1,13 +1,13 @@
 [
-  { "id": "problem", "text": "AI agents are starting to spend money and hire people. When an agent overspends, or the work never happens, who is accountable?" },
-  { "id": "what", "text": "SettleAI is the accountability layer. A person signs what an agent may do. The money waits, proof is checked, and every decision leaves a receipt anyone can verify." },
-  { "id": "mandate", "text": "Ravi has signed a mandate for his agent: delivery jobs only, up to one hundred fifty dollars each, four hundred in total." },
-  { "id": "denied", "text": "The agent tries a five hundred dollar job outside that mandate. Mandate Guard is deterministic code. It denies the request before any money moves, and says why." },
-  { "id": "fund", "text": "Inside the mandate, the agent hires a courier. Ravi funds the job on the PayPal sandbox, with Orders version two. The money is held on the platform account until the work is proven." },
-  { "id": "proof", "text": "The worker submits a photo. Rules check location, time and duplicates first. Then a vision model judges each criterion, and policy approves the release." },
-  { "id": "dispute", "text": "Ravi disputes the delivery and adds a photo of the damage. The arbiter returns a liability finding that cites the mandate clause, the criteria and the evidence. Both sides accept, and PayPal settles it." },
-  { "id": "fraud", "text": "Someone reuses that photo on another job. The perceptual hash catches it, the payout is held, and it waits in the risk queue for a person." },
-  { "id": "receipt", "text": "Every step is signed into a receipt. Anyone can verify it, without trusting us. Change one byte, and verification fails, pointing to the broken link." },
-  { "id": "results", "text": "In our repeatable test scenarios, no bad proof was auto-paid, and every tampered receipt was caught. Next: production key custody, a regulated partner, and PayPal Invoicing." },
-  { "id": "honest", "text": "This runs on the PayPal sandbox with test money. The mandates are inspired by AP2. They are not official, and not endorsed by PayPal." }
+  {"id": "cold", "text": "When an AI agent spends money, who is accountable?"},
+  {"id": "title", "text": "This is SettleAI. It makes sure the work was done before PayPal pays, and it says who is liable when it wasn't."},
+  {"id": "mandate", "text": "Ravi runs a small shop. His AI agent can hire couriers for him, but only within limits he signs: delivery jobs, up to a hundred and fifty dollars each."},
+  {"id": "denied", "text": "Now the agent tries to book a five hundred dollar repair job. That's outside the limits. The check is plain code, not a prompt. It says no, and why, before any money moves."},
+  {"id": "fund", "text": "Inside the limits, the agent books a delivery. Ravi pays through PayPal checkout, in the sandbox. PayPal holds the money for this job until the work is proven."},
+  {"id": "proof", "text": "The courier sends a photo. Simple rules check the place, the time, and whether the photo was used before. Then an AI model checks each requirement, and the payment is approved."},
+  {"id": "fraud", "text": "On a second job, someone sends the same photo again. It's caught. Nothing is paid, and the job waits for a person in the review queue."},
+  {"id": "dispute", "text": "Back on the first job, Ravi says one carton arrived damaged. An AI arbiter weighs both sides and writes a liability finding. It cites the exact clause Ravi signed. Both sides accept, and PayPal pays out and refunds."},
+  {"id": "evidence", "text": "These are real PayPal sandbox transactions. The capture, the payout, and the refund, each with its own PayPal ID."},
+  {"id": "receipt", "text": "Every step is signed into a receipt. Anyone can check it in the browser, without trusting us. Change a single character, and the check fails, and shows what was changed."},
+  {"id": "close", "text": "AI agents are about to spend real money. SettleAI makes them accountable. Try it yourself at the link on screen."}
 ]

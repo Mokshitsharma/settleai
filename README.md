@@ -4,15 +4,26 @@
 
 ![An AI agent asks to hire outside its signed mandate; SettleAI denies it with reason codes before any money moves](docs/devpost/2-denied-before-money-moves.png)
 
+## Try it in 60 seconds
+
+Open **https://settleai-07ue.onrender.com** (no sign-up; if the first load is slow, the free server is waking up), then:
+
+1. **Agent denied:** Payer, **Agent mandates**, **Out of scope**, **Send as agent**. Reason codes, nothing created, no money moved.
+2. **Fraud caught:** Worker, open a job, **Submit proof**, **Photo reused from another job**. Held for a person.
+3. **Liability finding:** fund a job with PayPal (sandbox buyer login in the Devpost testing notes); as Worker, **Accept**, wait one minute, **Submit proof**, **Photo at the right place**; as Payer, **Dispute this milestone** within 10 minutes. A split and a finding that cites the signed mandate clause.
+4. **Verify a receipt:** open the [showcase receipt](https://settleai-07ue.onrender.com/receipt/showcase), then **/verify**. All green; change one byte and it fails.
+
+## Why it matters
+
 **Who it's for first:** small businesses that outsource deliveries and repairs, and the workers they pay.
-Payment for that kind of work is already broken: nearly three in four New York freelancers (73%) have faced nonpayment or late
+Payment for that kind of work is already broken: nearly three in four New York freelancers have faced nonpayment or late
 payment ([NYC, *Freelancing in New York 2019*](https://www.nyc.gov/assets/mome/pdf/freelancing-ny-report-09062019.pdf)), and
 62.6% of UK small-business invoices were paid late last year ([FreeAgent, via Financial IT](https://financialit.net/news/cash-management/sme-cash-flow-crisis-nearly-two-thirds-invoices-paid-late-across-uk)).
 Agents will scale it: McKinsey estimates AI agents could orchestrate up to $1 trillion of US retail revenue by 2030
 ([*The agentic commerce opportunity*](https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-agentic-commerce-opportunity-how-ai-agents-are-ushering-in-a-new-era-for-consumers-and-merchants), Oct 2025).
 
 > AP2-style mandates prove a human authorized an agent to pay. SettleAI adds what happens next for real-world
-> services: the money waits in PayPal, proof is checked by rules and AI, a deterministic Mandate Guard decides every
+> services: the money is held by PayPal for the job, proof is checked by rules and AI, a deterministic Mandate Guard decides every
 > payout, disputes get a liability finding, and every step is a signed receipt anyone can verify offline.
 
 Built for the **PayPal AI Hackathon 2026**. MIT licensed.
@@ -21,7 +32,7 @@ Built for the **PayPal AI Hackathon 2026**. MIT licensed.
 
 ## Live demo
 
-First load may take ~75s while the free server wakes up.
+The server is pinged every 10 minutes during judging; if the first load is still slow (up to ~75s), the free server is waking up.
 
 **The demo resets after idle time**, so jobs you create don't stay online; a receipt you downloaded still verifies offline. For a link that never changes, see the [showcase receipt](https://settleai-07ue.onrender.com/receipt/showcase): the signed record of one real job on the PayPal sandbox, frozen and served from a file.
 
@@ -41,11 +52,11 @@ says which mode is live.
 
 | Journey | Where | What you will see |
 |---|---|---|
-| Hire and fund | Payer, **New job** | Describe a job in plain words; the scoping agent drafts paid milestones with proof requirements; fund through PayPal into escrow |
+| Hire and fund | Payer, **New job** | Describe a job in plain words; the scoping agent drafts paid milestones with proof requirements; fund through PayPal; the money is held by PayPal for this job |
 | Get paid | Worker, open the job, **Submit proof** | Use **Photo at the right place**; watch the live checks; after a challenge window (10 minutes on the live demo) PayPal pays out |
 | Fraud caught | Worker, **Photo reused from another job** | Held: "This photo was already submitted for another job". No money moves |
 | Agent denied | Payer, **Agent mandates**, **Out of scope**, **Send as agent** | `MANDATE_SCOPE_VIOLATION`, `MANDATE_CAP_EXCEEDED`; nothing created |
-| Dispute | After **Get paid**, Payer, open the same job, **Dispute this milestone** within the challenge window | The arbiter splits the amount and names the fault class; PayPal pays and refunds |
+| Dispute | After **Get paid**, Payer, open the same job, **Dispute this milestone** within the challenge window (10 minutes on the live demo) | The arbiter splits the amount and names the fault class; PayPal pays and refunds |
 | Revoke | Payer, **Revoke** a mandate during a challenge window | The payout pauses before any PayPal call; you choose to pay or refund |
 | Verify | Any job, **Open the public receipt**, or **/verify** | All checks green; change one byte and it fails, pointing at the broken link |
 | Operate | **Admin** | AG Grid console: KPIs, review queue, disputes, ledger, guard checks, AI runs, evaluation, risk policy |
@@ -84,7 +95,7 @@ flowchart LR
   A[AI agent via MCP] -- create_job --> MG{{Mandate Guard<br/>G1 hire, G2 fund,<br/>G3 payout, G4 dispute}}
   MG -- allowed --> S[Scoping agent<br/>milestones + criteria]
   S --> JM[Job Mandate<br/>signed, hash-bound]
-  JM --> PP1[PayPal Orders v2<br/>capture into escrow]
+  JM --> PP1[PayPal Orders v2<br/>capture, held for the job]
   PP1 -- webhook --> L[(Double-entry ledger)]
   W[Worker] -- photo, GPS, text --> D[Deterministic checks<br/>EXIF, GPS, duplicate photo,<br/>injection scan]
   D --> V[Verification agent]
@@ -106,7 +117,7 @@ the deterministic Treasury calls PayPal, and only after the Mandate Guard allows
 
 ### How PayPal is used
 
-- **Orders v2** (create, capture) funds escrow; the job is funded only when the `PAYMENT.CAPTURE.COMPLETED` webhook confirms it.
+- **Orders v2** (create, capture) funds the job is funded only when the `PAYMENT.CAPTURE.COMPLETED` webhook confirms it.
 - **Payouts v1** pays each milestone after verification and the challenge window.
 - **Payments v2 refunds** return the payer's share in disputes and cancellations, including the unearned platform fee.
 - **Webhooks** with signature verification, event-id dedupe and state-machine-safe handlers; a reconciliation job compares records with PayPal.

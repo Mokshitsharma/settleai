@@ -1,0 +1,34 @@
+SettleAI demo voiceover (read in this order; one paragraph per beat)
+
+[cold]
+When an AI agent spends money, who is accountable?
+
+[title]
+This is SettleAI. It makes sure the work was done before PayPal pays, and it says who is liable when it wasn't.
+
+[mandate]
+Ravi runs a small shop. His AI agent can hire couriers for him, but only within limits he signs: delivery jobs, up to a hundred and fifty dollars each.
+
+[denied]
+Now the agent tries to book a five hundred dollar repair job. That's outside the limits. The check is plain code, not a prompt. It says no, and why, before any money moves.
+
+[fund]
+Inside the limits, the agent books a delivery. Ravi pays through PayPal checkout, in the sandbox. PayPal holds the money for this job until the work is proven.
+
+[proof]
+The courier sends a photo. Simple rules check the place, the time, and whether the photo was used before. Then an AI model checks each requirement, and the payment is approved.
+
+[fraud]
+On a second job, someone sends the same photo again. It's caught. Nothing is paid, and the job waits for a person in the review queue.
+
+[dispute]
+Back on the first job, Ravi says one carton arrived damaged. An AI arbiter weighs both sides and writes a liability finding. It cites the exact clause Ravi signed. Both sides accept, and PayPal pays out and refunds.
+
+[evidence]
+These are real PayPal sandbox transactions. The capture, the payout, and the refund, each with its own PayPal ID.
+
+[receipt]
+Every step is signed into a receipt. Anyone can check it in the browser, without trusting us. Change a single character, and the check fails, and shows what was changed.
+
+[close]
+AI agents are about to spend real money. SettleAI makes them accountable. Try it yourself at the link on screen.

@@ -1,59 +1,38 @@
 # Impact evidence pack
 
-Purpose: show judges, briefly and honestly, that the problem is real for the people SettleAI is for: gig workers who are paid
-late or not at all, and small businesses that pay up front with no proof or recourse.
+Purpose: show judges, briefly and honestly, that the problem is real for the people SettleAI is for first: **small
+businesses that outsource deliveries and repairs**, and the workers they pay, who are often paid late or not at all.
 
 Rules for this pack:
 
-- **No invented numbers or quotes.** Every statistic below carries its source. Every quote comes from a real conversation
-  recorded in `interviews/`, with the person's consent, and is attributed by role and city only, never by name.
-- **Placeholders stay visible** (`{{...}}`) until real answers replace them. Nothing here is submitted while a placeholder
-  remains.
-- **Say what the evidence is:** 3 to 5 conversations are signals, not a survey. Present them that way.
+- **No invented numbers or quotes.** Every statistic below carries its source and the date it was checked.
+- **No user interviews are claimed.** We did not run a structured interview study before submission, so this pack quotes
+  no one.
 
 ## 1. The problem, in published numbers
 
-Re-check each source before quoting it; mark the date you checked.
-
 | Claim | Figure | Source | Checked |
 |---|---|---|---|
-| Size of India's gig workforce | 7.7 million in 2020-21, projected 23.5 million by 2029-30 | NITI Aayog, *India's Booming Gig and Platform Economy* (June 2022); [PIB release](https://pib.gov.in/PressReleasePage.aspx?PRID=1837277) | 7 Nov 2026, via search results; primary document not re-read |
-| Freelancers who struggle to get paid (US) | 1 in 2 had trouble getting paid in a year; nonpayment cost the average respondent 13% of income | Freelancers Union nonpayment survey of 5,358 freelancers ([report PDF](https://onlabor.org/wp-content/uploads/2017/05/FU_NonpaymentReport_r3.pdf)) | 7 Nov 2026, via search results; primary document not re-read |
-| Late or unpaid work (New York) | 74% had experienced nonpayment or late payment | NYC Mayor's Office, *Freelancing in New York* (2019, [PDF](https://www.nyc.gov/assets/mome/pdf/freelancing-ny-report-09062019.pdf)) | 7 Nov 2026, via search results; primary document not re-read |
+| Late or unpaid work (New York freelancers) | Nearly three in four had faced nonpayment or late payment (the release gives both 74% and 73%, so we say "nearly three in four") | NYC Mayor's Office of Media and Entertainment, Freelancers Union and Upwork, *Freelancing in New York 2019* ([PDF](https://www.nyc.gov/assets/mome/pdf/freelancing-ny-report-09062019.pdf), [release](https://www.nyc.gov/site/mome/news/09102019-freelancing-in-ny-report.page)) | 9 Nov 2026 |
+| Freelancers who struggle to get paid (US) | 1 in 2 had trouble getting paid in a year | Freelancers Union nonpayment survey ([report PDF](https://onlabor.org/wp-content/uploads/2017/05/FU_NonpaymentReport_r3.pdf)) | 7 Nov 2026 |
+| Small-business late payment (UK) | 62.6% of invoices sent in the past year were paid late | FreeAgent survey, reported by [Financial IT](https://financialit.net/news/cash-management/sme-cash-flow-crisis-nearly-two-thirds-invoices-paid-late-across-uk) | 7 Nov 2026 |
+| Agentic commerce outlook | Up to $1 trillion of US retail revenue orchestrated by AI agents by 2030; $3–5 trillion globally | McKinsey, [*The agentic commerce opportunity*](https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-agentic-commerce-opportunity-how-ai-agents-are-ushering-in-a-new-era-for-consumers-and-merchants) (Oct 2025) | 7 Nov 2026 |
+| Size of India's gig workforce | 7.7 million in 2020-21, projected 23.5 million by 2029-30 | NITI Aayog, *India's Booming Gig and Platform Economy* (June 2022); [PIB release](https://pib.gov.in/PressReleasePage.aspx?PRID=1837277) | 7 Nov 2026 |
 
-Use the US figures as context, not as India figures. No India-specific primary source on late payment was found, so none is
-quoted.
+The US and UK figures are context, not India figures. No India-specific primary source on late payment was found, so none
+is quoted.
 
-## 2. What we heard: conversations
+## 2. What SettleAI changes
 
-Target: 3 to 5 conversations, mixed between delivery drivers or couriers and small shopkeepers who pay for delivery or
-small jobs. Use [INTERVIEW-GUIDE.md](INTERVIEW-GUIDE.md). Store each as `interviews/NN-role-city.md` from
-[interviews/TEMPLATE.md](interviews/TEMPLATE.md).
-
-| # | Role | City | Date | Key finding (one line) | Quote approved for use |
-|---|---|---|---|---|---|
-| 1 | {{role}} | {{city}} | 7 Nov 2026, via search results; primary document not re-read | {{finding}} | {{yes / no}} |
-| 2 | {{role}} | {{city}} | 7 Nov 2026, via search results; primary document not re-read | {{finding}} | {{yes / no}} |
-| 3 | {{role}} | {{city}} | 7 Nov 2026, via search results; primary document not re-read | {{finding}} | {{yes / no}} |
-| 4 | {{optional}} | | | | |
-| 5 | {{optional}} | | | | |
-
-### Patterns (fill in only from the conversations above)
-
-- {{Pattern seen in at least 2 conversations, with the conversation numbers}}
-- {{Pattern}}
-- {{Anything that argued AGAINST SettleAI's approach; keep it, judges trust a pack that shows it}}
-
-## 3. What SettleAI changes, mapped to what we heard
-
-| What people said | What SettleAI does | Evidence it works (from this repo) |
+| Problem | What SettleAI does | Evidence it works (from this repo) |
 |---|---|---|
-| {{e.g. "I deliver, then wait days for payment"}} | Money is held before work starts and released by Payouts after verified proof | Live sandbox flow in `STATUS.md`: order, capture, payout, refund ids |
-| {{e.g. "I paid up front and the goods arrived damaged"}} | A dispute ends in a split and a liability finding that cites the mandate | Showcase receipt at `/receipt/showcase` |
-| {{e.g. "Someone sent me an old photo as proof"}} | Duplicate-photo detection holds the payout for a person | e2e journey J2; eval scenario S03 |
-| {{e.g. "I don't trust an app's word"}} | Every step is a signed receipt anyone can verify offline | `pnpm verify-receipt`, `/verify` |
+| Workers deliver, then wait for payment | Money is held by PayPal for the job before work starts and paid out by Payouts after verified proof | Live sandbox flow in `STATUS.md`: order, capture, payout and refund ids |
+| Payers pay up front and the work is bad or missing | A dispute ends in a split and a liability finding that cites the mandate | Showcase receipt at `/receipt/showcase` |
+| Old or reused photos sent as proof | Duplicate-photo detection holds the payout for a person | e2e journey J2; eval scenario S03 |
+| "Why should I trust the app's word?" | Every step is a signed receipt anyone can verify offline | `pnpm verify-receipt`, `/verify` |
+| An AI agent overspends or hires out of scope | The Mandate Guard denies it before any money moves | e2e journey J6; eval mandate scenarios |
 
-## 4. One line for Devpost and the video
+## 3. One line for Devpost and the video
 
-{{One sentence, built only from sections 1 and 2. Example shape: "In N conversations with delivery workers and shopkeepers
-in CITY, X described WHAT; SettleAI pays them after verified proof, not after weeks of follow-up."}}
+Nearly three in four New York freelancers have been paid late or not at all, and AI agents are about to start hiring;
+SettleAI pays workers after verified proof and says who is liable when the work was not done.

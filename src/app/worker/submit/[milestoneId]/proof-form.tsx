@@ -127,7 +127,7 @@ export function ProofForm({ milestoneId, jobId, criteria }: { milestoneId: strin
         ) : null}
         <details className="mt-3 rounded-md border border-vellum bg-surface px-3 py-2 text-sm">
           <summary className="cursor-pointer font-medium text-ink-soft">No phone at the job site? Use a demo photo</summary>
-          <p className="mt-2 text-xs text-ink-faint">Generated photos with real capture time and GPS, marked as demo samples. Each one exercises a different check.</p>
+          <p className="mt-2 text-xs text-ink-faint">Generated photos with real capture time and GPS, marked as demo samples. Each one exercises a different check. Wait at least a minute after the milestone starts: proof sent sooner is flagged as too fast and goes to a person.</p>
           <div className="mt-2 grid grid-cols-2 gap-2">
             {SAMPLES.map((s) => (
               <Button key={s.variant} variant="secondary" disabled={busy !== null} onClick={() => sample(s.variant)} className="text-xs">

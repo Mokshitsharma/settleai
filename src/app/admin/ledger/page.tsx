@@ -31,7 +31,7 @@ export default async function LedgerPage() {
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold tracking-tight">Ledger</h1>
-          <p className="mt-1 max-w-[70ch] text-ink-soft">Double-entry record of every cent: funding into escrow, payouts, fees and refunds. Every transaction balances.</p>
+          <p className="mt-1 max-w-[70ch] text-ink-soft">Double-entry record of every cent: funding held for each job, payouts, fees and refunds. Every transaction balances.</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <Pill tone={problems.length ? "bad" : "good"}>{problems.length ? `${problems.length} invariant problems` : "All ledger invariants hold"}</Pill>

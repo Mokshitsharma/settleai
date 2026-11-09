@@ -3,7 +3,7 @@ import { renderDemoPhoto } from "@/core/checks/demo-photos";
 import { getContainer } from "@/core/container";
 import { HttpError, handle, limit, readJson, requireUser } from "../../_lib";
 
-/** Demo: attach a real photo of damaged goods to a dispute, for judges who have no picture of their own. */
+/** Demo: attach an illustrative (AI-generated) image of damaged goods to a dispute, for judges who have no picture of their own. */
 export const POST = handle(async (req: Request) => {
   const user = await requireUser(["payer", "worker"]);
   limit(req, "write", user.id);

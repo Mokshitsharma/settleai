@@ -34,17 +34,14 @@ if r.returncode:
     sys.exit(f"caption burn failed: {r.stderr[-600:]}")
 length = dur(final)
 print(f"FINAL {final}: {length:.2f}s")
-if length >= 178:
-    sys.exit(f"FAIL: {length:.1f}s is not under 2:58")
+if length >= 175:
+    sys.exit(f"FAIL: {length:.1f}s is not under 2:55")
 import shutil; shutil.copyfile(f"{V}/captions.srt", f"{OUT}/captions.srt")
 
-# Thumbnail: a frame from the dispute beat, darkened, with the project name.
-starts, t = {}, 0.0
-for name in ["title", "problem", "what", "mandate", "denied", "fund", "proof", "dispute"]:
-    starts[name] = t
-    t += dur(f"{V}/beat-{name}.mp4")
-at = starts["dispute"] + dur(f"{V}/beat-dispute.mp4") * 0.6
-r = subprocess.run([FF, "-y", "-hide_banner", "-loglevel", "error", "-ss", f"{at:.2f}", "-i", f"{V}/assembled.mp4", "-frames:v", "1", "-vf", f"scale=1280:720,eq=brightness=-0.2,drawbox=x=0:y=400:w=iw:h=250:color=0x14213D@0.92:t=fill,drawtext=fontfile='{FONTB}':text='SettleAI':fontcolor=white:fontsize=110:x=60:y=430,drawtext=fontfile='{FONT}':text='Agents hire people. Who is liable?':fontcolor=white:fontsize=50:x=64:y=575", f"{OUT}/thumbnail.png"], capture_output=True, text=True)
+# Thumbnail: the liability finding from the dispute beat's zoom hold, darkened, with the project name.
+starts = json.load(open(f"{V}/beat-starts.json"))
+at = starts["dispute"] + 13
+r = subprocess.run([FF, "-y", "-hide_banner", "-loglevel", "error", "-ss", f"{at:.2f}", "-i", f"{V}/assembled.mp4", "-frames:v", "1", "-vf", f"scale=1280:720,eq=brightness=-0.2,drawbox=x=0:y=400:w=iw:h=250:color=0x14213D@0.92:t=fill,drawtext=fontfile='{FONTB}':text='SettleAI':fontcolor=white:fontsize=110:x=60:y=430,drawtext=fontfile='{FONT}':text='When an AI agent spends, who is liable?':fontcolor=white:fontsize=48:x=64:y=575", f"{OUT}/thumbnail.png"], capture_output=True, text=True)
 if r.returncode:
     sys.exit(f"thumbnail failed: {r.stderr[-400:]}")
-print("thumbnail written; dispute beat starts at", round(starts["dispute"], 1))
+print("thumbnail written from", round(at, 1), "s")

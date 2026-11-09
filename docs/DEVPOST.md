@@ -13,7 +13,7 @@ AI agents are starting to buy things for people. Signed mandates can prove a per
 
 The numbers say this is already a problem before agents arrive, and agents will scale it:
 
-- **Nearly three in four freelancers** (73%) in New York had faced nonpayment or late payment ([*Freelancing in New York 2019*](https://www.nyc.gov/assets/mome/pdf/freelancing-ny-report-09062019.pdf), NYC Mayor's Office of Media and Entertainment, Freelancers Union and Upwork).
+- **Nearly three in four freelancers** in New York had faced nonpayment or late payment ([*Freelancing in New York 2019*](https://www.nyc.gov/assets/mome/pdf/freelancing-ny-report-09062019.pdf), NYC Mayor's Office of Media and Entertainment, Freelancers Union and Upwork).
 - **62.6% of invoices** sent by UK small businesses in the past year were paid late (FreeAgent survey, reported by [Financial IT](https://financialit.net/news/cash-management/sme-cash-flow-crisis-nearly-two-thirds-invoices-paid-late-across-uk)).
 - **Up to $1 trillion** of US retail revenue could be orchestrated by AI agents by 2030, and $3–5 trillion globally (McKinsey, [*The agentic commerce opportunity*](https://www.mckinsey.com/capabilities/quantumblack/our-insights/the-agentic-commerce-opportunity-how-ai-agents-are-ushering-in-a-new-era-for-consumers-and-merchants), October 2025). That forecast covers goods; services, where proof of work matters most, come next.
 
@@ -106,7 +106,7 @@ PayPal Orders v2, Payouts v1, Payments v2, Webhooks · Groq (Qwen, gpt-oss) · M
 
 ## Testing instructions for judges
 
-**Live:** https://settleai-07ue.onrender.com. First load may take ~75s while the free server wakes up. The demo resets after idle time, so jobs you create don't stay online; a receipt you downloaded still verifies offline.
+**Live:** https://settleai-07ue.onrender.com. The server is pinged every 10 minutes during judging so it stays awake; if the first load is still slow (up to ~75s), the free server was waking up. The demo resets after idle time, so jobs you create don't stay online; a receipt you downloaded still verifies offline.
 
 **Permanent showcase:** https://settleai-07ue.onrender.com/receipt/showcase is the signed receipt of one real job on the PayPal sandbox: two milestones verified by the vision model, and a dispute settled by the Arbiter with a liability finding that cites the mandate. It never changes, and it verifies at /verify or offline against the public key in the README. The header badge shows `PayPal sandbox`; hover "Real AI models" to see which models are in use.
 
@@ -114,8 +114,8 @@ No sign-up: click **Payer**, **Worker** or **Admin** on the landing page. To pay
 
 | Try | Click | You should see |
 |---|---|---|
-| Hire and fund | Payer, **New job**, describe a delivery, **Create job**, **Fund with PayPal** | Milestones with criteria, PayPal sandbox checkout, then Held in escrow |
-| Get paid | Worker, open the job, **Accept**, **Submit proof**, **Photo at the right place** | Live checks and a Decision Card with the model's name, then a 10-minute challenge window and payout |
+| Hire and fund | Payer, **New job**, describe a delivery, **Create job**, **Fund with PayPal** | Milestones with criteria, PayPal sandbox checkout, then "Held by PayPal for this job" |
+| Get paid | Worker, open the job, **Accept**, wait one minute, **Submit proof**, **Photo at the right place** | Live checks and a Decision Card with the model's name, then a 10-minute challenge window and payout |
 | Fraud caught | Worker, on another job, **Photo reused from another job** | Held, with no money moved |
 | Agent denied | Payer, **Agent mandates**, **Out of scope**, **Send as agent** | Reason codes, and nothing created |
 | Dispute | After **Get paid**, switch to Payer, open the same job, **Dispute this milestone** within 10 minutes | A split and a liability finding citing the mandate clause |
