@@ -90,11 +90,11 @@ PayPal Invoicing through the Agent Toolkit, a Concierge agent, document delivera
 
 ## Gallery (docs/devpost/, 1920x1080, from the live site)
 
-1. `1-landing.png`: landing page with the PayPal sandbox badge and the four things to try
-2. `2-denied-before-money-moves.png`: an out-of-mandate agent request denied with reason codes
+1. `1-landing.png`: landing page with the PayPal sandbox badge, the signed mandate and the four things to try
+2. `2-denied-before-money-moves.png`: an AI agent asks for a $500 gift-card and repair job; the Mandate Guard denies it with reason codes before any money moves
 3. `3-decision-card-real-model.png`: Decision Card with the real vision model's verdict and a webhook-confirmed capture
-4. `4-liability-finding-cites-mandate.png`: Arbiter proposal and the liability finding citing the Payment Mandate, settled through PayPal
-5. `5-ag-grid-risk-queue.png`: AG Grid review queue with the reused photo held
+4. `4-liability-finding-cites-mandate.png`: the Arbiter's proposal and a liability finding whose plain-English clause cites the signed Payment Mandate
+5. `5-ag-grid-risk-queue.png`: AG Grid review queue: the reused photo held and waiting for a person, with filters, quick search and CSV export
 
 Video: under 3 minutes on YouTube (link added at upload). Thumbnail and captions in `docs/video/`.
 

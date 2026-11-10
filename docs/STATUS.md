@@ -125,7 +125,8 @@ Phase plan: docs/SPEC.md §19. Feature freeze 8 Nov 2026; submit by 11 Nov 2026.
 - Decision (Guard): `guard.ts` denial messages still say "Funds stay in escrow" because the Guard is out of scope for this pass; every other UI string says the money is held by PayPal for the job. The admin KPI is "Funded through PayPal, all time" (e2e locator text updated to match, same assertion).
 - Impact pack: interview section and guide removed (no interviews were run); NYC figure stated as "nearly three in four" because the source gives both 73% and 74%.
 - Video: new 11-beat script (cold open on the denial, four moments with zoom holds, sandbox evidence beat, end on product); Kokoro-82M (Apache-2.0) voice replaces Piper LJ Speech; `voiceover.txt` exported.
-- Keep-warm: needs an external ping every 10 minutes (cron-job.org) through 15 Dec; the owner sets it up (no browser access from this session).
+- Keep-warm: cron-job.org pings /api/health every 10 minutes until 16 Dec (set up by the owner, confirmed 10 Nov).
+- Phases 3-5 (10 Nov): live recording (real sandbox and models), five screenshots retaken (2 and 4 centred on 1920x1080), video rebuilt at 2:42 with Kokoro voice, contact sheets reviewed; evidence beat uses the showcase receipt because a fresh job's payout was not yet confirmed when filmed. Re-judged in docs/JUDGE_REVIEW_2.md: 8.1/10 (was 7.6).
 
 ## Track sections
 - A. Payments and ledger: done in MOCK; next a LIVE sandbox run of the PayPal adapter and JS SDK v6 buttons (needs credentials).

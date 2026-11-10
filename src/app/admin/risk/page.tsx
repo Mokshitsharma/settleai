@@ -15,7 +15,7 @@ const COLUMNS: ColumnSpec[] = [
   { field: "amountMinor", header: "Amount", kind: "money", width: 88 },
   { field: "worker", header: "Worker", width: 84 },
   { field: "status", header: "Status", kind: "status", width: 120, tones: { RELEASED: "good", RESOLVED: "good", NEEDS_REVIEW: "warn", HELD: "bad", REJECTED: "bad" } },
-  { field: "at", header: "Decided", kind: "datetime", width: 120 },
+  { field: "at", header: "Decided", kind: "datetime", width: 136 },
   { field: "policyVersion", header: "Policy", kind: "number", width: 85, hide: true },
 ];
 

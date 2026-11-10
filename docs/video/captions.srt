@@ -1,168 +1,148 @@
 1
-00:00:04,200 --> 00:00:07,076
-AI agents are starting to spend money and hire
+00:00:08,300 --> 00:00:11,074
+This is SettleAI. It makes sure the work was
 
 2
-00:00:07,076 --> 00:00:09,632
-people. When an agent overspends, or the work
+00:00:11,074 --> 00:00:13,847
+done before PayPal pays, and it says who is
 
 3
-00:00:09,632 --> 00:00:11,230
-never happens, who is accountable?
+00:00:13,847 --> 00:00:15,080
+liable when it wasn't.
 
 4
-00:00:12,530 --> 00:00:15,127
-SettleAI is the accountability layer. A person
+00:00:17,300 --> 00:00:20,917
+Ravi runs a small shop. His AI agent can hire
 
 5
-00:00:15,127 --> 00:00:18,467
-signs what an agent may do. The money waits,
+00:00:20,917 --> 00:00:23,811
+couriers for him, but only within limits he
 
 6
-00:00:18,467 --> 00:00:21,436
-proof is checked, and every decision leaves a
+00:00:23,811 --> 00:00:26,705
+signs: delivery jobs, up to a hundred and
 
 7
-00:00:21,436 --> 00:00:22,920
-receipt anyone can verify.
+00:00:26,705 --> 00:00:27,790
+fifty dollars each.
 
 8
-00:00:24,220 --> 00:00:26,624
-Ravi has signed a mandate for his agent:
+00:00:30,300 --> 00:00:33,295
+Now the agent tries to book a five hundred
 
 9
-00:00:26,624 --> 00:00:29,027
-delivery jobs only, up to one hundred fifty
+00:00:33,295 --> 00:00:35,624
+dollar repair job. That's outside the limits.
 
 10
-00:00:29,027 --> 00:00:30,830
-dollars each, four hundred in total.
+00:00:35,624 --> 00:00:38,951
+The check is plain code, not a prompt. It says
 
 11
-00:00:32,130 --> 00:00:35,176
-The agent tries a five hundred dollar job
+00:00:38,951 --> 00:00:41,280
+no, and why, before any money moves.
 
 12
-00:00:35,176 --> 00:00:37,460
-outside that mandate. Mandate Guard is
+00:00:46,300 --> 00:00:49,234
+Inside the limits, the agent books a delivery.
 
 13
-00:00:37,460 --> 00:00:39,745
-deterministic code. It denies the request
+00:00:49,234 --> 00:00:51,802
+Ravi pays through PayPal checkout, in the
 
 14
-00:00:39,745 --> 00:00:42,410
-before any money moves, and says why.
+00:00:51,802 --> 00:00:54,736
+sandbox. PayPal holds the money for this job
 
 15
-00:00:43,710 --> 00:00:46,503
-Inside the mandate, the agent hires a courier.
+00:00:54,736 --> 00:00:56,570
+until the work is proven.
 
 16
-00:00:46,503 --> 00:00:49,645
-Ravi funds the job on the PayPal sandbox, with
+00:01:01,300 --> 00:01:04,245
+The courier sends a photo. Simple rules check
 
 17
-00:00:49,645 --> 00:00:52,786
-Orders version two. The money is held on the
+00:01:04,245 --> 00:01:07,557
+the place, the time, and whether the photo was
 
 18
-00:00:52,786 --> 00:00:55,230
-platform account until the work is proven.
+00:01:07,557 --> 00:01:10,502
+used before. Then an AI model checks each
 
 19
-00:00:56,530 --> 00:00:59,613
-The worker submits a photo. Rules check
+00:01:10,502 --> 00:01:12,710
+requirement, and the payment is approved.
 
 20
-00:00:59,613 --> 00:01:02,696
-location, time and duplicates first. Then a
+00:01:17,300 --> 00:01:20,156
+On a second job, someone sends the same photo
 
 21
-00:01:02,696 --> 00:01:05,779
-vision model judges each criterion, and policy
+00:01:20,156 --> 00:01:22,694
+again. It's caught. Nothing is paid, and the
 
 22
-00:01:05,779 --> 00:01:07,100
-approves the release.
+00:01:22,694 --> 00:01:25,550
+job waits for a person in the review queue.
 
 23
-00:01:08,400 --> 00:01:11,894
-Ravi disputes the delivery and adds a photo of
+00:01:32,300 --> 00:01:35,977
+Back on the first job, Ravi says one carton
 
 24
-00:01:11,894 --> 00:01:14,612
-the damage. The arbiter returns a liability
+00:01:35,977 --> 00:01:38,838
+arrived damaged. An AI arbiter weighs both
 
 25
-00:01:14,612 --> 00:01:17,329
-finding that cites the mandate clause, the
+00:01:38,838 --> 00:01:42,107
+sides and writes a liability finding. It cites
 
 26
-00:01:17,329 --> 00:01:20,047
-criteria and the evidence. Both sides accept,
+00:01:42,107 --> 00:01:44,967
+the exact clause Ravi signed. Both sides
 
 27
-00:01:20,047 --> 00:01:21,600
-and PayPal settles it.
+00:01:44,967 --> 00:01:47,010
+accept, and PayPal settles it.
 
 28
-00:01:22,900 --> 00:01:25,272
-Someone reuses that photo on another job. The
+00:01:58,300 --> 00:02:01,691
+This is a real job on the PayPal sandbox. The
 
 29
-00:01:25,272 --> 00:01:27,348
-perceptual hash catches it, the payout is
+00:02:01,691 --> 00:02:04,065
+order, the capture, and both payouts, each
 
 30
-00:01:27,348 --> 00:01:30,313
-held, and it waits in the risk queue for a
+00:02:04,065 --> 00:02:05,760
+with its own PayPal ID.
 
 31
-00:01:30,313 --> 00:01:30,610
-person.
-
-32
-00:01:31,910 --> 00:01:34,972
+00:02:11,300 --> 00:02:13,977
 Every step is signed into a receipt. Anyone
 
+32
+00:02:13,977 --> 00:02:16,655
+can check it in the browser, without trusting
+
 33
-00:01:34,972 --> 00:01:38,035
-can verify it, without trusting us. Change one
+00:02:16,655 --> 00:02:19,332
+us. Change a single character, and the check
 
 34
-00:01:38,035 --> 00:01:40,714
-byte, and verification fails, pointing to the
+00:02:19,332 --> 00:02:21,340
+fails, and shows what was changed.
 
 35
-00:01:40,714 --> 00:01:41,480
-broken link.
+00:02:30,300 --> 00:02:33,240
+AI agents are about to spend real money.
 
 36
-00:01:42,780 --> 00:01:46,389
-In our repeatable test scenarios, no bad proof
+00:02:33,240 --> 00:02:35,445
+SettleAI makes them accountable. Try it
 
 37
-00:01:46,389 --> 00:01:49,547
-was auto-paid, and every tampered receipt was
-
-38
-00:01:49,547 --> 00:01:52,254
-caught. Next: production key custody, a
-
-39
-00:01:52,254 --> 00:01:54,510
-regulated partner, and PayPal Invoicing.
-
-40
-00:01:55,810 --> 00:01:58,660
-This runs on the PayPal sandbox with test
-
-41
-00:01:58,660 --> 00:02:01,510
-money. The mandates are inspired by AP2. They
-
-42
-00:02:01,510 --> 00:02:04,360
-are not official, and not endorsed by PayPal.
+00:02:35,445 --> 00:02:37,650
+yourself at the link on screen.
 

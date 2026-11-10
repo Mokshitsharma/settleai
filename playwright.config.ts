@@ -26,7 +26,7 @@ export default defineConfig({
     command: `pnpm build && pnpm db:template && pnpm build:standalone && cd .next/standalone && node --max-old-space-size=320 --liftoff-only db-boot.cjs boot && node --max-old-space-size=320 --liftoff-only server.js`,
     url: `http://localhost:${PORT}/api/health`,
     timeout: 600_000, // build + template + standalone can exceed 5 minutes on a slow machine
-    reuseExistingServer: false,
+    reuseExistingServer: Boolean(process.env.E2E_REUSE_SERVER), // opt-in: a server started by hand with the same env
     env: {
       APP_MODE: "MOCK",
       PROCUREBOT_API_KEY: process.env.PROCUREBOT_API_KEY ?? randomBytes(24).toString("hex"),

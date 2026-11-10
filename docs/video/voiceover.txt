@@ -22,10 +22,10 @@ The courier sends a photo. Simple rules check the place, the time, and whether t
 On a second job, someone sends the same photo again. It's caught. Nothing is paid, and the job waits for a person in the review queue.
 
 [dispute]
-Back on the first job, Ravi says one carton arrived damaged. An AI arbiter weighs both sides and writes a liability finding. It cites the exact clause Ravi signed. Both sides accept, and PayPal pays out and refunds.
+Back on the first job, Ravi says one carton arrived damaged. An AI arbiter weighs both sides and writes a liability finding. It cites the exact clause Ravi signed. Both sides accept, and PayPal settles it.
 
 [evidence]
-These are real PayPal sandbox transactions. The capture, the payout, and the refund, each with its own PayPal ID.
+This is a real job on the PayPal sandbox. The order, the capture, and both payouts, each with its own PayPal ID.
 
 [receipt]
 Every step is signed into a receipt. Anyone can check it in the browser, without trusting us. Change a single character, and the check fails, and shows what was changed.

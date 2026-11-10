@@ -19,13 +19,13 @@ Code: https://github.com/Mokshitsharma/settleai
 0:00 Who is accountable when an agent spends?
 0:17 A signed mandate for an AI agent
 0:30 Out-of-mandate request denied before money moves
-0:49 Funded through PayPal sandbox checkout
-1:04 Proof checked by rules and an AI model
-1:20 A reused photo is caught and held
-1:35 A liability finding that cites the mandate
-1:59 Real PayPal sandbox capture, payout and refund
-2:12 A receipt verifies; a one-character change fails
-2:31 Try it
+0:46 Funded through PayPal sandbox checkout
+1:01 Proof checked by rules and an AI model
+1:17 A reused photo is caught and held
+1:32 A liability finding that cites the mandate
+1:58 Real PayPal sandbox order, capture and payouts
+2:11 A receipt verifies; a one-character change fails
+2:30 Try it
 
 PayPal sandbox with test money. Funds are captured to the platform account and released by Payouts (PayPal has no native
 escrow here). Mandates are AP2-inspired: not official AP2, and not endorsed by PayPal or Google. Demo images are

@@ -41,16 +41,17 @@ t = lambda src, k: src[k]["t"]
 vo = {i["id"]: i for i in json.load(open(f"{V}/vo/durations.json"))}
 
 # Beat lengths in seconds: the voiceover plus room to read the key card. Total about 2:43.
-LENGTH = {"cold": 8, "title": 9, "mandate": 13, "denied": 19, "fund": 15, "proof": 16, "fraud": 15, "dispute": 24, "evidence": 13, "receipt": 19, "close": 12}
+LENGTH = {"cold": 8, "title": 9, "mandate": 13, "denied": 16, "fund": 15, "proof": 16, "fraud": 15, "dispute": 26, "evidence": 13, "receipt": 19, "close": 12}
 # Each screen beat: plain segments (start, end, raw file), then a zoom hold on a marked card (marks, name, seconds).
 SCREEN = {
-    "mandate": ([(t(M, "mandates"), t(M, "agent-out-of-scope"), 1)], None),
-    "denied": ([(t(M, "agent-out-of-scope"), t(M, "denied"), 1)], (M, "denied", 7)),
+    "mandate": ([(t(M, "landing") + 2, t(M, "agent-out-of-scope"), 1)], (M, "mandates", 0)),
+    "denied": ([(t(M, "agent-out-of-scope") - 1, t(M, "denied") + 3.5, 1)], (M, "denied", 7)),
     "fund": ([(t(M, "agent-in-scope"), t(M, "agent-allowed") + 2, 1), (t(M, "job-created"), t(M, "fund-clicked") + 1.5, 1), (t(M, "paypal-checkout"), t(M, "paypal-review") + 2, 1), (t(M, "paypal-returned"), t(M, "paypal-returned") + 2, 1), (t(M, "funded") - 1, t(M, "funded") + 3, 1)], None),
     "proof": ([(t(M, "proof-photo") - 1.5, t(M, "submitted") + 2, 1)], (M, "decision-card", 5)),
     "fraud": ([(t(N, "reused-photo") - 2, t(N, "reused-photo") + 1, 2), (t(N, "risk-queue"), t(N, "risk-queue") + 4, 2)], (N, "held", 5)),
-    "dispute": ([(t(M, "dispute-opened") - 4, t(M, "evidence-added") + 1, 1), (t(M, "settled") - 1, t(M, "settled") + 3, 1)], (M, "liability-finding", 6)),
-    "evidence": ([], (M, "evidence", 13)),
+    "dispute": ([(t(M, "dispute-opened") - 4, t(M, "evidence-added") + 1, 1), (t(M, "settled") - 1, t(M, "settled") + 3, 1)], ({"_raw": 1, "lf": {"t": t(M, "settled") - 2.2, "box": {"x": 284, "y": 112, "width": 596, "height": 152}}}, "lf", 6)),  # the finding, scrolled into view, boxed by hand
+    # The permanent showcase receipt (a real sandbox job): its PayPal order, capture and payout ids, boxed by hand.
+    "evidence": ([], ({"ids": {"t": t(N, "showcase") + 2.0, "box": {"x": 384, "y": 240, "width": 768, "height": 156}}}, "ids", 13)),
     "receipt": ([(t(N, "showcase"), t(N, "showcase-verified") + 3, 2), (t(N, "verify-page"), t(N, "tamper-failed"), 2)], (N, "tamper-failed", 6)),
 }
 # In the fraud and dispute beats the zoom hold sits between the plain segments, where it happens on screen.
@@ -76,7 +77,7 @@ def zoom_hold(name, marks, key, seconds, n, overlay=None):
         z1 = max(1.0, min(2.2, W / (bw + 2 * pad), H / (bh + 2 * pad)))
         cx, cy = bx + bw / 2, by + bh / 2
     else:
-        z1, cx, cy = 1.0, W / 2, H / 2
+        z1, cx, cy = 1.12, W / 2, H / 2
     frames = int(seconds * FPS)
     ramp = 1.6 * FPS
     S = 2  # zoompan works on a 2x upscale to avoid jitter
@@ -87,7 +88,7 @@ def zoom_hold(name, marks, key, seconds, n, overlay=None):
     vf = f"scale={W * S}:{H * S},zoompan=z='{z}':x='{x}':y='{y}':d={frames}:s={W}x{H}:fps={FPS}"
     if overlay:
         o = overlay.replace(":", "\\:").replace("'", "\u2019")
-        vf += f",drawbox=x=0:y=ih-230:w=iw:h=150:color={BG}@0.88:t=fill,drawtext=fontfile='{FONTB}':text='{o}':fontcolor=white:fontsize=60:x=(w-text_w)/2:y=h-185"
+        vf += f",drawbox=x=0:y=50:w=iw:h=150:color={BG}@0.9:t=fill,drawtext=fontfile='{FONTB}':text='{o}':fontcolor=white:fontsize=60:x=(w-text_w)/2:y=95"
     p = f"{V}/hold-{name}.mp4"
     run(["-loop", "1", "-i", frame, "-vf", vf, "-frames:v", str(frames), "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-pix_fmt", "yuv420p", p])
     return p
@@ -111,14 +112,17 @@ def screen_beat(name, seconds, audio):
     parts = []
     if plain:
         total = sum(dur(p) for p in plain)
-        factor = (seconds - hold_s) / total  # under 1 speeds up waits; over 1 slows gently
-        print(f"{name}: {total:.1f}s of screen fitted to {seconds - hold_s:.1f}s (x{1 / factor:.2f}), hold {hold_s}s")
+        factor = (seconds - hold_s) / total  # under 1 speeds up waits
+        if factor > 1:  # never slow footage down: the spare time goes to the hold on the key card
+            hold_s += seconds - hold_s - total
+            factor = 1.0
+        print(f"{name}: {total:.1f}s of screen at x{1 / factor:.2f}, hold {hold_s:.1f}s")
         for i, p in enumerate(plain):
             sped = f"{V}/sped-{name}-{i}.mp4"
             run(["-i", p, "-vf", f"setpts={factor:.4f}*PTS,fps={FPS}", "-an", "-c:v", "libx264", "-preset", "veryfast", "-crf", "18", "-pix_fmt", "yuv420p", sped])
             parts.append(sped)
     if hold:
-        h = zoom_hold(name, hold[0], hold[1], hold_s, 1 if hold[0] is M else 2)
+        h = zoom_hold(name, hold[0], hold[1], hold_s, 1 if (hold[0] is M or hold[0].get("_raw") == 1) else 2)
         parts.insert(HOLD_AT.get(name, len(parts)), h)
     return with_audio(name, concat(name, parts), seconds, audio)
 
@@ -143,6 +147,10 @@ def card(name, lines, seconds, audio):
 beats, srt, clock = [], [], 0.0
 def add(path, seconds, caption):
     global clock
+    if caption is None:  # the beat shows its words on screen already
+        beats.append(path)
+        clock += seconds
+        return
     words = caption.split()
     chunks, cur = [], []
     for w in words:
@@ -171,7 +179,7 @@ for name in ORDER:
     audio = f"{V}/vo/{name}.wav"
     if name == "cold":
         h = zoom_hold("cold", M, "denied", seconds, 1, overlay="When an AI agent spends money, who is accountable?")
-        add(with_audio("cold", h, seconds, audio), seconds, item["text"])
+        add(with_audio("cold", h, seconds, audio), seconds, None)
     elif name == "title":
         add(card("title", [("SettleAI", 120, True, WHITE), ("", 0, False, WHITE), ("Agents will hire people.", 58, False, WHITE), ("SettleAI makes sure the work was done before PayPal pays.", 46, False, SOFT)], seconds, audio), seconds, item["text"])
     elif name == "close":
